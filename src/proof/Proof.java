@@ -1,11 +1,13 @@
 package proof;
 
+import com.sun.istack.internal.NotNull;
 import com.sun.istack.internal.Nullable;
 import expression.BinaryOperator;
 import expression.Expression;
 import parser.ExpressionParser;
 import parser.ParseException;
 import scanner.FastLineScanner;
+import threading.Control;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -30,11 +32,11 @@ public final class Proof {
         statements = new ArrayList<>();
     }
 
-    public Proof(List<Statement> statements) {
+    public Proof(@NotNull List<Statement> statements) {
         this.statements = statements;
     }
 
-    public Proof(String proof) throws ParseException {
+    public Proof(@NotNull String proof) throws ParseException {
         String[] lines = proof.split("\n");
         statements = new ArrayList<>();
         for (String s: lines) {
@@ -60,7 +62,7 @@ public final class Proof {
         }
     }
 
-    public Proof(File file) throws ParseException, FileNotFoundException {
+    public Proof(@NotNull File file) throws ParseException, FileNotFoundException {
         FastLineScanner scanner = new FastLineScanner(file);
         statements = new ArrayList<>();
         while (scanner.hasMore()) {
@@ -96,9 +98,8 @@ public final class Proof {
 
         Proof proof = (Proof) o;
 
-        if (!statements.equals(proof.statements)) return false;
+        return statements.equals(proof.statements);
 
-        return true;
     }
 
     @Override
@@ -144,24 +145,45 @@ public final class Proof {
         all.put(expression, st);
     }
 
-    public boolean rightExists(Expression exp) {
+    public boolean rightExists(@NotNull Expression exp) {
         return right.containsKey(exp);
     }
 
-    public Set<Statement> getRights(Expression exp) {
+    public Set<Statement> getRights(@NotNull Expression exp) {
         return right.get(exp);
     }
 
-    public boolean allExists(Expression exp) {
+    public boolean allExists(@NotNull Expression exp) {
         return all.containsKey(exp);
     }
 
-    public Statement getAll(Expression exp) {
+    public Statement getAll(@NotNull Expression exp) {
         return all.get(exp);
     }
 
     public int getLine() {
         return line;
+    }
+
+    public ModusPonens findModusPonens(@NotNull Expression expression, @Nullable Control control) {
+        if (rightExists(expression)) {
+            Set<Statement> set = getRights(expression);
+            for (Statement target : set) {
+                BinaryOperator bo = (BinaryOperator) target.getExp();
+                Expression left = bo.getLeft();
+                if (control != null && control.flag) {
+                    return null;
+                }
+                if (allExists(left)) {
+                    if (control != null) {
+                        control.flag = true;
+                    }
+                    Statement antecedent = getAll(left);
+                    return new ModusPonens(antecedent, target);
+                }
+            }
+        }
+        return null;
     }
 
     public final List<Statement> getStatements() {

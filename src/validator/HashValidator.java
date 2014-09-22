@@ -7,6 +7,7 @@ import parser.*;
 import proof.*;
 import proof.Error;
 import scanner.FastLineScanner;
+import threading.Control;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -15,10 +16,6 @@ import java.util.*;
 public final class HashValidator implements Validator {
     //TODO: refactor
     //TODO: javadoc
-
-    private static class Control {
-        public volatile boolean flag = false;
-    }
 
     private Control control;
 
@@ -47,21 +44,9 @@ public final class HashValidator implements Validator {
                 Runnable modusPonens = new Runnable() {
                     @Override
                     public void run() {
-                        if (proof.rightExists(expression)) {
-                            Set<Statement> set = proof.getRights(expression);
-                            for (Statement target : set) {
-                                BinaryOperator bo = (BinaryOperator) target.getExp();
-                                Expression left = bo.getLeft();
-                                if (control.flag) {
-                                    return;
-                                }
-                                if (proof.allExists(left)) {
-                                    control.flag = true;
-                                    Statement antecedent = proof.getAll(left);
-                                    proof.addExpression(expression, new ModusPonens(antecedent, target));
-                                    return;
-                                }
-                            }
+                        ModusPonens proofModusPonens = proof.findModusPonens(expression, control);
+                        if (proofModusPonens != null) {
+                            proof.addExpression(expression, proofModusPonens);
                         }
                     }
                 };
