@@ -2,7 +2,7 @@ package parser;
 
 import expression.*;
 
-public final class ExpressionParser {
+public final class ExpressionParser implements Parser<Expression> {
     //TODO: javadoc
     private static String s;
     private static int next;
@@ -115,7 +115,8 @@ public final class ExpressionParser {
         return parseEntailment(parseOr(parseAnd(parseFactor())));
     }
 
-    public static Expression parse(String str) throws ParseException {
+    @Override
+    public Expression parse(String str) throws ParseException {
         s = str;
         next = 0;
         Expression expression = parseFormula();

@@ -50,7 +50,6 @@ public final class FastLineScanner {
         return s;
     }
 
-
     /**
      * Checks if input source has more lines to read
      * @return          <code>true</code> if lines are left in input source

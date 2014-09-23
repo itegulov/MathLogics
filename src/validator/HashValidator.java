@@ -15,8 +15,6 @@ import java.io.FileNotFoundException;
 public final class HashValidator implements Validator {
     //TODO: javadoc
 
-    private Control control;
-
     @Override
     public Proof validate(@NotNull final File f) throws FileNotFoundException {
         return validate(f, null);
@@ -29,15 +27,16 @@ public final class HashValidator implements Validator {
     }
 
     @Override
-    public Proof validate(final FastLineScanner in, final Statement[] assumptions) {
-        control = new Control();
+    public Proof validate(@NotNull final FastLineScanner in, @Nullable final Statement[] assumptions) {
+        final Control control = new Control();
         final Proof proof = new Proof();
+        final Parser<Expression> expressionParser = new ExpressionParser();
         while (in.hasMore()) {
             control.flag = false;
             final String s;
             s = in.next();
             try {
-                final Expression expression = ExpressionParser.parse(s);
+                final Expression expression = expressionParser.parse(s);
                 //Thread for application Modus Ponens rule
                 Runnable modusPonens = new Runnable() {
                     @Override

@@ -3,6 +3,7 @@ package proof;
 import expression.*;
 import parser.ExpressionParser;
 import parser.ParseException;
+import parser.Parser;
 
 import java.util.HashMap;
 
@@ -16,8 +17,9 @@ public enum Axiom implements StatementType {
     private int number;
 
     Axiom(String s, int number) {
+        Parser<Expression> expressionParser = new ExpressionParser();
         try {
-            exp = ExpressionParser.parse(s);
+            exp = expressionParser.parse(s);
             this.number = number;
         } catch (ParseException e) {
             e.printStackTrace();
