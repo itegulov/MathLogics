@@ -1,8 +1,6 @@
 package proof;
 
 import expression.Expression;
-import parser.ExpressionParser;
-import parser.ParseException;
 
 public final class Statement {
     //TODO: javadoc
@@ -44,8 +42,7 @@ public final class Statement {
                 return false;
             }
         }
-
-        return type.equals(statement.type);
+        return true;
     }
 
     @Override
