@@ -181,8 +181,6 @@ public class HashValidatorTest {
     @Test
     public void testMaxTest() throws Exception {
         Proof answer = validator.validate(new File("maxtest.in"));
-        //PrintWriter pw = new PrintWriter(new File("maxtest.out"));
-        //pw.println(answer.toString());
         Proof goodAnswer = new Proof(new File("maxtest.out"));
         assertEquals(answer, goodAnswer);
     }

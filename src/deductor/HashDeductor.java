@@ -31,13 +31,13 @@ public final class HashDeductor implements Deductor {
         FastLineScanner scanner = new FastLineScanner(f);
 
         String assumptionsStatement = scanner.next();
-        String[] parts = assumptionsStatement.split("|-", 2);
+        String[] parts = assumptionsStatement.split("\\|\\-", 2);
         String[] assumptionStrings = parts[0].split(",");
         final Statement[] assumptions = new Statement[assumptionStrings.length];
         for (int i = 0; i < assumptionStrings.length; i++) {
             assumptions[i] = new Statement(ExpressionParser.parse(assumptionStrings[i]), new Assumption(), i + 2);
         }
-        Proof proof = new HashValidator().validate(f);
+        Proof proof = new HashValidator().validate(scanner, assumptions);
 
         for (Statement assumption : assumptions) {
             Expression currentAssumption = assumption.getExp();
@@ -76,12 +76,10 @@ public final class HashDeductor implements Deductor {
                             .replaceAll("c", currentExp.toString()));
                     modusPonens = newProof.findModusPonens(expression, null);
                     newProof.addExpression(expression, modusPonens);
-                } else {
-
                 }
             }
             proof = newProof;
         }
-        return null;
+        return proof;
     }
 }

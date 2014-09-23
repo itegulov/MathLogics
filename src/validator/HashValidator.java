@@ -11,10 +11,8 @@ import threading.Control;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.*;
 
 public final class HashValidator implements Validator {
-    //TODO: refactor
     //TODO: javadoc
 
     private Control control;
@@ -40,7 +38,6 @@ public final class HashValidator implements Validator {
             s = in.next();
             try {
                 final Expression expression = ExpressionParser.parse(s);
-                //TODO: make thread-safe
                 //Thread for application Modus Ponens rule
                 Runnable modusPonens = new Runnable() {
                     @Override
