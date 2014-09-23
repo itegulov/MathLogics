@@ -171,15 +171,28 @@ public final class Proof {
             for (Statement target : set) {
                 BinaryOperator bo = (BinaryOperator) target.getExp();
                 Expression left = bo.getLeft();
-                if (control != null && control.flag) {
-                    return null;
-                }
-                if (allExists(left)) {
-                    if (control != null) {
-                        control.flag = true;
+                if (control != null) {
+                    synchronized (control) {
+                        try {
+                            control.wait(0, 1);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        if (control.flag) {
+                            return null;
+                        }
+                        if (allExists(left)) {
+                            control.flag = true;
+                            Statement antecedent = getAll(left);
+                            return new ModusPonens(antecedent, target);
+                        }
+                        control.notifyAll();
                     }
-                    Statement antecedent = getAll(left);
-                    return new ModusPonens(antecedent, target);
+                } else {
+                    if (allExists(left)) {
+                        Statement antecedent = getAll(left);
+                        return new ModusPonens(antecedent, target);
+                    }
                 }
             }
         }

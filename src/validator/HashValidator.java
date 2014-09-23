@@ -40,6 +40,7 @@ public final class HashValidator implements Validator {
             s = in.next();
             try {
                 final Expression expression = ExpressionParser.parse(s);
+                //TODO: make thread-safe
                 //Thread for application Modus Ponens rule
                 Runnable modusPonens = new Runnable() {
                     @Override
@@ -56,13 +57,22 @@ public final class HashValidator implements Validator {
                     @Override
                     public void run() {
                         for (Axiom axiom : Axiom.values()) {
-                            if (control.flag) {
-                                return;
-                            }
-                            if (axiom.matches(expression)) {
-                                control.flag = true;
-                                proof.addExpression(expression, axiom);
-                                return;
+                            synchronized (control) {
+                                try {
+                                    control.wait(0, 1);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                                if (control.flag) {
+                                    return;
+                                }
+
+                                if (axiom.matches(expression)) {
+                                    control.flag = true;
+                                    proof.addExpression(expression, axiom);
+                                    return;
+                                }
+                                control.notifyAll();
                             }
                         }
                     }
@@ -76,13 +86,21 @@ public final class HashValidator implements Validator {
                             return;
                         }
                         for (Statement assumption : assumptions) {
-                            if (control.flag) {
-                                return;
-                            }
-                            if (assumption.getExp().equals(expression)) {
-                                control.flag = true;
-                                proof.addExpression(expression, new Assumption());
-                                return;
+                            synchronized (control) {
+                                try {
+                                    control.wait(0, 1);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                                if (control.flag) {
+                                    return;
+                                }
+                                if (assumption.getExp().equals(expression)) {
+                                    control.flag = true;
+                                    proof.addExpression(expression, new Assumption());
+                                    return;
+                                }
+                                control.notifyAll();
                             }
                         }
                     }
