@@ -15,9 +15,10 @@ public final class ModusPonens implements StatementType {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
-        BinaryOperator bo = (BinaryOperator) second.getExp();
-        return first.getExp().equals(bo.getLeft());
+        ModusPonens modusPonens = (ModusPonens) o;
+        BinaryOperator binaryOperator = (BinaryOperator) modusPonens.second.getExp();
+        BinaryOperator myBinaryOperator = (BinaryOperator) second.getExp();
+        return binaryOperator.getRight().equals(myBinaryOperator.getRight());
     }
 
     public Statement getFirst() {
