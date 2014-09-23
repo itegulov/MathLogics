@@ -41,33 +41,7 @@ public class HashDeductorTest {
 
     @Test
     public void testDeductSmall() throws Exception {
-        PrintWriter pw = new PrintWriter(file);
-        pw.println("!B,A->B|-!B->!A\n" +
-                "((A->B)->((A->(!B))->(!A)))\n" +
-                "(((A->B)->((A->(!B))->(!A)))->((!B)->((A->B)->((A->(!B))->(!A)))))\n" +
-                "((!B)->((A->B)->((A->(!B))->(!A))))\n" +
-                "(A->B)\n" +
-                "((A->B)->((!B)->(A->B)))\n" +
-                "((!B)->(A->B))\n" +
-                "(((!B)->(A->B))->(((!B)->((A->B)->((A->(!B))->(!A))))->((!B)->((A->(!B))->(!A)))))\n" +
-                "(((!B)->((A->B)->((A->(!B))->(!A))))->((!B)->((A->(!B))->(!A))))\n" +
-                "((!B)->((A->(!B))->(!A)))\n" +
-                "((!B)->(A->(!B)))\n" +
-                "(((!B)->(A->(!B)))->((!B)->((!B)->(A->(!B)))))\n" +
-                "((!B)->((!B)->(A->(!B))))\n" +
-                "((!B)->((!B)->(!B)))\n" +
-                "(((!B)->((!B)->(!B)))->(((!B)->(((!B)->(!B))->(!B)))->((!B)->(!B))))\n" +
-                "(((!B)->(((!B)->(!B))->(!B)))->((!B)->(!B)))\n" +
-                "((!B)->(((!B)->(!B))->(!B)))\n" +
-                "((!B)->(!B))\n" +
-                "(((!B)->(!B))->(((!B)->((!B)->(A->(!B))))->((!B)->(A->(!B)))))\n" +
-                "(((!B)->((!B)->(A->(!B))))->((!B)->(A->(!B))))\n" +
-                "((!B)->(A->(!B)))\n" +
-                "(((!B)->(A->(!B)))->(((!B)->((A->(!B))->(!A)))->((!B)->(!A))))\n" +
-                "(((!B)->((A->(!B))->(!A)))->((!B)->(!A)))\n" +
-                "((!B)->(!A))");
-        pw.close();
-        Proof proof = new Proof();
-        assertEquals(deductor.deduct(file), proof);
+        Proof proof = new Proof(new File("deductor_small.out"));
+        assertEquals(deductor.deduct(new File("deductor_small.in")), proof);
     }
 }

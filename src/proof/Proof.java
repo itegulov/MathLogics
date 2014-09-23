@@ -6,6 +6,7 @@ import expression.BinaryOperator;
 import expression.Expression;
 import parser.ExpressionParser;
 import parser.ParseException;
+import parser.Parser;
 import scanner.FastLineScanner;
 import threading.Control;
 
@@ -37,6 +38,7 @@ public final class Proof {
     }
 
     public Proof(@NotNull String proof) throws ParseException {
+        Parser<Expression> expressionParser = new ExpressionParser();
         String[] lines = proof.split("\n");
         statements = new ArrayList<>();
         for (String s: lines) {
@@ -46,14 +48,14 @@ public final class Proof {
             } else {
                 String[] tokens = s.split(" ", 2);
                 if (tokens[1].matches("\\(сх\\. акс\\.(.*)")) {
-                    statements.add(new Statement(ExpressionParser.parse(tokens[0]), Axiom.values()[Integer.parseInt(tokens[1].substring(10, tokens[1].length() - 1)) - 1], line));
+                    statements.add(new Statement(expressionParser.parse(tokens[0]), Axiom.values()[Integer.parseInt(tokens[1].substring(10, tokens[1].length() - 1)) - 1], line));
                 } else {
                     if (tokens[1].matches("\\(M\\.P\\.(.*)")) {
                         String lineNumbers = tokens[1].substring(6, tokens[1].length() - 1);
                         String[] numbers = lineNumbers.split(", ");
                         int firstLine = Integer.parseInt(numbers[0]);
                         int secondLine = Integer.parseInt(numbers[1]);
-                        statements.add(new Statement(ExpressionParser.parse(tokens[0]), new ModusPonens(statements.get(firstLine - 1), statements.get(secondLine - 1)), line));
+                        statements.add(new Statement(expressionParser.parse(tokens[0]), new ModusPonens(statements.get(firstLine - 1), statements.get(secondLine - 1)), line));
                     } else {
                         throw new ParseException("Undefined type of statement");
                     }
@@ -63,6 +65,7 @@ public final class Proof {
     }
 
     public Proof(@NotNull File file) throws ParseException, FileNotFoundException {
+        Parser<Expression> expressionParser = new ExpressionParser();
         FastLineScanner scanner = new FastLineScanner(file);
         statements = new ArrayList<>();
         while (scanner.hasMore()) {
@@ -73,7 +76,7 @@ public final class Proof {
             } else {
                 String[] tokens = s.split(" ", 2);
                 if (tokens[1].matches("\\(сх\\. акс\\.(.*)")) {
-                    statements.add(new Statement(ExpressionParser.parse(tokens[0]),
+                    statements.add(new Statement(expressionParser.parse(tokens[0]),
                             Axiom.values()[Integer.parseInt(tokens[1].substring(10, tokens[1].length() - 1)) - 1], line));
                 } else {
                     if (tokens[1].matches("\\(M\\.P\\.(.*)")) {
@@ -81,7 +84,7 @@ public final class Proof {
                         String[] numbers = lineNumbers.split(", ");
                         int firstLine = Integer.parseInt(numbers[0]);
                         int secondLine = Integer.parseInt(numbers[1]);
-                        statements.add(new Statement(ExpressionParser.parse(tokens[0]), new ModusPonens(statements.get(firstLine - 1),
+                        statements.add(new Statement(expressionParser.parse(tokens[0]), new ModusPonens(statements.get(firstLine - 1),
                                 statements.get(secondLine - 1)), line));
                     } else {
                         throw new ParseException("Undefined type of statement");

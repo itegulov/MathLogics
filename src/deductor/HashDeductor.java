@@ -49,35 +49,42 @@ public final class HashDeductor implements Deductor {
             for (Statement statement : proof.getStatements()) {
                 Expression currentExp = statement.getExp();
                 StatementType statementType = statement.getType();
-                if (statement.equals(assumption)) {
+                if (statement.getExp().equals(currentAssumption)) {
                     final List<Statement> statements = newProof.getStatements();
-                    newProof.addExpression(parser.parse("a->a->a".replaceAll("a", currentExp.toString())), Axiom.AxiomOne);
-                    newProof.addExpression(parser.parse("(a->(a->a))->(a->((a->a)->a))->(a->a)".replaceAll("a", currentExp.toString())), Axiom.AxiomTwo);
+                    newProof.addExpression(parser.parse("(a)->(a)->(a)".replaceAll("a", currentExp.toString())), Axiom.AxiomOne);
+                    newProof.addExpression(parser.parse("((a)->((a)->(a)))->((a)->(((a)->(a))->(a)))->((a)->(a))".replaceAll("a", currentExp.toString())), Axiom.AxiomTwo);
                     ModusPonens modusPonens = new ModusPonens(statements.get(statements.size() - 1), statements.get(statements.size() -2));
-                    newProof.addExpression(parser.parse("(a->((a->a)->a))->(a->a)".replaceAll("a", currentExp.toString())), modusPonens);
-                    newProof.addExpression(parser.parse("(a->((a->a)->a))".replaceAll("a", currentExp.toString())), Axiom.AxiomOne);
+                    newProof.addExpression(parser.parse("((a)->(((a)->(a))->a))->((a)->(a))".replaceAll("a", currentExp.toString())), modusPonens);
+                    newProof.addExpression(parser.parse("((a)->(((a)->(a))->(a)))".replaceAll("a", currentExp.toString())), Axiom.AxiomOne);
                     modusPonens = new ModusPonens(statements.get(statements.size() - 1), statements.get(statements.size() -2));
-                    newProof.addExpression(parser.parse("a->a".replaceAll("a", currentExp.toString())), modusPonens);
+                    newProof.addExpression(parser.parse("(a)->(a)".replaceAll("a", currentExp.toString())), modusPonens);
                 } else if (statementType.getClass() == Axiom.class || allowanceContainsStatement(assumptions, statement)) {
                     newProof.addExpression(statement.getExp(), statementType);
-                    newProof.addExpression(new Entailment(statement.getExp(), new Entailment(assumption.getExp(), statement.getExp())), Axiom.AxiomOne);
+                    newProof.addExpression(new Entailment(currentExp, new Entailment(currentAssumption, currentExp)), Axiom.AxiomOne);
+                    Expression expression = new Entailment(currentAssumption, currentExp);
+                    ModusPonens modusPonens = newProof.findModusPonens(expression, null);
+                    newProof.addExpression(expression, modusPonens);
                 } else if (statementType.getClass() == ModusPonens.class) {
                     Statement antecedent = ((ModusPonens)statementType).getFirst();
-                    Expression expression = parser.parse("(a->b)->((a->(b->c))->(a->c))"
+                    Expression expression = parser.parse("((a)->(b))->(((a)->((b)->(c)))->((a)->(c)))"
                             .replaceAll("a", currentAssumption.toString())
-                            .replaceAll("b", antecedent.toString())
+                            .replaceAll("b", antecedent.getExp().toString())
                             .replaceAll("c", currentExp.toString()));
                     newProof.addExpression(expression, Axiom.AxiomTwo);
-                    expression = parser.parse("((a->(b->c))->(a->c))"
+                    expression = parser.parse("(((a)->((b)->(c)))->((a)->(c)))"
                             .replaceAll("a", currentAssumption.toString())
-                            .replaceAll("b", antecedent.toString())
+                            .replaceAll("b", antecedent.getExp().toString())
                             .replaceAll("c", currentExp.toString()));
                     ModusPonens modusPonens = newProof.findModusPonens(expression, null);
                     newProof.addExpression(expression, modusPonens);
-                    expression = parser.parse("a->c"
+                    expression = parser.parse("(a)->(c)"
                             .replaceAll("a", currentAssumption.toString())
                             .replaceAll("c", currentExp.toString()));
                     modusPonens = newProof.findModusPonens(expression, null);
+                    if (modusPonens == null) {
+                        System.out.println("Bad");
+                        modusPonens = newProof.findModusPonens(expression, null);
+                    }
                     newProof.addExpression(expression, modusPonens);
                 }
             }

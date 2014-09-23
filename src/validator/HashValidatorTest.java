@@ -4,11 +4,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import proof.Proof;
-import scanner.FastLineScanner;
 
 import java.io.File;
 import java.io.PrintWriter;
-import java.util.Objects;
 
 import static org.junit.Assert.assertEquals;
 
