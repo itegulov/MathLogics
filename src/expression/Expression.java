@@ -1,5 +1,7 @@
 package expression;
 
+import com.sun.istack.internal.NotNull;
+
 import java.util.Map;
 
 /**
@@ -18,11 +20,11 @@ public interface Expression {
      * @param args      a Map, which specifies what values were given to variables
      * @return          result of evaluating the expression
     */
-    public boolean evaluate(Map<String, Boolean> args);
+    public boolean evaluate(@NotNull Map<String, Boolean> args);
 
     /**
      * Generates Java code of the expression, which can be used for testing
-     * of something else.
+     * or something else.
      * <p>
      * For example: <code>(new And(new Variable("a"), new Variable("b"))).toJavaCode()</code>
      * results to <code>"new And(new Variable("a"), new Variable("b"))"</code>
@@ -37,7 +39,7 @@ public interface Expression {
     public boolean isBinary();
 
     /**
-     * Checks if other expression suits for this expression. Following rules are used:
+     * Checks if other expression suits this expression. Following rules are used:
      * 1) If some operation (binary or unary) was met in this expression, then
      * the same type of expression must be met in other expression.
      * 2) If variable was met in this expression, then any expression can be
@@ -48,7 +50,7 @@ public interface Expression {
      * @param map       map, which specifies which expression collerates with variable
      * @return          <code>true</code> if other expression matches all rules
      */
-    public boolean matches(Expression other, Map<String, Expression> map);
+    public boolean matches(@NotNull Expression other, @NotNull Map<String, Expression> map);
 
     /**
      * Converts expression to human-read string. Priority is used to specify
