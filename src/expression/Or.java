@@ -12,15 +12,6 @@ public final class Or extends BinaryOperator {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof Or) {
-            Or or = (Or) obj;
-            return or.left.equals(left) && or.right.equals(right);
-        }
-        return false;
-    }
-
-    @Override
     public String toJavaCode() {
         return "new Or(" + left.toJavaCode() + ", " + right.toJavaCode() + ")";
     }

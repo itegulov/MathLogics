@@ -2,30 +2,19 @@ package proof;
 
 public final class Error implements StatementType {
     //TODO: javadoc
-    private int line;
-
-    public Error(int line) {
-        this.line = line;
-    }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Error error = (Error) o;
-
-        return line == error.line;
-
+        return this == o || !(o == null || getClass() != o.getClass());
     }
 
     @Override
     public int hashCode() {
-        return line;
+        return 23874;
     }
 
     @Override
     public String toString() {
-        return "Доказательство неверно начиная со строки №" + line;
+        return "Не доказано";
     }
 }

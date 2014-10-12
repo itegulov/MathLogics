@@ -1,13 +1,13 @@
 package parser;
 
+import com.sun.istack.internal.NotNull;
 import expression.*;
 
 public final class ExpressionParser implements Parser<Expression> {
-    //TODO: javadoc
-    private static String s;
-    private static int next;
+    private String s;
+    private int next;
 
-    private static char getChar() {
+    private char getChar() {
         if (next < 0 || next >= s.length()) {
             next++;
             return '>';
@@ -15,16 +15,16 @@ public final class ExpressionParser implements Parser<Expression> {
         return s.charAt(next++);
     }
 
-    private static void returnChar() {
+    private void returnChar() {
         next--;
     }
 
-    private static boolean isChar(char c) {
+    private boolean isChar(char c) {
         return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
     }
 
-    private static Variable getVariable(char c) {
-        StringBuffer sb = new StringBuffer();
+    private Variable getVariable(char c) {
+        StringBuilder sb = new StringBuilder();
         do {
             sb.append(c);
             c = getChar();
@@ -33,7 +33,7 @@ public final class ExpressionParser implements Parser<Expression> {
         return new Variable(sb.toString());
     }
 
-    private static void skipWhitespaces() throws ParseException {
+    private void skipWhitespaces() throws ParseException {
         char c = getChar();
         while (Character.isWhitespace(c)) {
             c = getChar();
@@ -41,7 +41,7 @@ public final class ExpressionParser implements Parser<Expression> {
         returnChar();
     }
 
-    private static Expression parseFactor() throws ParseException {
+    private Expression parseFactor() throws ParseException {
         skipWhitespaces();
         char c = getChar();
 
@@ -65,7 +65,7 @@ public final class ExpressionParser implements Parser<Expression> {
         }
     }
 
-    private static Expression parseAnd(Expression left) throws ParseException {
+    private Expression parseAnd(@NotNull Expression left) throws ParseException {
         skipWhitespaces();
         char c = getChar();
 
@@ -78,7 +78,7 @@ public final class ExpressionParser implements Parser<Expression> {
         }
     }
 
-    private static Expression parseOr(Expression left) throws ParseException {
+    private Expression parseOr(@NotNull Expression left) throws ParseException {
         skipWhitespaces();
         char c = getChar();
 
@@ -93,7 +93,7 @@ public final class ExpressionParser implements Parser<Expression> {
 
 
 
-    private static Expression parseEntailment(Expression left) throws ParseException {
+    private Expression parseEntailment(@NotNull Expression left) throws ParseException {
         skipWhitespaces();
         char c = getChar();
 
@@ -111,12 +111,12 @@ public final class ExpressionParser implements Parser<Expression> {
         }
     }
 
-    private static Expression parseFormula() throws ParseException {
+    private Expression parseFormula() throws ParseException {
         return parseEntailment(parseOr(parseAnd(parseFactor())));
     }
 
     @Override
-    public Expression parse(String str) throws ParseException {
+    public Expression parse(@NotNull String str) throws ParseException {
         s = str;
         next = 0;
         Expression expression = parseFormula();

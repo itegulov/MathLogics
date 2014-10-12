@@ -13,7 +13,6 @@ import validator.Validator;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.*;
 
 public final class HashDeductor implements Deductor {
     //TODO: javadoc
@@ -42,7 +41,6 @@ public final class HashDeductor implements Deductor {
         }
         Validator validator = new HashValidator();
         Proof proof = validator.validate(scanner, assumptions);
-
         for (Statement assumption : assumptions) {
             Expression currentAssumption = assumption.getExp();
             Proof newProof = new Proof();
@@ -50,46 +48,52 @@ public final class HashDeductor implements Deductor {
                 Expression currentExp = statement.getExp();
                 StatementType statementType = statement.getType();
                 if (statement.getExp().equals(currentAssumption)) {
-                    final List<Statement> statements = newProof.getStatements();
-                    newProof.addExpression(parser.parse("(a)->(a)->(a)".replaceAll("a", currentExp.toString())), Axiom.AxiomOne);
-                    newProof.addExpression(parser.parse("((a)->((a)->(a)))->((a)->(((a)->(a))->(a)))->((a)->(a))".replaceAll("a", currentExp.toString())), Axiom.AxiomTwo);
-                    ModusPonens modusPonens = new ModusPonens(statements.get(statements.size() - 1), statements.get(statements.size() -2));
-                    newProof.addExpression(parser.parse("((a)->(((a)->(a))->a))->((a)->(a))".replaceAll("a", currentExp.toString())), modusPonens);
-                    newProof.addExpression(parser.parse("((a)->(((a)->(a))->(a)))".replaceAll("a", currentExp.toString())), Axiom.AxiomOne);
-                    modusPonens = new ModusPonens(statements.get(statements.size() - 1), statements.get(statements.size() -2));
-                    newProof.addExpression(parser.parse("(a)->(a)".replaceAll("a", currentExp.toString())), modusPonens);
+                    newProof.addExpression(parser.parse("(a)->(a)->(a)".replaceAll("a", currentExp.toString())), null);
+                    newProof.addExpression(parser.parse("((a)->((a)->(a)))->((a)->(((a)->(a))->(a)))->((a)->(a))".replaceAll("a", currentExp.toString())), null);
+                    newProof.addExpression(parser.parse("((a)->(((a)->(a))->a))->((a)->(a))".replaceAll("a", currentExp.toString())), null);
+                    newProof.addExpression(parser.parse("((a)->(((a)->(a))->(a)))".replaceAll("a", currentExp.toString())), null);
+                    newProof.addExpression(parser.parse("(a)->(a)".replaceAll("a", currentExp.toString())), null);
                 } else if (statementType.getClass() == Axiom.class || allowanceContainsStatement(assumptions, statement)) {
-                    newProof.addExpression(statement.getExp(), statementType);
-                    newProof.addExpression(new Entailment(currentExp, new Entailment(currentAssumption, currentExp)), Axiom.AxiomOne);
+                    newProof.addExpression(statement.getExp(), null);
+                    newProof.addExpression(new Entailment(currentExp, new Entailment(currentAssumption, currentExp)), null);
                     Expression expression = new Entailment(currentAssumption, currentExp);
-                    ModusPonens modusPonens = newProof.findModusPonens(expression, null);
-                    newProof.addExpression(expression, modusPonens);
+                    newProof.addExpression(expression, null);
                 } else if (statementType.getClass() == ModusPonens.class) {
                     Statement antecedent = ((ModusPonens)statementType).getFirst();
                     Expression expression = parser.parse("((a)->(b))->(((a)->((b)->(c)))->((a)->(c)))"
                             .replaceAll("a", currentAssumption.toString())
                             .replaceAll("b", antecedent.getExp().toString())
                             .replaceAll("c", currentExp.toString()));
-                    newProof.addExpression(expression, Axiom.AxiomTwo);
+                    newProof.addExpression(expression, null);
                     expression = parser.parse("(((a)->((b)->(c)))->((a)->(c)))"
                             .replaceAll("a", currentAssumption.toString())
                             .replaceAll("b", antecedent.getExp().toString())
                             .replaceAll("c", currentExp.toString()));
-                    ModusPonens modusPonens = newProof.findModusPonens(expression, null);
-                    newProof.addExpression(expression, modusPonens);
+                    newProof.addExpression(expression, null);
                     expression = parser.parse("(a)->(c)"
                             .replaceAll("a", currentAssumption.toString())
                             .replaceAll("c", currentExp.toString()));
-                    modusPonens = newProof.findModusPonens(expression, null);
-                    if (modusPonens == null) {
-                        System.out.println("Bad");
-                        modusPonens = newProof.findModusPonens(expression, null);
-                    }
-                    newProof.addExpression(expression, modusPonens);
+                    newProof.addExpression(expression, null);
                 }
             }
-            proof = newProof;
+            proof = validator.validate(newProof, assumptions);
         }
         return proof;
+    }
+
+    public static void main(String[] args) {
+        if (args.length != 0) {
+            System.out.println("Illegal count of arguments");
+        }
+        File f = new File("test.in");
+        Deductor d = new HashDeductor();
+        try {
+            Proof proof = d.deduct(f);
+            System.out.println(proof);
+        } catch (FileNotFoundException e) {
+            System.out.println("No such file");
+        } catch (ParseException e) {
+            System.out.println(e.getMessage());
+        }
     }
 }

@@ -60,6 +60,14 @@ public abstract class BinaryOperator implements Expression {
         return result;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BinaryOperator binaryOperator = (BinaryOperator) o;
+        return binaryOperator.left.equals(left) && binaryOperator.right.equals(right) && binaryOperator.operationName.equals(operationName);
+    }
+
     public Expression getLeft() {
         return left;
     }

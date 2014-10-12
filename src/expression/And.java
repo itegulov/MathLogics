@@ -12,15 +12,6 @@ public final class And extends BinaryOperator {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof And) {
-            And and = (And) obj;
-            return and.left.equals(left) && and.right.equals(right);
-        }
-        return false;
-    }
-
-    @Override
     public String toJavaCode() {
         return "new And(" + left.toJavaCode() + ", " + right.toJavaCode() + ")";
     }

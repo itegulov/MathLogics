@@ -26,6 +26,10 @@ public final class Statement {
         return line;
     }
 
+    public void setType(StatementType type) {
+        this.type = type;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -34,23 +38,15 @@ public final class Statement {
         Statement statement = (Statement) o;
 
         if (exp != null) {
-            if (!exp.equals(statement.exp)) {
-                return false;
-            }
+            return exp.equals(statement.exp);
         } else {
-            if (statement.exp != null) {
-                return false;
-            }
+            return statement.exp == null;
         }
-        return true;
     }
 
     @Override
     public int hashCode() {
-        int result = exp != null ? exp.hashCode() : 0;
-        result = 31 * result + type.hashCode();
-        result = 31 * result + line;
-        return result;
+        return exp != null ? exp.hashCode() : 23498;
     }
 
     @Override
@@ -58,6 +54,6 @@ public final class Statement {
         if (exp == null) {
             return type.toString();
         }
-        return exp.toString() + " (" + type.toString() + ")";
+        return "(" + line + ") " + exp.toString() + " (" + type.toString() + ")";
     }
 }

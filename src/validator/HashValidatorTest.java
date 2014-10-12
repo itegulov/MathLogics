@@ -116,7 +116,7 @@ public class HashValidatorTest {
         pw.println("b->a");
         pw.close();
         Proof proof = new Proof("a->a->a (сх. акс. 1)\n" +
-                "Доказательство некорректно начиная с высказывания номер 2\n");
+                "b->a (Не доказано)\n");
         assertEquals(validator.validate(file), proof);
     }
 

@@ -9,6 +9,8 @@ import parser.ParseException;
 import parser.Parser;
 import scanner.FastLineScanner;
 import threading.Control;
+import validator.HashValidator;
+import validator.Validator;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -33,29 +35,26 @@ public final class Proof {
         statements = new ArrayList<>();
     }
 
-    public Proof(@NotNull List<Statement> statements) {
-        this.statements = statements;
-    }
-
     public Proof(@NotNull String proof) throws ParseException {
         Parser<Expression> expressionParser = new ExpressionParser();
         String[] lines = proof.split("\n");
         statements = new ArrayList<>();
         for (String s: lines) {
             line++;
-            if (s.matches("Доказательство(.*)")) {
-                statements.add(new Statement(null, new Error(line), line));
+            String[] tokens = s.split(" ", 2);
+            if (tokens[1].matches("\\(сх\\. акс\\.(.*)")) {
+                statements.add(new Statement(expressionParser.parse(tokens[0]), Axiom.values()[Integer.parseInt(tokens[1].substring(10, tokens[1].length() - 1)) - 1], line));
             } else {
-                String[] tokens = s.split(" ", 2);
-                if (tokens[1].matches("\\(сх\\. акс\\.(.*)")) {
-                    statements.add(new Statement(expressionParser.parse(tokens[0]), Axiom.values()[Integer.parseInt(tokens[1].substring(10, tokens[1].length() - 1)) - 1], line));
+                if (tokens[1].matches("\\(M\\.P\\.(.*)")) {
+                    String lineNumbers = tokens[1].substring(6, tokens[1].length() - 1);
+                    String[] numbers = lineNumbers.split(", ");
+                    int firstLine = Integer.parseInt(numbers[0]);
+                    int secondLine = Integer.parseInt(numbers[1]);
+                    statements.add(new Statement(expressionParser.parse(tokens[0]), new ModusPonens(statements.get(firstLine - 1), statements.get(secondLine - 1)), line));
                 } else {
-                    if (tokens[1].matches("\\(M\\.P\\.(.*)")) {
-                        String lineNumbers = tokens[1].substring(6, tokens[1].length() - 1);
-                        String[] numbers = lineNumbers.split(", ");
-                        int firstLine = Integer.parseInt(numbers[0]);
-                        int secondLine = Integer.parseInt(numbers[1]);
-                        statements.add(new Statement(expressionParser.parse(tokens[0]), new ModusPonens(statements.get(firstLine - 1), statements.get(secondLine - 1)), line));
+                    if (tokens[1].matches("\\(Не доказано\\)")) {
+                        statements.add(new Statement(expressionParser.parse(tokens[0]),
+                                new Error(), line));
                     } else {
                         throw new ParseException("Undefined type of statement");
                     }
@@ -71,26 +70,28 @@ public final class Proof {
         while (scanner.hasMore()) {
             String s = scanner.next();
             line++;
-            if (s.matches("Доказательство(.*)")) {
-                statements.add(new Statement(null, new Error(line), line));
+            String[] tokens = s.split(" ", 2);
+            if (tokens[1].matches("\\(сх\\. акс\\.(.*)")) {
+                statements.add(new Statement(expressionParser.parse(tokens[0]),
+                        Axiom.values()[Integer.parseInt(tokens[1].substring(10, tokens[1].length() - 1)) - 1], line));
             } else {
-                String[] tokens = s.split(" ", 2);
-                if (tokens[1].matches("\\(сх\\. акс\\.(.*)")) {
-                    statements.add(new Statement(expressionParser.parse(tokens[0]),
-                            Axiom.values()[Integer.parseInt(tokens[1].substring(10, tokens[1].length() - 1)) - 1], line));
+                if (tokens[1].matches("\\(M\\.P\\.(.*)")) {
+                    String lineNumbers = tokens[1].substring(6, tokens[1].length() - 1);
+                    String[] numbers = lineNumbers.split(", ");
+                    int firstLine = Integer.parseInt(numbers[0]);
+                    int secondLine = Integer.parseInt(numbers[1]);
+                    statements.add(new Statement(expressionParser.parse(tokens[0]), new ModusPonens(statements.get(firstLine - 1),
+                            statements.get(secondLine - 1)), line));
                 } else {
-                    if (tokens[1].matches("\\(M\\.P\\.(.*)")) {
-                        String lineNumbers = tokens[1].substring(6, tokens[1].length() - 1);
-                        String[] numbers = lineNumbers.split(", ");
-                        int firstLine = Integer.parseInt(numbers[0]);
-                        int secondLine = Integer.parseInt(numbers[1]);
-                        statements.add(new Statement(expressionParser.parse(tokens[0]), new ModusPonens(statements.get(firstLine - 1),
-                                statements.get(secondLine - 1)), line));
+                    if (tokens[1].matches("\\(Не доказано\\)")) {
+                        statements.add(new Statement(expressionParser.parse(tokens[0]),
+                                new Error(), line));
                     } else {
                         throw new ParseException("Undefined type of statement");
                     }
                 }
             }
+
         }
     }
 
@@ -100,8 +101,23 @@ public final class Proof {
         if (!(o instanceof Proof)) return false;
 
         Proof proof = (Proof) o;
+        Validator validator = new HashValidator();
+        Proof otherValidated = validator.validate(proof, null);
+        Proof myValidated = validator.validate(this, null);
+        int errorCount = 0;
+        for (int i = 0; i < myValidated.getStatements().size(); i++) {
+            if (myValidated.getStatements().get(i).getType().getClass() == Error.class) {
+                errorCount++;
+            }
+        }
 
-        return statements.equals(proof.statements);
+        for (int i = 0; i < otherValidated.getStatements().size(); i++) {
+            if (otherValidated.getStatements().get(i).getType().getClass() == Error.class) {
+                errorCount--;
+            }
+        }
+        return errorCount == 0 && myValidated.getStatements().get(myValidated.getStatements().size() - 1).equals(
+                otherValidated.getStatements().get(otherValidated.getStatements().size() - 1));
 
     }
 
@@ -121,14 +137,6 @@ public final class Proof {
         return sb.toString();
     }
 
-    public String[] toStrings() {
-        String[] answer = new String[statements.size()];
-        for (int i = 0; i < answer.length; i++) {
-            answer[i] = statements.get(i).toString();
-        }
-        return answer;
-    }
-
     public void addExpression(@Nullable final Expression expression, @Nullable final StatementType type) {
         line++;
         Statement st = new Statement(expression, type, line);
@@ -145,7 +153,9 @@ public final class Proof {
                 right.get(bo.getRight()).add(st);
             }
         }
-        all.put(expression, st);
+        if (!all.containsKey(expression)) {
+            all.put(expression, st);
+        }
     }
 
     public boolean rightExists(@NotNull Expression exp) {
@@ -162,10 +172,6 @@ public final class Proof {
 
     public Statement getAll(@NotNull Expression exp) {
         return all.get(exp);
-    }
-
-    public int getLine() {
-        return line;
     }
 
     public ModusPonens findModusPonens(@NotNull Expression expression, @Nullable Control control) {

@@ -28,22 +28,37 @@ public final class HashValidator implements Validator {
 
     @Override
     public Proof validate(@NotNull final FastLineScanner in, @Nullable final Statement[] assumptions) {
-        final Control control = new Control();
         final Proof proof = new Proof();
         final Parser<Expression> expressionParser = new ExpressionParser();
         while (in.hasMore()) {
-            control.flag = false;
             final String s;
             s = in.next();
             try {
                 final Expression expression = expressionParser.parse(s);
+                proof.addExpression(expression, null);
+            } catch (ParseException e) {
+                //Couldn't parse an expression
+                proof.addExpression(null, new Error());
+                return proof;
+            }
+        }
+        return validate(proof, assumptions);
+    }
+
+    @Override
+    public Proof validate(final Proof proof, final Statement[] assumptions) {
+        final Control control = new Control();
+        for (final Statement statement : proof.getStatements()) {
+            control.flag = false;
+            if (statement.getType() == null) {
+                final Expression expression = statement.getExp();
                 //Thread for application Modus Ponens rule
                 Runnable modusPonens = new Runnable() {
                     @Override
                     public void run() {
                         ModusPonens proofModusPonens = proof.findModusPonens(expression, control);
                         if (proofModusPonens != null) {
-                            proof.addExpression(expression, proofModusPonens);
+                            statement.setType(proofModusPonens);
                         }
                     }
                 };
@@ -65,7 +80,7 @@ public final class HashValidator implements Validator {
 
                                 if (axiom.matches(expression)) {
                                     control.flag = true;
-                                    proof.addExpression(expression, axiom);
+                                    statement.setType(axiom);
                                     return;
                                 }
                                 control.notifyAll();
@@ -93,7 +108,7 @@ public final class HashValidator implements Validator {
                                 }
                                 if (assumption.getExp().equals(expression)) {
                                     control.flag = true;
-                                    proof.addExpression(expression, new Assumption());
+                                    statement.setType(new Assumption());
                                     return;
                                 }
                                 control.notifyAll();
@@ -122,14 +137,21 @@ public final class HashValidator implements Validator {
                 }
 
                 //Couldn't match an axiom, match an assumption or apply Modus Ponens rule
-                proof.addExpression(null, new Error(proof.getLine() + 1));
-                return proof;
-            } catch (ParseException e) {
-                //Couldn't parse an expression
-                proof.addExpression(null, new Error(proof.getLine() + 1));
-                return proof;
+                statement.setType(new Error());
             }
         }
         return proof;
+    }
+
+    public static void main(String[] args) {
+        File f = new File("test2.in");
+        Validator v = new HashValidator();
+        Statement[] assumptions = {new Statement(new Variable("P"), new Assumption(), 0)};
+        try {
+            Proof p = v.validate(f, assumptions);
+            System.out.println(p);
+        } catch (FileNotFoundException e) {
+            System.out.println("No such file");
+        }
     }
 }

@@ -53,7 +53,11 @@ public abstract class UnaryOperator implements Expression {
         return result;
     }
 
-    public Expression getExp() {
-        return exp;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        UnaryOperator unaryOperator = (UnaryOperator) o;
+        return unaryOperator.exp.equals(exp) && unaryOperator.operationName.equals(operationName);
     }
 }

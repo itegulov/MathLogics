@@ -12,15 +12,6 @@ public final class Entailment extends BinaryOperator {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof Entailment) {
-            Entailment entailment = (Entailment) obj;
-            return entailment.left.equals(left) && entailment.right.equals(right);
-        }
-        return false;
-    }
-
-    @Override
     public String toString(int priority) {
         if (operationPriority > priority) {
             return left.toString(operationPriority) + operationName + right.toString(operationPriority);

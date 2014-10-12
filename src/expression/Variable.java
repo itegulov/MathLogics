@@ -32,8 +32,11 @@ public final class Variable implements Expression {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        return obj instanceof Variable && ((Variable) obj).name.equals(name);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Variable variable = (Variable) o;
+        return variable.name.equals(name);
     }
 
     @Override
