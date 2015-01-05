@@ -1,18 +1,19 @@
-package expression;
+package structure.logic;
 
 import java.util.Map;
 
-public abstract class BinaryOperator implements Expression {
+import structure.AbstractExpression;
+import structure.Expression;
+
+public abstract class BinaryOperator extends AbstractExpression {
     //TODO: javadoc
     protected final Expression left, right;
     protected final String operationName;
-    protected final int operationPriority;
 
-    public BinaryOperator(Expression left, Expression right, String operationName, int operationPriority) {
+    public BinaryOperator(Expression left, Expression right, String operationName) {
         this.left = left;
         this.right = right;
         this.operationName = operationName;
-        this.operationPriority = operationPriority;
     }
 
     @Override
@@ -39,17 +40,18 @@ public abstract class BinaryOperator implements Expression {
     }
 
     @Override
-    public final String toString() {
-        return left.toString(operationPriority) + operationName + right.toString(operationPriority);
-    }
-
-    @Override
-    public String toString(int priority) {
-        if (operationPriority > priority) {
-            return left.toString(operationPriority) + operationName + right.toString(operationPriority);
-        } else {
-            return "(" + left.toString(operationPriority) + operationName + right.toString(operationPriority) + ")";
+    public StringBuilder asString() {
+        StringBuilder s1 = left.asString();
+        StringBuilder s2 = right.asString();
+        if (left instanceof BinaryOperator) {
+            s1.insert(0, '(');
+            s1.append(')');
         }
+        if (right instanceof BinaryOperator) {
+            s2.insert(0, '(');
+            s2.append(')');
+        }
+        return s1.append(operationName).append(s2);
     }
 
     @Override
@@ -74,5 +76,19 @@ public abstract class BinaryOperator implements Expression {
 
     public Expression getRight() {
         return right;
+    }
+
+    @Override
+    public boolean treeMatch(Expression other) {
+        return hasSameType(other)
+                && ((BinaryOperator) other).left.treeMatch(left)
+                && ((BinaryOperator) other).right.treeMatch(right);
+    }
+
+    @Override
+    public Map<String, Variable> getVariables() {
+        Map<String, Variable> variables = left.getVariables();
+        variables.putAll(right.getVariables());
+        return variables;
     }
 }

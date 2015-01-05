@@ -2,13 +2,12 @@ package proof;
 
 import com.sun.istack.internal.NotNull;
 import com.sun.istack.internal.Nullable;
-import expression.BinaryOperator;
-import expression.Expression;
+import structure.logic.BinaryOperator;
+import structure.Expression;
 import parser.ExpressionParser;
 import parser.ParseException;
 import parser.Parser;
 import scanner.FastLineScanner;
-import threading.Control;
 import validator.HashValidator;
 import validator.Validator;
 
@@ -24,7 +23,7 @@ public final class Proof {
     private final Map<Expression, Statement> all = new HashMap<>();
     /**
      * All contains all expressions, suitable for next rule:
-     * If expression has the next form: a -> b, then b
+     * If structure.expression has the next form: a -> b, then b
      * is contained in right map
      */
     private final Map<Expression, Set<Statement>> right = new HashMap<>();
@@ -174,34 +173,15 @@ public final class Proof {
         return all.get(exp);
     }
 
-    public ModusPonens findModusPonens(@NotNull Expression expression, @Nullable Control control) {
+    public ModusPonens findModusPonens(@NotNull Expression expression) {
         if (rightExists(expression)) {
             Set<Statement> set = getRights(expression);
             for (Statement target : set) {
                 BinaryOperator bo = (BinaryOperator) target.getExp();
                 Expression left = bo.getLeft();
-                if (control != null) {
-                    synchronized (control) {
-                        try {
-                            control.wait(0, 1);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        if (control.flag) {
-                            return null;
-                        }
-                        if (allExists(left)) {
-                            control.flag = true;
-                            Statement antecedent = getAll(left);
-                            return new ModusPonens(antecedent, target);
-                        }
-                        control.notifyAll();
-                    }
-                } else {
-                    if (allExists(left)) {
-                        Statement antecedent = getAll(left);
-                        return new ModusPonens(antecedent, target);
-                    }
+                if (allExists(left)) {
+                    Statement antecedent = getAll(left);
+                    return new ModusPonens(antecedent, target);
                 }
             }
         }

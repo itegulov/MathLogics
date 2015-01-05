@@ -1,4 +1,4 @@
-package expression;
+package structure.logic;
 
 public enum ExpressionType {
     //TODO: javadoc

@@ -1,16 +1,17 @@
-package expression;
+package structure.logic;
 
 import java.util.Map;
 
-public abstract class UnaryOperator implements Expression {
+import structure.AbstractExpression;
+import structure.Expression;
+
+public abstract class UnaryOperator extends AbstractExpression {
     protected final Expression exp;
     protected final String operationName;
-    protected final int operationPriority;
 
-    public UnaryOperator(Expression exp, String operationName, int operationPriority) {
+    public UnaryOperator(Expression exp, String operationName) {
         this.exp = exp;
         this.operationName = operationName;
-        this.operationPriority = operationPriority;
     }
 
     @Override
@@ -37,13 +38,13 @@ public abstract class UnaryOperator implements Expression {
     }
 
     @Override
-    public final String toString() {
-        return operationName + exp.toString(operationPriority);
-    }
-
-    @Override
-    public String toString(int priority) {
-        return operationName + exp.toString(operationPriority);
+    public StringBuilder asString() {
+        StringBuilder s = exp.asString();
+        if (exp instanceof BinaryOperator) {
+            s.insert(0, '(');
+            s.append(')');
+        }
+        return s.insert(0, operationName);
     }
 
     @Override
@@ -59,5 +60,16 @@ public abstract class UnaryOperator implements Expression {
         if (o == null || getClass() != o.getClass()) return false;
         UnaryOperator unaryOperator = (UnaryOperator) o;
         return unaryOperator.exp.equals(exp) && unaryOperator.operationName.equals(operationName);
+    }
+
+    @Override
+    public boolean treeMatch(Expression other) {
+        return hasSameType(other)
+                && ((Not) other).exp.treeMatch(exp);
+    }
+
+    @Override
+    public Map<String, Variable> getVariables() {
+        return exp.getVariables();
     }
 }

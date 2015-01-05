@@ -1,16 +1,17 @@
-package expression;
+package structure;
 
 import com.sun.istack.internal.NotNull;
 
+import structure.logic.Variable;
 import java.util.Map;
 
 /**
  * Expression is the interface for all type of expressions met in the math logics.
- * Expressions can be evaluated, generate Java code, be converted to string,
- * matched with other expression.
- * @author  Daniar Itegulov
+ * Expressions can be evaluated, generate Java code, can be converted to string,
+ * matched with other expressions.
+ * @author  Daniyar Itegulov
  * @since %I% %G%
- * @version 1.1
+ * @version 1.2
  */
 public interface Expression {
     /**
@@ -21,6 +22,36 @@ public interface Expression {
      * @return          result of evaluating the expression
     */
     public boolean evaluate(@NotNull Map<String, Boolean> args);
+
+    /**
+     * Checks if other expression and this expression represent expressions, which coincide
+     * character by character in string representation
+     * @param other     expression, which needs, to be checked
+     * @return          <code>true</code> if other expression coincide with this
+     */
+    boolean match(@NotNull Expression other);
+
+    /**
+     * Checks if other expression and this expression represent expressions, which coincide
+     * by nodes in expression-tree representation
+     * @param other     expression, which needs, to be checked
+     * @return          <code>true</code> if other expression coincide with this
+     */
+    boolean treeMatch(@NotNull Expression other);
+
+    /**
+     * Checks if other expression and this expression has same exactly the same type
+     * @param other     expression, which needs, to be checked
+     * @return          <code>true</code> if other expression's and this expression's types
+     *                  coincide
+     */
+    boolean hasSameType(@NotNull Expression other);
+
+    /**
+     * Returns all variables names and some one node of all variable nodes, which have this name
+     * @return map, consisting of variable names and appropriate variable nodes
+     */
+    Map<String, Variable> getVariables();
 
     /**
      * Generates Java code of the expression, which can be used for testing
@@ -40,7 +71,7 @@ public interface Expression {
 
     /**
      * Checks if other expression suits this expression. Following rules are used:
-     * 1) If some operation (binary or unary) was met in this expression, then
+     * 1) If some operation (binary or unary) was met in this structure.expression, then
      * the same type of expression must be met in other expression.
      * 2) If variable was met in this expression, then any expression can be
      * met in other expression.
@@ -53,10 +84,8 @@ public interface Expression {
     public boolean matches(@NotNull Expression other, @NotNull Map<String, Expression> map);
 
     /**
-     * Converts expression to human-read string. Priority is used to specify
-     * priority of operation, which stands right above current expression
-     * @param priority  priority of operation above
-     * @return          human-read string interpretation of expression
+     * Converts expression to human-readable string
+     * @return          human-readable string interpretation of expression
      */
-    public String toString(int priority);
+    public StringBuilder asString();
 }

@@ -1,9 +1,10 @@
-package expression;
+package structure.logic;
+import structure.Expression;
 
 public final class Or extends BinaryOperator {
     //TODO: javadoc
     public Or(Expression left, Expression right) {
-        super(left, right, "|", 2);
+        super(left, right, "|");
     }
 
     @Override

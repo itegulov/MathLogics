@@ -1,8 +1,8 @@
 package deductor;
 
 import com.sun.istack.internal.NotNull;
-import expression.Entailment;
-import expression.Expression;
+import structure.logic.Entailment;
+import structure.Expression;
 import parser.ExpressionParser;
 import parser.ParseException;
 import parser.Parser;
@@ -16,7 +16,6 @@ import java.io.FileNotFoundException;
 
 public final class HashDeductor implements Deductor {
     //TODO: javadoc
-    //TODO: refactor
 
     private boolean allowanceContainsStatement(@NotNull final Statement[] allowance, @NotNull final Statement statement) {
         for (Statement allow : allowance) {
@@ -41,6 +40,18 @@ public final class HashDeductor implements Deductor {
         }
         Validator validator = new HashValidator();
         Proof proof = validator.validate(scanner, assumptions);
+        return deduct(proof, assumptions);
+    }
+
+    @Override
+    public Proof deduct(String s) throws FileNotFoundException, ParseException {
+        return null;
+    }
+
+    @Override
+    public Proof deduct(Proof proof, Statement[] assumptions) throws FileNotFoundException, ParseException {
+        Parser<Expression> parser = new ExpressionParser();
+        Validator validator = new HashValidator();
         for (Statement assumption : assumptions) {
             Expression currentAssumption = assumption.getExp();
             Proof newProof = new Proof();
@@ -84,6 +95,7 @@ public final class HashDeductor implements Deductor {
     public static void main(String[] args) {
         if (args.length != 0) {
             System.out.println("Illegal count of arguments");
+            return;
         }
         File f = new File("test.in");
         Deductor d = new HashDeductor();

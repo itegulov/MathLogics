@@ -1,6 +1,6 @@
 package proof;
 
-import expression.Expression;
+import structure.Expression;
 
 public final class Statement {
     //TODO: javadoc

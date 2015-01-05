@@ -1,6 +1,7 @@
 package parser;
 
-import expression.*;
+import structure.Expression;
+import structure.logic.*;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -13,7 +14,7 @@ public class ExpressionParserTest {
     Parser<Expression> expressionParser;
 
     @Rule
-    private ExpectedException exception = ExpectedException.none();
+    public ExpectedException exception = ExpectedException.none();
 
     @Before
     public void setUp() throws Exception {
@@ -73,7 +74,6 @@ public class ExpressionParserTest {
     public void testHardParse() throws Exception {
         Expression e = new Or(new Not(new Or(new Variable("a"), new Variable("b"))), new And(new And(new Variable("a"), new Not(new Not(new Variable("b")))),
                 new Or(new Variable("c"), new And(new Variable("a"), new Entailment(new Variable("b"), new And(new Variable("a"), new Variable("c")))))));
-        System.out.println(e);
         assertEquals(e, expressionParser.parse("!(a|b)|((a&!!b)&(c|a&(b->a&c)))"));
 
         e = new Not(new Not(new Or(new And(new Or(new Variable("a"), new Not(new Variable("b"))), new Or(new Variable("c"), new Variable("d"))),

@@ -1,6 +1,6 @@
 package proof;
 
-import expression.*;
+import structure.Expression;
 import parser.ExpressionParser;
 import parser.ParseException;
 import parser.Parser;

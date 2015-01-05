@@ -1,9 +1,11 @@
-package expression;
+package structure.logic;
+
+import structure.Expression;
 
 public final class And extends BinaryOperator {
     //TODO: javadoc
     public And(Expression left, Expression right) {
-        super(left, right, "&", 3);
+        super(left, right, "&");
     }
 
     @Override

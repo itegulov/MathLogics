@@ -1,9 +1,10 @@
-package expression;
+package structure.logic;
+import structure.Expression;
 
 public final class Not extends UnaryOperator {
     //TODO: javadoc
     public Not(Expression exp) {
-        super(exp, "!", 4);
+        super(exp, "!");
     }
 
     @Override

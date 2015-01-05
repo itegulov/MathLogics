@@ -1,7 +1,8 @@
 package parser;
 
 import com.sun.istack.internal.NotNull;
-import expression.*;
+import structure.Expression;
+import structure.logic.*;
 
 public final class ExpressionParser implements Parser<Expression> {
     private String s;

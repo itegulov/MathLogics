@@ -1,8 +1,12 @@
-package expression;
+package structure.logic;
 
+import java.util.HashMap;
 import java.util.Map;
 
-public final class Variable implements Expression {
+import structure.AbstractExpression;
+import structure.Expression;
+
+public final class Variable extends AbstractExpression {
     private String name;
 
     public Variable(String name) {
@@ -15,6 +19,18 @@ public final class Variable implements Expression {
             throw new IllegalArgumentException("No such variable");
         }
         return args.get(name);
+    }
+
+    @Override
+    public boolean treeMatch(Expression other) {
+        return hasSameType(other) && (name != null && ((Variable) other).name.equals(name));
+    }
+
+    @Override
+    public Map<String, Variable> getVariables() {
+        Map<String, Variable> map = new HashMap<>();
+        map.put(name, this);
+        return map;
     }
 
     @Override
@@ -40,13 +56,8 @@ public final class Variable implements Expression {
     }
 
     @Override
-    public String toString() {
-        return name;
-    }
-
-    @Override
-    public String toString(int priority) {
-        return name;
+    public StringBuilder asString() {
+        return new StringBuilder(name);
     }
 
     @Override

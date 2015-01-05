@@ -1,6 +1,6 @@
 package proof;
 
-import expression.BinaryOperator;
+import structure.logic.BinaryOperator;
 
 public final class ModusPonens implements StatementType {
     //TODO: javadoc

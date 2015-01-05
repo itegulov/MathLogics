@@ -1,4 +1,6 @@
-package expression;
+package structure.logic;
+
+import structure.Expression;
 
 import java.util.Random;
 
