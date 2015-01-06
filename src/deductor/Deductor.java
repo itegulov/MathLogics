@@ -1,5 +1,7 @@
 package deductor;
 
+import com.sun.istack.internal.NotNull;
+import com.sun.istack.internal.Nullable;
 import parser.ParseException;
 import proof.Proof;
 import proof.Statement;
@@ -9,7 +11,6 @@ import java.io.FileNotFoundException;
 
 public interface Deductor {
     //TODO: javadoc
-    Proof deduct(final File f) throws FileNotFoundException, ParseException;
-    Proof deduct(final String s) throws FileNotFoundException, ParseException;
-    Proof deduct(final Proof proof, final Statement[] assumptions) throws FileNotFoundException, ParseException;
+    Proof deduct(@NotNull final File f, @Nullable final Statement[] proofed) throws FileNotFoundException, ParseException;
+    Proof deduct(@NotNull Proof proof, @NotNull final Statement[] assumptions, @Nullable final Statement[] proofed) throws FileNotFoundException, ParseException;
 }

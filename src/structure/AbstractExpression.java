@@ -1,5 +1,7 @@
 package structure;
 
+import java.util.Map;
+
 public abstract class AbstractExpression implements Expression {
     @Override
     public boolean match(Expression other) {
@@ -25,5 +27,9 @@ public abstract class AbstractExpression implements Expression {
     public boolean equals(Object obj) {
         return obj instanceof AbstractExpression
                 && obj.toString().equals(toString());
+    }
+
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
     }
 }

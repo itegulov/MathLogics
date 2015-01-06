@@ -2,6 +2,8 @@ package proof;
 
 import structure.Expression;
 
+import java.util.Map;
+
 public final class Statement {
     //TODO: javadoc
     private Expression exp;
@@ -55,5 +57,17 @@ public final class Statement {
             return type.toString();
         }
         return "(" + line + ") " + exp.toString() + " (" + type.toString() + ")";
+    }
+
+    public String asSimpleString() {
+        return exp.toString();
+    }
+
+    public Statement replaceAll(Map<Expression, Expression> replacement) {
+        return new Statement(exp.replaceAll(replacement), type, line);
+    }
+
+    public void setLine(int line) {
+        this.line = line;
     }
 }

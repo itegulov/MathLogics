@@ -3,7 +3,10 @@ package deductor;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import proof.Assumption;
 import proof.Proof;
+import proof.Statement;
+import structure.logic.Variable;
 
 import java.io.File;
 import java.io.PrintWriter;
@@ -36,12 +39,19 @@ public class HashDeductorTest {
                 "(a->((a->a)->a))->(a->a) (M.P. 2, 1)\n" +
                 "a->((a->a)->a) (сх. акс. 1)\n" +
                 "a->a (M.P. 4, 3)");
-        assertEquals(deductor.deduct(file), proof);
+        assertEquals(deductor.deduct(file, null), proof);
     }
 
     @Test
     public void testDeductSmall() throws Exception {
         Proof proof = new Proof(new File("deductor_small.out"));
-        assertEquals(deductor.deduct(new File("deductor_small.in")), proof);
+        assertEquals(deductor.deduct(new File("deductor_small.in"), null), proof);
+    }
+
+    @Test
+    public void testDeductWithProofed() throws Exception {
+        Statement[] statements = {new Statement(new Variable("a"), new Assumption(), 1)};
+        Proof proof = deductor.deduct(new File("deductor_assumption.proof"), statements);
+        System.out.println(proof);
     }
 }

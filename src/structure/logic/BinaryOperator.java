@@ -7,7 +7,7 @@ import structure.Expression;
 
 public abstract class BinaryOperator extends AbstractExpression {
     //TODO: javadoc
-    protected final Expression left, right;
+    protected Expression left, right;
     protected final String operationName;
 
     public BinaryOperator(Expression left, Expression right, String operationName) {
@@ -52,14 +52,6 @@ public abstract class BinaryOperator extends AbstractExpression {
             s2.append(')');
         }
         return s1.append(operationName).append(s2);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = left.hashCode();
-        result = 31 * result + right.hashCode();
-        result = 31 * result + operationName.hashCode();
-        return result;
     }
 
     @Override

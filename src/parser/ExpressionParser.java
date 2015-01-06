@@ -1,6 +1,7 @@
 package parser;
 
 import com.sun.istack.internal.NotNull;
+import structure.AbstractExpression;
 import structure.Expression;
 import structure.logic.*;
 

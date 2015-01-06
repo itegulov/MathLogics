@@ -182,4 +182,12 @@ public class HashValidatorTest {
         Proof goodAnswer = new Proof(new File("maxtest.out"));
         assertEquals(answer, goodAnswer);
     }
+
+    @Test
+    public void testTertiumNonDatur() throws Exception {
+        Proof answer = validator.validate(new File("tertium_non_datur.proof"));
+        System.out.println(answer);
+        //Proof goodAnswer = new Proof(new File("maxtest.out"));
+        //assertEquals(answer, goodAnswer);
+    }
 }

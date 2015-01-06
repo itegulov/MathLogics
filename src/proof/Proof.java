@@ -2,9 +2,9 @@ package proof;
 
 import com.sun.istack.internal.NotNull;
 import com.sun.istack.internal.Nullable;
+import parser.ExpressionParser;
 import structure.logic.BinaryOperator;
 import structure.Expression;
-import parser.ExpressionParser;
 import parser.ParseException;
 import parser.Parser;
 import scanner.FastLineScanner;
@@ -23,7 +23,7 @@ public final class Proof {
     private final Map<Expression, Statement> all = new HashMap<>();
     /**
      * All contains all expressions, suitable for next rule:
-     * If structure.expression has the next form: a -> b, then b
+     * If expression has the next form: a -> b, then b
      * is contained in right map
      */
     private final Map<Expression, Set<Statement>> right = new HashMap<>();
@@ -136,24 +136,38 @@ public final class Proof {
         return sb.toString();
     }
 
+    public String asSimpleString() {
+        StringBuilder sb = new StringBuilder();
+
+        for (Statement s : statements) {
+            sb.append(s.asSimpleString()).append("\n");
+        }
+
+        return sb.toString();
+    }
+
     public void addExpression(@Nullable final Expression expression, @Nullable final StatementType type) {
+        addStatement(new Statement(expression, type, line + 1));
+    }
+
+    public void addStatement(@NotNull final Statement st) {
         line++;
-        Statement st = new Statement(expression, type, line);
+        st.setLine(line);
         statements.add(st);
-        if (expression == null) {
+        if (st.getExp() == null) {
             return;
         }
-        if (expression.isBinary()) {
-            BinaryOperator bo = (BinaryOperator) expression;
+        if (st.getExp().isBinary()) {
+            BinaryOperator bo = (BinaryOperator) st.getExp();
             if (right.containsKey(bo.getRight())) {
                 right.get(bo.getRight()).add(st);
             } else {
-                right.put(bo.getRight(), new HashSet<Statement>());
+                right.put(bo.getRight(), new HashSet<>());
                 right.get(bo.getRight()).add(st);
             }
         }
-        if (!all.containsKey(expression)) {
-            all.put(expression, st);
+        if (!all.containsKey(st.getExp())) {
+            all.put(st.getExp(), st);
         }
     }
 
@@ -173,10 +187,13 @@ public final class Proof {
         return all.get(exp);
     }
 
-    public ModusPonens findModusPonens(@NotNull Expression expression) {
-        if (rightExists(expression)) {
-            Set<Statement> set = getRights(expression);
+    public ModusPonens findModusPonens(@NotNull Statement statement) {
+        if (rightExists(statement.getExp())) {
+            Set<Statement> set = getRights(statement.getExp());
             for (Statement target : set) {
+                if (target.getLine() >= statement.getLine()) {
+                    continue;
+                }
                 BinaryOperator bo = (BinaryOperator) target.getExp();
                 Expression left = bo.getLeft();
                 if (allExists(left)) {
@@ -188,7 +205,23 @@ public final class Proof {
         return null;
     }
 
+    public void addProof(Proof proof) {
+        proof.getStatements().forEach(this::addStatement);
+    }
+
+    public Proof replace(Map<Expression, Expression> map) {
+        Proof newProof = new Proof();
+        for (Statement statement : statements) {
+            newProof.addStatement(new Statement(statement.getExp().replaceAll(map), statement.getType(), -1));
+        }
+        return newProof;
+    }
+
     public final List<Statement> getStatements() {
         return statements;
+    }
+
+    public int getLine() {
+        return line;
     }
 }

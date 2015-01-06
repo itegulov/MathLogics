@@ -1,5 +1,6 @@
 package proof;
 
+import structure.AbstractExpression;
 import structure.Expression;
 import parser.ExpressionParser;
 import parser.ParseException;

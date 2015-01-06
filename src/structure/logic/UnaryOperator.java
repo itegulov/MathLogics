@@ -6,7 +6,7 @@ import structure.AbstractExpression;
 import structure.Expression;
 
 public abstract class UnaryOperator extends AbstractExpression {
-    protected final Expression exp;
+    protected Expression exp;
     protected final String operationName;
 
     public UnaryOperator(Expression exp, String operationName) {
@@ -45,13 +45,6 @@ public abstract class UnaryOperator extends AbstractExpression {
             s.append(')');
         }
         return s.insert(0, operationName);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = exp.hashCode();
-        result = 31 * result + operationName.hashCode();
-        return result;
     }
 
     @Override

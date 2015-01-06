@@ -1,5 +1,6 @@
 package parser;
 
+import structure.AbstractExpression;
 import structure.Expression;
 import structure.logic.*;
 import org.junit.Before;

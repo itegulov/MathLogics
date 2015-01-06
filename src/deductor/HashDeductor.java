@@ -1,6 +1,7 @@
 package deductor;
 
 import com.sun.istack.internal.NotNull;
+import com.sun.istack.internal.Nullable;
 import structure.logic.Entailment;
 import structure.Expression;
 import parser.ExpressionParser;
@@ -13,12 +14,18 @@ import validator.Validator;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public final class HashDeductor implements Deductor {
     //TODO: javadoc
 
-    private boolean allowanceContainsStatement(@NotNull final Statement[] allowance, @NotNull final Statement statement) {
-        for (Statement allow : allowance) {
+    private boolean containsStatement(@NotNull final Statement[] proofed, @NotNull final Statement statement) {
+        if (proofed == null) {
+            return false;
+        }
+        for (Statement allow : proofed) {
             if (allow.equals(statement)) {
                 return true;
             }
@@ -27,7 +34,7 @@ public final class HashDeductor implements Deductor {
     }
 
     @Override
-    public Proof deduct(@NotNull final File f) throws FileNotFoundException, ParseException {
+    public Proof deduct(@NotNull final File f, @Nullable final Statement[] proofed) throws FileNotFoundException, ParseException {
         FastLineScanner scanner = new FastLineScanner(f);
         Parser<Expression> parser = new ExpressionParser();
 
@@ -40,18 +47,19 @@ public final class HashDeductor implements Deductor {
         }
         Validator validator = new HashValidator();
         Proof proof = validator.validate(scanner, assumptions);
-        return deduct(proof, assumptions);
+        return deduct(proof, assumptions, proofed);
     }
 
     @Override
-    public Proof deduct(String s) throws FileNotFoundException, ParseException {
-        return null;
-    }
-
-    @Override
-    public Proof deduct(Proof proof, Statement[] assumptions) throws FileNotFoundException, ParseException {
+    public Proof deduct(@NotNull Proof proof, @NotNull final Statement[] assumptions, @Nullable final Statement[] proofed) throws FileNotFoundException, ParseException {
         Parser<Expression> parser = new ExpressionParser();
         Validator validator = new HashValidator();
+        List<Statement> allProofedList = new ArrayList<>();
+        allProofedList.addAll(Arrays.asList(assumptions));
+        if (proofed != null) {
+            allProofedList.addAll(Arrays.asList(proofed));
+        }
+        Statement[] allProofed = allProofedList.toArray(new Statement[allProofedList.size()]);
         for (Statement assumption : assumptions) {
             Expression currentAssumption = assumption.getExp();
             Proof newProof = new Proof();
@@ -59,35 +67,37 @@ public final class HashDeductor implements Deductor {
                 Expression currentExp = statement.getExp();
                 StatementType statementType = statement.getType();
                 if (statement.getExp().equals(currentAssumption)) {
-                    newProof.addExpression(parser.parse("(a)->(a)->(a)".replaceAll("a", currentExp.toString())), null);
-                    newProof.addExpression(parser.parse("((a)->((a)->(a)))->((a)->(((a)->(a))->(a)))->((a)->(a))".replaceAll("a", currentExp.toString())), null);
-                    newProof.addExpression(parser.parse("((a)->(((a)->(a))->a))->((a)->(a))".replaceAll("a", currentExp.toString())), null);
-                    newProof.addExpression(parser.parse("((a)->(((a)->(a))->(a)))".replaceAll("a", currentExp.toString())), null);
-                    newProof.addExpression(parser.parse("(a)->(a)".replaceAll("a", currentExp.toString())), null);
-                } else if (statementType.getClass() == Axiom.class || allowanceContainsStatement(assumptions, statement)) {
+                    newProof.addExpression(parser.parse("(a123)->(a123)->(a123)".replaceAll("a123", currentExp.toString())), null);
+                    newProof.addExpression(parser.parse("((a123)->((a123)->(a123)))->((a123)->(((a123)->(a123))->(a123)))->((a123)->(a123))".replaceAll("a123", currentExp.toString())), null);
+                    newProof.addExpression(parser.parse("((a123)->(((a123)->(a123))->a123))->((a123)->(a123))".replaceAll("a123", currentExp.toString())), null);
+                    newProof.addExpression(parser.parse("((a123)->(((a123)->(a123))->(a123)))".replaceAll("a123", currentExp.toString())), null);
+                    newProof.addExpression(parser.parse("(a123)->(a123)".replaceAll("a123", currentExp.toString())), null);
+                } else if (statementType.getClass() == Axiom.class
+                        || containsStatement(assumptions, statement)
+                        || containsStatement(proofed, statement)) {
                     newProof.addExpression(statement.getExp(), null);
                     newProof.addExpression(new Entailment(currentExp, new Entailment(currentAssumption, currentExp)), null);
                     Expression expression = new Entailment(currentAssumption, currentExp);
                     newProof.addExpression(expression, null);
                 } else if (statementType.getClass() == ModusPonens.class) {
-                    Statement antecedent = ((ModusPonens)statementType).getFirst();
-                    Expression expression = parser.parse("((a)->(b))->(((a)->((b)->(c)))->((a)->(c)))"
-                            .replaceAll("a", currentAssumption.toString())
-                            .replaceAll("b", antecedent.getExp().toString())
-                            .replaceAll("c", currentExp.toString()));
+                    Statement antecedent = ((ModusPonens) statementType).getFirst();
+                    Expression expression = parser.parse("((a123)->(b123))->(((a123)->((b123)->(c123)))->((a123)->(c123)))"
+                            .replaceAll("a123", currentAssumption.toString())
+                            .replaceAll("b123", antecedent.getExp().toString())
+                            .replaceAll("c123", currentExp.toString()));
                     newProof.addExpression(expression, null);
-                    expression = parser.parse("(((a)->((b)->(c)))->((a)->(c)))"
-                            .replaceAll("a", currentAssumption.toString())
-                            .replaceAll("b", antecedent.getExp().toString())
-                            .replaceAll("c", currentExp.toString()));
+                    expression = parser.parse("(((a123)->((b123)->(c123)))->((a123)->(c123)))"
+                            .replaceAll("a123", currentAssumption.toString())
+                            .replaceAll("b123", antecedent.getExp().toString())
+                            .replaceAll("c123", currentExp.toString()));
                     newProof.addExpression(expression, null);
-                    expression = parser.parse("(a)->(c)"
-                            .replaceAll("a", currentAssumption.toString())
-                            .replaceAll("c", currentExp.toString()));
+                    expression = parser.parse("(a123)->(c123)"
+                            .replaceAll("a123", currentAssumption.toString())
+                            .replaceAll("c123", currentExp.toString()));
                     newProof.addExpression(expression, null);
                 }
             }
-            proof = validator.validate(newProof, assumptions);
+            proof = validator.validate(newProof, allProofed);
         }
         return proof;
     }
@@ -100,7 +110,7 @@ public final class HashDeductor implements Deductor {
         File f = new File("test.in");
         Deductor d = new HashDeductor();
         try {
-            Proof proof = d.deduct(f);
+            Proof proof = d.deduct(f, null);
             System.out.println(proof);
         } catch (FileNotFoundException e) {
             System.out.println("No such file");

@@ -61,12 +61,27 @@ public final class Variable extends AbstractExpression {
     }
 
     @Override
+    public Expression replaceAll(Map<Expression, Expression> replacement) {
+        try {
+            return (Expression) clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
     public String toJavaCode() {
         return "new Variable(\"" + name + "\")";
     }
 
     @Override
-    public final int hashCode() {
-        return name.hashCode();
+    public Object clone() throws CloneNotSupportedException {
+        super.clone();
+        return new Variable(name);
+    }
+
+    public String getName() {
+        return name;
     }
 }

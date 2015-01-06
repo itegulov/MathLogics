@@ -13,7 +13,7 @@ import java.util.Map;
  * @since %I% %G%
  * @version 1.2
  */
-public interface Expression {
+public interface Expression extends Cloneable {
     /**
      * Returns the result of evaluating the expression. Variable values must be
      * specified in {@link java.util.Map}. Throws {@link java.lang.IllegalArgumentException}
@@ -88,4 +88,15 @@ public interface Expression {
      * @return          human-readable string interpretation of expression
      */
     public StringBuilder asString();
+
+    /**
+     * Finds all nodes in expression tree, which contained in map and replaces them with
+     * appropriate new expression
+     * @param replacement   map, which contains what expression you need to replace and what
+     *                      expression you want it is to be replaced with
+     * @return
+     */
+    Expression replaceAll(Map<Expression, Expression> replacement);
+
+    Object clone() throws CloneNotSupportedException;
 }

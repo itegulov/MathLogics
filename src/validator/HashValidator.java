@@ -2,6 +2,7 @@ package validator;
 
 import com.sun.istack.internal.NotNull;
 import com.sun.istack.internal.Nullable;
+import structure.AbstractExpression;
 import structure.Expression;
 import structure.logic.*;
 import parser.*;
@@ -51,7 +52,7 @@ public final class HashValidator implements Validator {
             if (statement.getType() == null) {
                 final Expression expression = statement.getExp();
                 boolean found = false;
-                ModusPonens proofModusPonens = proof.findModusPonens(expression);
+                ModusPonens proofModusPonens = proof.findModusPonens(statement);
                 if (proofModusPonens != null) {
                     statement.setType(proofModusPonens);
                     found = true;
