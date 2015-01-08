@@ -224,4 +224,15 @@ public final class Proof {
     public int getLine() {
         return line;
     }
+
+    public boolean check(Statement[] assumptions) {
+        HashValidator validator = new HashValidator();
+        Proof checkedProof = validator.validate(this, assumptions);
+        for (Statement st : statements) {
+            if (st.getType().getClass().getSimpleName().equals(Error.class.getSimpleName())) {
+                return false;
+            }
+        }
+        return true;
+    }
 }

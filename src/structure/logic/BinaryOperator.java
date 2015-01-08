@@ -1,5 +1,6 @@
 package structure.logic;
 
+import java.util.List;
 import java.util.Map;
 
 import structure.AbstractExpression;
@@ -82,5 +83,12 @@ public abstract class BinaryOperator extends AbstractExpression {
         Map<String, Variable> variables = left.getVariables();
         variables.putAll(right.getVariables());
         return variables;
+    }
+
+    @Override
+    public List<Expression> getParticularProof(List<Expression> hypothesis) {
+        List<Expression> result = left.getParticularProof(hypothesis);
+        result.addAll(right.getParticularProof(hypothesis));
+        return result;
     }
 }

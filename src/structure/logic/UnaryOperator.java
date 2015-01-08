@@ -1,5 +1,6 @@
 package structure.logic;
 
+import java.util.List;
 import java.util.Map;
 
 import structure.AbstractExpression;
@@ -64,5 +65,10 @@ public abstract class UnaryOperator extends AbstractExpression {
     @Override
     public Map<String, Variable> getVariables() {
         return exp.getVariables();
+    }
+
+    @Override
+    public List<Expression> getParticularProof(List<Expression> hypothesis) {
+        return exp.getParticularProof(hypothesis);
     }
 }

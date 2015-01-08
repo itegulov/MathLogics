@@ -3,6 +3,8 @@ package structure;
 import com.sun.istack.internal.NotNull;
 
 import structure.logic.Variable;
+
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -21,7 +23,14 @@ public interface Expression extends Cloneable {
      * @param args      a Map, which specifies what values were given to variables
      * @return          result of evaluating the expression
     */
-    public boolean evaluate(@NotNull Map<String, Boolean> args);
+    boolean evaluate(@NotNull Map<String, Boolean> args);
+
+    /**
+     * Evaluate using known information (works only in particular cases, for example
+     * after assigning all variables in expression some value through setCurrentValue
+     * @return          result of evaluating the expression
+     */
+    boolean evaluate();
 
     /**
      * Checks if other expression and this expression represent expressions, which coincide
@@ -97,6 +106,13 @@ public interface Expression extends Cloneable {
      * @return
      */
     Expression replaceAll(Map<Expression, Expression> replacement);
+
+    /**
+     *
+     * @param hypothesis
+     * @return
+     */
+    List<Expression> getParticularProof(List<Expression> hypothesis);
 
     Object clone() throws CloneNotSupportedException;
 }

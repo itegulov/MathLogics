@@ -1,6 +1,8 @@
 package structure.logic;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import structure.AbstractExpression;
@@ -8,6 +10,7 @@ import structure.Expression;
 
 public final class Variable extends AbstractExpression {
     private String name;
+    private Boolean currentValue;
 
     public Variable(String name) {
         this.name = name;
@@ -83,5 +86,33 @@ public final class Variable extends AbstractExpression {
 
     public String getName() {
         return name;
+    }
+
+    @Override
+    public List<Expression> getParticularProof(List<Expression> hypothesis) {
+        boolean f = false;
+        List<Expression> list = new ArrayList<>();
+        if (hypothesis.contains(this)) {
+            currentValue = true;
+            if (!list.contains(this)) list.add(this);
+            f = true;
+        }
+        if (!f && hypothesis.contains(new Not(this))) {
+            currentValue = false;
+            if (!list.contains(new Not(this))) list.add(new Not(this));
+            f = true;
+        }
+        if (!f) {
+            throw new IllegalArgumentException("no such variable in hypothesis: " + name);
+        }
+        return list;
+    }
+
+    @Override
+    public boolean evaluate() {
+        if (currentValue == null) {
+            throw new IllegalStateException("variable doesn't have a value: " + name);
+        }
+        return currentValue;
     }
 }

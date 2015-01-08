@@ -12,5 +12,5 @@ import java.io.FileNotFoundException;
 public interface Deductor {
     //TODO: javadoc
     Proof deduct(@NotNull final File f, @Nullable final Statement[] proofed) throws FileNotFoundException, ParseException;
-    Proof deduct(@NotNull Proof proof, @NotNull final Statement[] assumptions, @Nullable final Statement[] proofed) throws FileNotFoundException, ParseException;
+    Proof deduct(@NotNull Proof proof, @NotNull final Statement[] assumptions, @Nullable final Statement[] proofed) throws ParseException;
 }

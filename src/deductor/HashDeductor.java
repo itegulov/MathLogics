@@ -12,6 +12,7 @@ import scanner.FastLineScanner;
 import validator.HashValidator;
 import validator.Validator;
 
+import javax.swing.plaf.nimbus.State;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -51,19 +52,29 @@ public final class HashDeductor implements Deductor {
     }
 
     @Override
-    public Proof deduct(@NotNull Proof proof, @NotNull final Statement[] assumptions, @Nullable final Statement[] proofed) throws FileNotFoundException, ParseException {
-        Parser<Expression> parser = new ExpressionParser();
+    public Proof deduct(@NotNull Proof proof, @NotNull final Statement[] assumptions, @Nullable final Statement[] proofed) throws ParseException {
+
         Validator validator = new HashValidator();
-        List<Statement> allProofedList = new ArrayList<>();
-        allProofedList.addAll(Arrays.asList(assumptions));
+        Statement[] all;
         if (proofed != null) {
-            allProofedList.addAll(Arrays.asList(proofed));
+            all = new Statement[assumptions.length + proofed.length];
+            System.arraycopy(assumptions, 0, all, 0, assumptions.length);
+            System.arraycopy(proofed, 0, all, assumptions.length, proofed.length);
+        } else {
+            all = new Statement[assumptions.length];
+            System.arraycopy(assumptions, 0, all, 0, assumptions.length);
+            proof = validator.validate(proof, assumptions);
         }
-        Statement[] allProofed = allProofedList.toArray(new Statement[allProofedList.size()]);
+        proof = validator.validate(proof, all);
+        Parser<Expression> parser = new ExpressionParser();
         for (Statement assumption : assumptions) {
             Expression currentAssumption = assumption.getExp();
             Proof newProof = new Proof();
             for (Statement statement : proof.getStatements()) {
+                Proof tempProof = validator.validate(newProof, all);
+                if (!tempProof.check(proofed)) {
+                    System.out.println("WUT");
+                }
                 Expression currentExp = statement.getExp();
                 StatementType statementType = statement.getType();
                 if (statement.getExp().equals(currentAssumption)) {
@@ -75,7 +86,7 @@ public final class HashDeductor implements Deductor {
                 } else if (statementType.getClass() == Axiom.class
                         || containsStatement(assumptions, statement)
                         || containsStatement(proofed, statement)) {
-                    newProof.addExpression(statement.getExp(), null);
+                    newProof.addExpression(currentExp, null);
                     newProof.addExpression(new Entailment(currentExp, new Entailment(currentAssumption, currentExp)), null);
                     Expression expression = new Entailment(currentAssumption, currentExp);
                     newProof.addExpression(expression, null);
@@ -97,7 +108,8 @@ public final class HashDeductor implements Deductor {
                     newProof.addExpression(expression, null);
                 }
             }
-            proof = validator.validate(newProof, allProofed);
+            proof = validator.validate(newProof, all);
+            proof.check(proofed);
         }
         return proof;
     }
