@@ -64,7 +64,7 @@ public final class Variable extends AbstractExpression {
     }
 
     @Override
-    public Expression replaceAll(Map<Expression, Expression> replacement) {
+    public Expression replaceAll(Map<Integer, Expression> replacement) {
         try {
             return (Expression) clone();
         } catch (CloneNotSupportedException e) {

@@ -63,7 +63,7 @@ public final class Statement {
         return exp.toString();
     }
 
-    public Statement replaceAll(Map<Expression, Expression> replacement) {
+    public Statement replaceAll(Map<Integer, Expression> replacement) {
         return new Statement(exp.replaceAll(replacement), type, line);
     }
 

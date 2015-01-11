@@ -12,12 +12,10 @@ import java.io.File;
 import static org.junit.Assert.*;
 
 public class TertiumNonDaturProoferTest {
-    private File file;
     private Proofer proofer;
 
     @Before
     public void setUp() throws Exception {
-        file = new File("test.in");
         proofer = new TertiumNonDaturProofer();
     }
 

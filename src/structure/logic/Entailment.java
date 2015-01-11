@@ -27,20 +27,8 @@ public final class Entailment extends BinaryOperator {
     }
 
     @Override
-    public Expression replaceAll(Map<Expression, Expression> replacement) {
-        Entailment entailment = new Entailment(null, null);
-        if (replacement.containsKey(left)) {
-            entailment.left = replacement.get(left);
-        } else {
-            entailment.left = left.replaceAll(replacement);
-        }
-
-        if (replacement.containsKey(right)) {
-            entailment.right = replacement.get(right);
-        } else {
-            entailment.right = right.replaceAll(replacement);
-        }
-        return entailment;
+    public Expression replaceAll(Map<Integer, Expression> replacement) {
+        return new Entailment(left.replaceAll(replacement), right.replaceAll(replacement));
     }
 
     @Override

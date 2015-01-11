@@ -105,7 +105,7 @@ public interface Expression extends Cloneable {
      *                      expression you want it is to be replaced with
      * @return
      */
-    Expression replaceAll(Map<Expression, Expression> replacement);
+    Expression replaceAll(Map<Integer, Expression> replacement);
 
     /**
      *

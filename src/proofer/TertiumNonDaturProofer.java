@@ -120,8 +120,8 @@ public class TertiumNonDaturProofer implements Proofer {
         List<Statement> proofedList = new ArrayList<>();
         List<Statement> hypothesis = new ArrayList<>();
         for (Variable var : variableValues) {
-            Map<Expression, Expression> expressionMap = new HashMap<>();
-            expressionMap.put(new Variable("a"), var);
+            Map<Integer, Expression> expressionMap = new HashMap<>();
+            expressionMap.put(1, var);
             Proof newProof = LogicRules.TERTIUM_NON_DATUR_PROOF.replace(expressionMap);
             proof.addProof(newProof);
             proofedList.add(newProof.getStatements().get(newProof.getStatements().size() - 1));
@@ -134,7 +134,7 @@ public class TertiumNonDaturProofer implements Proofer {
 
     public static void main(String[] args) {
         try {
-            Proof proof = new TertiumNonDaturProofer().proof("(A->B->C)->(B&A->C)");
+            Proof proof = new TertiumNonDaturProofer().proof("!(A&B)->!B|!A");
             proof = new HashValidator().validate(proof, null);
             System.out.println(proof);
         } catch (ParseException e) {

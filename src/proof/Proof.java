@@ -209,7 +209,7 @@ public final class Proof {
         proof.getStatements().forEach(this::addStatement);
     }
 
-    public Proof replace(Map<Expression, Expression> map) {
+    public Proof replace(Map<Integer, Expression> map) {
         Proof newProof = new Proof();
         for (Statement statement : statements) {
             newProof.addStatement(new Statement(statement.getExp().replaceAll(map), statement.getType(), -1));

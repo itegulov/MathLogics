@@ -1,7 +1,6 @@
 package parser;
 
 import com.sun.istack.internal.NotNull;
-import structure.AbstractExpression;
 import structure.Expression;
 import structure.logic.*;
 
@@ -35,6 +34,16 @@ public final class ExpressionParser implements Parser<Expression> {
         return new Variable(sb.toString());
     }
 
+    private Gap getGap(char c) {
+        StringBuilder sb = new StringBuilder();
+        do {
+            sb.append(c);
+            c = getChar();
+        } while (Character.isDigit(c));
+        returnChar();
+        return new Gap(Integer.parseInt(sb.toString()));
+    }
+
     private void skipWhitespaces() throws ParseException {
         char c = getChar();
         while (Character.isWhitespace(c)) {
@@ -49,6 +58,10 @@ public final class ExpressionParser implements Parser<Expression> {
 
         if (isChar(c)) {
             return getVariable(c);
+        }
+
+        if (Character.isDigit(c)) {
+            return getGap(c);
         }
 
         Expression result;
