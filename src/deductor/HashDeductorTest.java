@@ -44,14 +44,13 @@ public class HashDeductorTest {
 
     @Test
     public void testDeductSmall() throws Exception {
-        Proof proof = new Proof(new File("deductor_small.out"));
-        assertEquals(deductor.deduct(new File("deductor_small.in"), null), proof);
+        Proof proof = new Proof(new File("res/tests/deductor_small.out"));
+        assertEquals(deductor.deduct(new File("res/tests/deductor_small.in"), null), proof);
     }
 
     @Test
     public void testDeductWithProofed() throws Exception {
         Statement[] statements = {new Statement(new Variable("a"), new Assumption(), 1)};
-        Proof proof = deductor.deduct(new File("deductor_assumption.proof"), statements);
-        System.out.println(proof);
+        Proof proof = deductor.deduct(new File("res/tests/deductor_assumption.proof"), statements);
     }
 }

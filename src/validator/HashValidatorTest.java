@@ -178,16 +178,8 @@ public class HashValidatorTest {
 
     @Test
     public void testMaxTest() throws Exception {
-        Proof answer = validator.validate(new File("maxtest.in"));
-        Proof goodAnswer = new Proof(new File("maxtest.out"));
+        Proof answer = validator.validate(new File("res/tests/maxtest.in"));
+        Proof goodAnswer = new Proof(new File("res/tests/maxtest.out"));
         assertEquals(answer, goodAnswer);
-    }
-
-    @Test
-    public void testTertiumNonDatur() throws Exception {
-        Proof answer = validator.validate(new File("tertium_non_datur.proof"));
-        System.out.println(answer);
-        //Proof goodAnswer = new Proof(new File("maxtest.out"));
-        //assertEquals(answer, goodAnswer);
     }
 }

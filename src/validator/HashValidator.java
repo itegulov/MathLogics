@@ -2,9 +2,7 @@ package validator;
 
 import com.sun.istack.internal.NotNull;
 import com.sun.istack.internal.Nullable;
-import structure.AbstractExpression;
 import structure.Expression;
-import structure.logic.*;
 import parser.*;
 import proof.*;
 import proof.Error;
@@ -88,17 +86,5 @@ public final class HashValidator implements Validator {
             }
         }
         return proof;
-    }
-
-    public static void main(String[] args) {
-        File f = new File("test2.in");
-        Validator v = new HashValidator();
-        Statement[] assumptions = {new Statement(new Variable("P"), new Assumption(), 0)};
-        try {
-            Proof p = v.validate(f, assumptions);
-            System.out.println(p);
-        } catch (FileNotFoundException e) {
-            System.out.println("No such file");
-        }
     }
 }
