@@ -85,6 +85,9 @@ public final class Proof {
                     if (tokens[1].matches("\\(Не доказано\\)")) {
                         statements.add(new Statement(expressionParser.parse(tokens[0]),
                                 new Error(), line));
+                    } else if (tokens[1].matches("\\(Допущение\\)")) {
+                        statements.add(new Statement(expressionParser.parse(tokens[0]),
+                                new Assumption(), line));
                     } else {
                         throw new ParseException("Undefined type of statement");
                     }

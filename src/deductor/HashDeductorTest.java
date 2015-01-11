@@ -25,7 +25,7 @@ public class HashDeductorTest {
 
     @After
     public void tearDown() throws Exception {
-        
+
     }
 
     @Test
@@ -51,6 +51,7 @@ public class HashDeductorTest {
     @Test
     public void testDeductWithProofed() throws Exception {
         Statement[] statements = {new Statement(new Variable("a"), new Assumption(), 1)};
-        Proof proof = deductor.deduct(new File("res/tests/deductor_assumption.proof"), statements);
+        Proof proof = new Proof(new File("res/tests/deductor_assumption.out"));
+        assertEquals(deductor.deduct(new File("res/tests/deductor_assumption.in"), statements), proof);
     }
 }
