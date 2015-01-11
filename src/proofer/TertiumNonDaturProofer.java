@@ -71,13 +71,16 @@ public class TertiumNonDaturProofer implements Proofer {
         proof.addProof(proof1);
         proof.addProof(proof2);
         hypothesis.set(pos, var);
-        proof.addExpression(parser.parse("(654a123->2345c123)->(6567b123->2345c123)->(654a123|6567b123->2345c123)"
-                .replaceAll("654a123", var.getExp().toString())
-                .replaceAll("6567b123", notVar.getExp().toString())
-                .replaceAll("2345c123", toProve.toString())), null);
+        proof.addExpression(parser.parse("(1->3)->(2->3)->(1|2->3)"
+                .replaceAll("1", var.getExp().toString())
+                .replaceAll("2", notVar.getExp().toString())
+                .replaceAll("3", toProve.toString())), null);
         proof.addExpression(new Entailment(new Entailment(notVar.getExp(), toProve), new Entailment(new Or(var.getExp(), notVar.getExp()), toProve)), null);
         proof.addExpression(new Entailment(new Or(var.getExp(), notVar.getExp()), toProve), null);
         proof.addExpression(toProve, null);
+        if (!proof.check(all)) {
+            System.out.println("CRYYYYY");
+        }
         return proof;
     }
 

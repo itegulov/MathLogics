@@ -56,12 +56,12 @@ public final class ExpressionParser implements Parser<Expression> {
         skipWhitespaces();
         char c = getChar();
 
-        if (isChar(c)) {
-            return getVariable(c);
-        }
-
         if (Character.isDigit(c)) {
             return getGap(c);
+        }
+
+        if (isChar(c)) {
+            return getVariable(c);
         }
 
         Expression result;

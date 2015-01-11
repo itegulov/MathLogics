@@ -52,7 +52,7 @@ public class Gap extends AbstractExpression {
 
     @Override
     public StringBuilder asString() {
-        throw new IllegalStateException("cannot represent expressions with gaps as strings");
+        return new StringBuilder(Integer.toString(num));
     }
 
     @Override
