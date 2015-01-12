@@ -25,11 +25,6 @@ public abstract class BinaryOperator extends AbstractExpression {
     protected abstract boolean operation(boolean a, boolean b);
 
     @Override
-    public boolean isBinary() {
-        return true;
-    }
-
-    @Override
     public boolean matches(Expression other, Map<String, Expression> map) {
         ExpressionType myType = ExpressionType.valueOf(getClass().getSimpleName());
         ExpressionType otherType = ExpressionType.valueOf(other.getClass().getSimpleName());

@@ -28,7 +28,7 @@ public final class HashValidator implements Validator {
     @Override
     public Proof validate(@NotNull final FastLineScanner in, @Nullable final Statement[] assumptions) {
         final Proof proof = new Proof();
-        final Parser<Expression> expressionParser = new ExpressionParser();
+        final Parser<Expression> expressionParser = new LogicParser();
         while (in.hasMore()) {
             final String s;
             s = in.next();

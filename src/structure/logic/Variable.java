@@ -37,11 +37,6 @@ public final class Variable extends AbstractExpression {
     }
 
     @Override
-    public boolean isBinary() {
-        return false;
-    }
-
-    @Override
     public boolean matches(Expression other, Map<String, Expression> map) {
         if (map.containsKey(name)) {
             return other.equals(map.get(name));

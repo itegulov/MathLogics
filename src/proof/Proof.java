@@ -2,7 +2,8 @@ package proof;
 
 import com.sun.istack.internal.NotNull;
 import com.sun.istack.internal.Nullable;
-import parser.ExpressionParser;
+import functional.SupplierThatThrows;
+import parser.LogicParser;
 import structure.logic.BinaryOperator;
 import structure.Expression;
 import parser.ParseException;
@@ -14,6 +15,9 @@ import validator.Validator;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 
 public final class Proof {
     //TODO: javadoc
@@ -35,7 +39,7 @@ public final class Proof {
     }
 
     public Proof(@NotNull String proof) throws ParseException {
-        Parser<Expression> expressionParser = new ExpressionParser();
+        Parser<Expression> expressionParser = new LogicParser();
         String[] lines = proof.split("\n");
         statements = new ArrayList<>();
         for (String s: lines) {
@@ -54,6 +58,9 @@ public final class Proof {
                     if (tokens[1].matches("\\(Не доказано\\)")) {
                         statements.add(new Statement(expressionParser.parse(tokens[0]),
                                 new Error(), line));
+                    } else if (tokens[1].matches("\\(Допущение\\)")) {
+                        statements.add(new Statement(expressionParser.parse(tokens[0]),
+                                new Assumption(), line));
                     } else {
                         throw new ParseException("Undefined type of statement");
                     }
@@ -63,38 +70,15 @@ public final class Proof {
     }
 
     public Proof(@NotNull File file) throws ParseException, FileNotFoundException {
-        Parser<Expression> expressionParser = new ExpressionParser();
-        FastLineScanner scanner = new FastLineScanner(file);
-        statements = new ArrayList<>();
-        while (scanner.hasMore()) {
-            String s = scanner.next();
-            line++;
-            String[] tokens = s.split(" ", 2);
-            if (tokens[1].matches("\\(сх\\. акс\\.(.*)")) {
-                statements.add(new Statement(expressionParser.parse(tokens[0]),
-                        Axiom.values()[Integer.parseInt(tokens[1].substring(10, tokens[1].length() - 1)) - 1], line));
-            } else {
-                if (tokens[1].matches("\\(M\\.P\\.(.*)")) {
-                    String lineNumbers = tokens[1].substring(6, tokens[1].length() - 1);
-                    String[] numbers = lineNumbers.split(", ");
-                    int firstLine = Integer.parseInt(numbers[0]);
-                    int secondLine = Integer.parseInt(numbers[1]);
-                    statements.add(new Statement(expressionParser.parse(tokens[0]), new ModusPonens(statements.get(firstLine - 1),
-                            statements.get(secondLine - 1)), line));
-                } else {
-                    if (tokens[1].matches("\\(Не доказано\\)")) {
-                        statements.add(new Statement(expressionParser.parse(tokens[0]),
-                                new Error(), line));
-                    } else if (tokens[1].matches("\\(Допущение\\)")) {
-                        statements.add(new Statement(expressionParser.parse(tokens[0]),
-                                new Assumption(), line));
-                    } else {
-                        throw new ParseException("Undefined type of statement");
-                    }
-                }
+        this(((SupplierThatThrows<String, FileNotFoundException>) () -> {
+            FastLineScanner scanner = null;
+            scanner = new FastLineScanner(file);
+            StringBuilder sb = new StringBuilder();
+            while (scanner.hasMore()) {
+                sb.append(scanner.next()).append("\n");
             }
-
-        }
+            return sb.toString();
+        }).get());
     }
 
     @Override
@@ -150,7 +134,7 @@ public final class Proof {
     }
 
     public void addExpression(@Nullable final Expression expression, @Nullable final StatementType type) {
-        addStatement(new Statement(expression, type, line + 1));
+        addStatement(new Statement(expression, type, -1));
     }
 
     public void addStatement(@NotNull final Statement st) {
@@ -160,7 +144,7 @@ public final class Proof {
         if (st.getExp() == null) {
             return;
         }
-        if (st.getExp().isBinary()) {
+        if (st.getExp() instanceof BinaryOperator) {
             BinaryOperator bo = (BinaryOperator) st.getExp();
             if (right.containsKey(bo.getRight())) {
                 right.get(bo.getRight()).add(st);
@@ -230,7 +214,7 @@ public final class Proof {
 
     public boolean check(Statement[] assumptions) {
         HashValidator validator = new HashValidator();
-        Proof checkedProof = validator.validate(this, assumptions);
+        validator.validate(this, assumptions);
         for (Statement st : statements) {
             if (st.getType().getClass().getSimpleName().equals(Error.class.getSimpleName())) {
                 return false;

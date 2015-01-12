@@ -4,7 +4,7 @@ import com.sun.istack.internal.NotNull;
 import structure.Expression;
 import structure.logic.*;
 
-public final class ExpressionParser implements Parser<Expression> {
+public final class LogicParser implements Parser<Expression> {
     private String s;
     private int next;
 

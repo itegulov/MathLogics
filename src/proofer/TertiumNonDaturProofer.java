@@ -2,7 +2,7 @@ package proofer;
 
 import deductor.Deductor;
 import deductor.HashDeductor;
-import parser.ExpressionParser;
+import parser.LogicParser;
 import parser.ParseException;
 import parser.Parser;
 import proof.*;
@@ -13,9 +13,9 @@ import validator.HashValidator;
 
 import java.util.*;
 
-public class TertiumNonDaturProofer implements Proofer {
+public final class TertiumNonDaturProofer implements Proofer {
     private Deductor deductor = new HashDeductor();
-    private Parser<Expression> parser = new ExpressionParser();
+    private Parser<Expression> parser = new LogicParser();
     private Statement[] proofed;
 
     private Proof getProof(Expression toProve, List<Statement> hypothesis, int pos) throws ParseException {
@@ -86,7 +86,7 @@ public class TertiumNonDaturProofer implements Proofer {
 
     @Override
     public Proof proof(String statement) throws ParseException {
-        Parser<Expression> parser = new ExpressionParser();
+        Parser<Expression> parser = new LogicParser();
         Expression expression = parser.parse(statement);
         Map<String, Variable> variables = expression.getVariables();
         Collection<Variable> variableValues = variables.values();

@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Gap extends AbstractExpression {
+public final class Gap extends AbstractExpression {
     private int num;
 
     public Gap(int num) {
@@ -38,11 +38,6 @@ public class Gap extends AbstractExpression {
     @Override
     public String toJavaCode() {
         return "new Gap(" + num + ")";
-    }
-
-    @Override
-    public boolean isBinary() {
-        return false;
     }
 
     @Override

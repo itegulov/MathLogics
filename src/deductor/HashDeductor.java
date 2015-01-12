@@ -4,7 +4,7 @@ import com.sun.istack.internal.NotNull;
 import com.sun.istack.internal.Nullable;
 import structure.logic.Entailment;
 import structure.Expression;
-import parser.ExpressionParser;
+import parser.LogicParser;
 import parser.ParseException;
 import parser.Parser;
 import proof.*;
@@ -12,12 +12,8 @@ import scanner.FastLineScanner;
 import validator.HashValidator;
 import validator.Validator;
 
-import javax.swing.plaf.nimbus.State;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public final class HashDeductor implements Deductor {
     //TODO: javadoc
@@ -37,7 +33,7 @@ public final class HashDeductor implements Deductor {
     @Override
     public Proof deduct(@NotNull final File f, @Nullable final Statement[] proofed) throws FileNotFoundException, ParseException {
         FastLineScanner scanner = new FastLineScanner(f);
-        Parser<Expression> parser = new ExpressionParser();
+        Parser<Expression> parser = new LogicParser();
 
         String assumptionsStatement = scanner.next();
         String[] parts = assumptionsStatement.split("\\|\\-", 2);
@@ -66,7 +62,7 @@ public final class HashDeductor implements Deductor {
             proof = validator.validate(proof, assumptions);
         }
         proof = validator.validate(proof, all);
-        Parser<Expression> parser = new ExpressionParser();
+        Parser<Expression> parser = new LogicParser();
         for (Statement assumption : assumptions) {
             Expression currentAssumption = assumption.getExp();
             Proof newProof = new Proof();

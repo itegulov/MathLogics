@@ -1,8 +1,7 @@
 package proof;
 
-import structure.AbstractExpression;
 import structure.Expression;
-import parser.ExpressionParser;
+import parser.LogicParser;
 import parser.ParseException;
 import parser.Parser;
 
@@ -18,7 +17,7 @@ public enum Axiom implements StatementType {
     private int number;
 
     Axiom(String s, int number) {
-        Parser<Expression> expressionParser = new ExpressionParser();
+        Parser<Expression> expressionParser = new LogicParser();
         try {
             exp = expressionParser.parse(s);
             this.number = number;
@@ -28,7 +27,7 @@ public enum Axiom implements StatementType {
     }
 
     public boolean matches(Expression other) {
-        return exp.matches(other, new HashMap<String, Expression>());
+        return exp.matches(other, new HashMap<>());
     }
 
     public int getNumber() {

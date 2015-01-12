@@ -1,6 +1,5 @@
 package parser;
 
-import structure.AbstractExpression;
 import structure.Expression;
 import structure.logic.*;
 import org.junit.Before;
@@ -10,7 +9,7 @@ import org.junit.rules.ExpectedException;
 
 import static org.junit.Assert.*;
 
-public class ExpressionParserTest {
+public class LogicParserTest {
     ExpressionRandomGenerator generator;
     Parser<Expression> expressionParser;
 
@@ -20,7 +19,7 @@ public class ExpressionParserTest {
     @Before
     public void setUp() throws Exception {
         generator = new ExpressionRandomGeneratorPseudo();
-        expressionParser = new ExpressionParser();
+        expressionParser = new LogicParser();
     }
 
     @org.junit.Test

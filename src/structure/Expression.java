@@ -73,12 +73,6 @@ public interface Expression extends Cloneable {
     public String toJavaCode();
 
     /**
-     * Checks if this expression is binary
-     * @return          <code>true</code> if this expression is binary and false otherwise
-     */
-    public boolean isBinary();
-
-    /**
      * Checks if other expression suits this expression. Following rules are used:
      * 1) If some operation (binary or unary) was met in this structure.expression, then
      * the same type of expression must be met in other expression.

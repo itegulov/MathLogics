@@ -23,11 +23,6 @@ public abstract class UnaryOperator extends AbstractExpression {
     protected abstract boolean operation(boolean a);
 
     @Override
-    public boolean isBinary() {
-        return false;
-    }
-
-    @Override
     public boolean matches(Expression other, Map<String, Expression> map) {
         ExpressionType myType = ExpressionType.valueOf(getClass().getSimpleName());
         ExpressionType otherType = ExpressionType.valueOf(other.getClass().getSimpleName());
