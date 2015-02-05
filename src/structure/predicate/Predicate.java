@@ -76,6 +76,13 @@ public class Predicate extends AbstractExpression {
     }
 
     @Override
+    public boolean match(Expression other) {
+        return hasSameType(other)
+                && ((Predicate) other).getName().equals(name)
+                && ((Predicate) other).arguments.length == arguments.length;
+    }
+
+    @Override
     public boolean matches(@NotNull Expression other, @NotNull Map<String, Expression> map) {
         throw new IllegalStateException("cannot match predicate");
     }
@@ -146,5 +153,9 @@ public class Predicate extends AbstractExpression {
             set.addAll(t.getReplacedVariableOccurrences(((Predicate) originalExpr).arguments[i]));
         }
         return set;
+    }
+
+    public String getName() {
+        return name;
     }
 }

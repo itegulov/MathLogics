@@ -1,5 +1,6 @@
 package proof;
 
+import parser.ArithmeticParser;
 import parser.LogicParser;
 import parser.ParseException;
 import parser.Parser;
@@ -7,8 +8,8 @@ import structure.Expression;
 
 import java.util.HashMap;
 
-public enum ArithmeticAxiom {
-    ArithmeticAxiomOne("a=b->a'=b'",1), ArithmeticAxiomTwo("a=b->a=c->b=c", 2), ArithmeticAxiomThree("a'=b'->a=b", 3), ArithmeticAxiomFour("!a'=0", 4),
+public enum ArithmeticAxiom implements StatementType {
+    ArithmeticAxiomOne("a=b->a'=b'", 1), ArithmeticAxiomTwo("a=b->a=c->b=c", 2), ArithmeticAxiomThree("a'=b'->a=b", 3), ArithmeticAxiomFour("!a'=0", 4),
     ArithmeticAxiomFive("a+b'=(a+b)'", 5), ArithmeticAxiomSix("a+0=0", 6), ArithmeticAxiomSeven("a*0=0", 7), ArithmeticAxiomEight("a*b'=a*b+a", 8);
 
 
@@ -16,7 +17,7 @@ public enum ArithmeticAxiom {
     private int number;
 
     ArithmeticAxiom(String s, int number) {
-        Parser<Expression> expressionParser = new LogicParser();
+        ArithmeticParser expressionParser = new ArithmeticParser();
         try {
             exp = expressionParser.parse(s);
             this.number = number;
@@ -26,7 +27,7 @@ public enum ArithmeticAxiom {
     }
 
     public boolean matches(Expression other) {
-        return exp.matches(other, new HashMap<>());
+        return exp.equals(other);
     }
 
     public int getNumber() {
@@ -35,6 +36,6 @@ public enum ArithmeticAxiom {
 
     @Override
     public String toString() {
-        return "сх. акс. " + number;
+        return "Сх. акс. ФА " + number;
     }
 }

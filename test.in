@@ -1,5 +1,10 @@
-@x(Q(x))->Q(x)
-@x(P(x)&Q(x))->P(x)&Q(x)
-@x(@yP(y)&Q(x))->@yP(y)&Q(x)
-@x((@yP(y))&Q(x))->(@yP(y))&Q(x)
-@x((@xP(x))&Q(x))->(@xP(x))&Q(x)
+A->B->A
+(A->B)->(A->B->C)->(A->C)
+A->B->A&B
+A&B->A
+A&B->B
+A->A|B
+B->A|B
+(A->Q)->(B->Q)->(A|B->Q)
+(A->B)->(A->!B)->!A
+!!A->A

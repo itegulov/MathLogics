@@ -3,16 +3,20 @@ package formalarithmetic.validator;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import proof.Proof;
+import parser.ArithmeticParser;
+import proof.*;
 
 import java.io.File;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
 public class HashValidatorTest {
     private File file;
     private Validator validator;
+    private ArithmeticParser parser = new ArithmeticParser();
 
     @Before
     public void setUp() throws Exception {
@@ -55,7 +59,11 @@ public class HashValidatorTest {
     }
 
     @Test
-    public void testValidate() throws Exception {
+    public void testPredicateAxioms() throws Exception {
+        /**
+         * TEST 1
+         */
+
         PrintWriter pw = new PrintWriter(file);
         pw.println(
                 "Q(a)->?aQ(a)\n" +
@@ -65,12 +73,20 @@ public class HashValidatorTest {
         );
         pw.close();
 
-        System.out.println(validator.validate(file));
-    }
+        Proof proof = validator.validate(file);
 
-    @Test
-    public void testMedium() throws Exception {
-        PrintWriter pw = new PrintWriter(file);
+        List<Statement> statementList = new ArrayList<>();
+        statementList.add(new Statement(parser.parse("Q(a)->?aQ(a)"), PredicateAxiom.AXIOM_EXISTS, 0));
+        statementList.add(new Statement(parser.parse("@aQ(a)->Q(a)"), PredicateAxiom.AXIOM_FOR_ALL, 1));
+        statementList.add(new Statement(parser.parse("@x(@xP(x)&Q(x))->@xP(x)&Q(x)"), PredicateAxiom.AXIOM_FOR_ALL, 2));
+        statementList.add(new Statement(parser.parse("@xP(x)->P(y)"), PredicateAxiom.AXIOM_FOR_ALL, 3));
+        assertEquals(proof.getStatements(), statementList);
+
+        /**
+         * TEST 2
+         */
+
+        pw = new PrintWriter(file);
         pw.println(
                 "@x(Q(x))->Q(x)\n" +
                 "@x(P(x)&Q(x))->P(x)&Q(x)\n" +
@@ -79,6 +95,48 @@ public class HashValidatorTest {
                 "@x((@xP(x))&Q(x))->(@xP(x))&Q(x)"
         );
         pw.close();
-        System.out.println(validator.validate(file));
+
+        proof = validator.validate(file);
+
+        statementList = new ArrayList<>();
+        statementList.add(new Statement(parser.parse("@x(Q(x))->Q(x)"), PredicateAxiom.AXIOM_FOR_ALL, 0));
+        statementList.add(new Statement(parser.parse("@x(P(x)&Q(x))->P(x)&Q(x)"), PredicateAxiom.AXIOM_FOR_ALL, 1));
+        statementList.add(new Statement(parser.parse("@x(@yP(y)&Q(x))->@yP(y)&Q(x)"), PredicateAxiom.AXIOM_FOR_ALL, 2));
+        statementList.add(new Statement(parser.parse("@x((@yP(y))&Q(x))->(@yP(y))&Q(x)"), PredicateAxiom.AXIOM_FOR_ALL, 3));
+        statementList.add(new Statement(parser.parse("@x((@xP(x))&Q(x))->(@xP(x))&Q(x)"), PredicateAxiom.AXIOM_FOR_ALL, 4));
+        assertEquals(proof.getStatements(), statementList);
+    }
+
+    @Test
+    public void testNewDerivationRules() throws Exception {
+        PrintWriter pw = new PrintWriter(file);
+        pw.println(
+                "Q(b)->P(a)->Q(b)\n" +
+                "Q(b)->@a(P(a)->Q(b))"
+        );
+        pw.close();
+
+        Proof proof = validator.validate(file);
+
+        List<Statement> statementList = new ArrayList<>();
+        statementList.add(new Statement(parser.parse("Q(b)->P(a)->Q(b)"), Axiom.AxiomOne, 0));
+        statementList.add(new Statement(parser.parse("Q(b)->@a(P(a)->Q(b))"), new ForAllDerivationRule(statementList.get(0)), 1));
+        assertEquals(proof.getStatements(), statementList);
+    }
+
+    @Test
+    public void testInduction() throws Exception {
+        PrintWriter pw = new PrintWriter(file);
+        pw.println(
+                "(x'+0=(x+0)')&@y(((x)'+y=(x+y)')->((x)'+(y)'=(x+(y)')'))->((x)'+y=(x+y)')\n" +
+                "P(0)&@x123 (P(x123) -> P(x123')) -> P(x123)"
+        );
+        pw.close();
+
+        Proof proof = validator.validate(file);
+        List<Statement> statementList = new ArrayList<>();
+        statementList.add(new Statement(parser.parse("(x'+0=(x+0)')&@y(((x)'+y=(x+y)')->((x)'+(y)'=(x+(y)')'))->((x)'+y=(x+y)')"), new InductionRule(), 0));
+        statementList.add(new Statement(parser.parse("P(0)&@x123 (P(x123) -> P(x123')) -> P(x123)"), new InductionRule(), 1));
+        assertEquals(proof.getStatements(), statementList);
     }
 }
