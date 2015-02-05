@@ -1,4 +1,4 @@
-package validator;
+package propositionallogic.validator;
 
 import proof.Proof;
 import proof.Statement;

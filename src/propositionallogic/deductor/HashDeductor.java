@@ -1,4 +1,4 @@
-package deductor;
+package propositionallogic.deductor;
 
 import com.sun.istack.internal.NotNull;
 import com.sun.istack.internal.Nullable;
@@ -9,8 +9,8 @@ import parser.ParseException;
 import parser.Parser;
 import proof.*;
 import scanner.FastLineScanner;
-import validator.HashValidator;
-import validator.Validator;
+import propositionallogic.validator.HashValidator;
+import propositionallogic.validator.Validator;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -74,11 +74,11 @@ public final class HashDeductor implements Deductor {
                 Expression currentExp = statement.getExp();
                 StatementType statementType = statement.getType();
                 if (statement.getExp().equals(currentAssumption)) {
-                    newProof.addExpression(parser.parse("(a123)->(a123)->(a123)".replaceAll("a123", currentExp.toString())), null);
-                    newProof.addExpression(parser.parse("((a123)->((a123)->(a123)))->((a123)->(((a123)->(a123))->(a123)))->((a123)->(a123))".replaceAll("a123", currentExp.toString())), null);
-                    newProof.addExpression(parser.parse("((a123)->(((a123)->(a123))->a123))->((a123)->(a123))".replaceAll("a123", currentExp.toString())), null);
-                    newProof.addExpression(parser.parse("((a123)->(((a123)->(a123))->(a123)))".replaceAll("a123", currentExp.toString())), null);
-                    newProof.addExpression(parser.parse("(a123)->(a123)".replaceAll("a123", currentExp.toString())), null);
+                    newProof.addExpression(parser.parse("(1)->(1)->(1)".replaceAll("1", currentExp.toString())), null);
+                    newProof.addExpression(parser.parse("((1)->((1)->(1)))->((1)->(((1)->(1))->(1)))->((1)->(1))".replaceAll("1", currentExp.toString())), null);
+                    newProof.addExpression(parser.parse("((1)->(((1)->(1))->1))->((1)->(1))".replaceAll("1", currentExp.toString())), null);
+                    newProof.addExpression(parser.parse("((1)->(((1)->(1))->(1)))".replaceAll("1", currentExp.toString())), null);
+                    newProof.addExpression(parser.parse("(1)->(1)".replaceAll("1", currentExp.toString())), null);
                 } else if (statementType.getClass() == Axiom.class
                         || containsStatement(assumptions, statement)
                         || containsStatement(proofed, statement)) {
@@ -88,19 +88,19 @@ public final class HashDeductor implements Deductor {
                     newProof.addExpression(expression, null);
                 } else if (statementType.getClass() == ModusPonens.class) {
                     Statement antecedent = ((ModusPonens) statementType).getFirst();
-                    Expression expression = parser.parse("((a123)->(b123))->(((a123)->((b123)->(c123)))->((a123)->(c123)))"
-                            .replaceAll("a123", currentAssumption.toString())
-                            .replaceAll("b123", antecedent.getExp().toString())
-                            .replaceAll("c123", currentExp.toString()));
+                    Expression expression = parser.parse("((1)->(2))->(((1)->((2)->(3)))->((1)->(3)))"
+                            .replaceAll("1", currentAssumption.toString())
+                            .replaceAll("2", antecedent.getExp().toString())
+                            .replaceAll("3", currentExp.toString()));
                     newProof.addExpression(expression, null);
-                    expression = parser.parse("(((a123)->((b123)->(c123)))->((a123)->(c123)))"
-                            .replaceAll("a123", currentAssumption.toString())
-                            .replaceAll("b123", antecedent.getExp().toString())
-                            .replaceAll("c123", currentExp.toString()));
+                    expression = parser.parse("(((1)->((2)->(3)))->((1)->(3)))"
+                            .replaceAll("1", currentAssumption.toString())
+                            .replaceAll("2", antecedent.getExp().toString())
+                            .replaceAll("3", currentExp.toString()));
                     newProof.addExpression(expression, null);
-                    expression = parser.parse("(a123)->(c123)"
-                            .replaceAll("a123", currentAssumption.toString())
-                            .replaceAll("c123", currentExp.toString()));
+                    expression = parser.parse("(1)->(3)"
+                            .replaceAll("1", currentAssumption.toString())
+                            .replaceAll("3", currentExp.toString()));
                     newProof.addExpression(expression, null);
                 }
             }

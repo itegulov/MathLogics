@@ -1,4 +1,4 @@
-package structure.logic;
+package structure;
 import structure.Expression;
 
 /**

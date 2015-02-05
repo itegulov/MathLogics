@@ -1,6 +1,6 @@
-package structure.logic;
+package structure;
 
-import structure.Expression;
+import structure.logic.*;
 
 import java.util.Random;
 
@@ -15,8 +15,9 @@ public final class ExpressionRandomGeneratorPseudo implements ExpressionRandomGe
     private String generateName() {
         int len = rnd.nextInt(3) + 1;
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < len; i++) {
-            sb.append((char)('a' + rnd.nextInt(26)));
+        sb.append((char)('A' + rnd.nextInt(26)));
+        for (int i = 0; i < len - 1; i++) {
+            sb.append((char)('0' + rnd.nextInt(10)));
         }
         return sb.toString();
     }

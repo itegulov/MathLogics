@@ -1,7 +1,7 @@
-package proofer;
+package propositionallogic.proofer;
 
-import deductor.Deductor;
-import deductor.HashDeductor;
+import propositionallogic.deductor.Deductor;
+import propositionallogic.deductor.HashDeductor;
 import parser.LogicParser;
 import parser.ParseException;
 import parser.Parser;
@@ -9,7 +9,7 @@ import proof.*;
 import rules.LogicRules;
 import structure.Expression;
 import structure.logic.*;
-import validator.HashValidator;
+import propositionallogic.validator.HashValidator;
 
 import java.util.*;
 
@@ -78,9 +78,6 @@ public final class TertiumNonDaturProofer implements Proofer {
         proof.addExpression(new Entailment(new Entailment(notVar.getExp(), toProve), new Entailment(new Or(var.getExp(), notVar.getExp()), toProve)), null);
         proof.addExpression(new Entailment(new Or(var.getExp(), notVar.getExp()), toProve), null);
         proof.addExpression(toProve, null);
-        if (!proof.check(all)) {
-            System.out.println("CRYYYYY");
-        }
         return proof;
     }
 
@@ -137,7 +134,7 @@ public final class TertiumNonDaturProofer implements Proofer {
 
     public static void main(String[] args) {
         try {
-            Proof proof = new TertiumNonDaturProofer().proof("!(A&B)->!B|!A");
+            Proof proof = new TertiumNonDaturProofer().proof("!!(!!P->P)");
             proof = new HashValidator().validate(proof, null);
             System.out.println(proof);
         } catch (ParseException e) {

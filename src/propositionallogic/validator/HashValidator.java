@@ -1,4 +1,4 @@
-package validator;
+package propositionallogic.validator;
 
 import com.sun.istack.internal.NotNull;
 import com.sun.istack.internal.Nullable;

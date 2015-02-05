@@ -2,9 +2,11 @@ package structure.logic;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import structure.AbstractExpression;
 import structure.Expression;
+import structure.predicate.Quantifier;
 
 public abstract class UnaryOperator extends AbstractExpression {
     protected Expression exp;
@@ -65,5 +67,15 @@ public abstract class UnaryOperator extends AbstractExpression {
     @Override
     public List<Expression> getParticularProof(List<Expression> hypothesis) {
         return exp.getParticularProof(hypothesis);
+    }
+
+    @Override
+    public void getQuantifiers(Set<Variable> quantifiers) {
+        exp.getQuantifiers(quantifiers);
+    }
+
+    @Override
+    public Set<Variable> getFreeVariables() {
+        return exp.getFreeVariables();
     }
 }

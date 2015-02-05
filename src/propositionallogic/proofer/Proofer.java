@@ -1,4 +1,4 @@
-package proofer;
+package propositionallogic.proofer;
 
 import parser.ParseException;
 import proof.Proof;

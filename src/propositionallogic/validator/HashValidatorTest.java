@@ -1,4 +1,4 @@
-package validator;
+package propositionallogic.validator;
 
 import org.junit.After;
 import org.junit.Before;
@@ -95,84 +95,84 @@ public class HashValidatorTest {
     @Test
     public void testVerify() throws Exception {
         PrintWriter pw = new PrintWriter(file);
-        pw.println("a->a->a");
-        pw.println("(a->(a->a))->(a->((a->a)->a))->(a->a)");
-        pw.println("(a->((a->a)->a))->(a->a)");
-        pw.println("(a->((a->a)->a))");
-        pw.println("a->a");
+        pw.println("A->A->A");
+        pw.println("(A->(A->A))->(A->((A->A)->A))->(A->A)");
+        pw.println("(A->((A->A)->A))->(A->A)");
+        pw.println("(A->((A->A)->A))");
+        pw.println("A->A");
         pw.close();
-        Proof proof = new Proof("a->a->a (сх. акс. 1)\n" +
-                "(a->(a->a))->(a->((a->a)->a))->(a->a) (сх. акс. 2)\n" +
-                "(a->((a->a)->a))->(a->a) (M.P. 1, 2)\n" +
-                "(a->((a->a)->a)) (сх. акс. 1)\n" +
-                "a->a (M.P. 4, 3)\n");
+        Proof proof = new Proof("A->A->A (сх. акс. 1)\n" +
+                "(A->(A->A))->(A->((A->A)->A))->(A->A) (сх. акс. 2)\n" +
+                "(A->((A->A)->A))->(A->A) (M.P. 1, 2)\n" +
+                "(A->((A->A)->A)) (сх. акс. 1)\n" +
+                "A->A (M.P. 4, 3)\n");
         assertEquals(validator.validate(file), proof);
     }
 
     @Test
     public void testVerifyBad() throws Exception {
         PrintWriter pw = new PrintWriter(file);
-        pw.println("a->a->a");
-        pw.println("b->a");
+        pw.println("A->A->A");
+        pw.println("B->A");
         pw.close();
-        Proof proof = new Proof("a->a->a (сх. акс. 1)\n" +
-                "b->a (Не доказано)\n");
+        Proof proof = new Proof("A->A->A (сх. акс. 1)\n" +
+                "B->A (Не доказано)\n");
         assertEquals(validator.validate(file), proof);
     }
 
     @Test
     public void testVerifyDifficult() throws Exception {
         PrintWriter pw = new PrintWriter(file);
-        pw.println("a->a->a");
-        pw.println("(a->a)->(a->((a->a)->a))->(a->a)");
-        pw.println("(a->(a->a))->(a->((a->a)->a))->(a->a)");
-        pw.println("(a->((a->a)->a))->(a->a)");
-        pw.println("(a->((a->a)->a))");
-        pw.println("a->a");
+        pw.println("A->A->A");
+        pw.println("(A->A)->(A->((A->A)->A))->(A->A)");
+        pw.println("(A->(A->A))->(A->((A->A)->A))->(A->A)");
+        pw.println("(A->((A->A)->A))->(A->A)");
+        pw.println("(A->((A->A)->A))");
+        pw.println("A->A");
         pw.close();
-        Proof proof = new Proof("a->a->a (сх. акс. 1)\n" +
-                "(a->a)->(a->((a->a)->a))->(a->a) (сх. акс. 1)\n" +
-                "(a->(a->a))->(a->((a->a)->a))->(a->a) (сх. акс. 2)\n" +
-                "(a->((a->a)->a))->(a->a) (M.P. 1, 3)\n" +
-                "(a->((a->a)->a)) (сх. акс. 1)\n" +
-                "a->a (M.P. 5, 4)\n");
+        Proof proof = new Proof("A->A->A (сх. акс. 1)\n" +
+                "(A->A)->(A->((A->A)->A))->(A->A) (сх. акс. 1)\n" +
+                "(A->(A->A))->(A->((A->A)->A))->(A->A) (сх. акс. 2)\n" +
+                "(A->((A->A)->A))->(A->A) (M.P. 1, 3)\n" +
+                "(A->((A->A)->A)) (сх. акс. 1)\n" +
+                "A->A (M.P. 5, 4)\n");
         assertEquals(validator.validate(file), proof);
 
         pw = new PrintWriter(file);
-        pw.println("a->a->a");
-        pw.println("(a->(a->a))->(a->((a->a)->a))->(a->a)");
-        pw.println("(a->a)->(a->((a->a)->a))->(a->a)");
-        pw.println("(a->((a->a)->a))->(a->a)");
-        pw.println("(a->((a->a)->a))");
-        pw.println("a->a");
+        pw.println("A->A->A");
+        pw.println("(A->(A->A))->(A->((A->A)->A))->(A->A)");
+        pw.println("(A->A)->(A->((A->A)->A))->(A->A)");
+        pw.println("(A->((A->A)->A))->(A->A)");
+        pw.println("(A->((A->A)->A))");
+        pw.println("A->A");
         pw.close();
-        proof = new Proof("a->a->a (сх. акс. 1)\n" +
-                "(a->(a->a))->(a->((a->a)->a))->(a->a) (сх. акс. 2)\n" +
-                "(a->a)->(a->((a->a)->a))->(a->a) (сх. акс. 1)\n" +
-                "(a->((a->a)->a))->(a->a) (M.P. 1, 2)\n" +
-                "(a->((a->a)->a)) (сх. акс. 1)\n" +
-                "a->a (M.P. 5, 4)\n");
+        proof = new Proof("A->A->A (сх. акс. 1)\n" +
+                "(A->(A->A))->(A->((A->A)->A))->(A->A) (сх. акс. 2)\n" +
+                "(A->A)->(A->((A->A)->A))->(A->A) (сх. акс. 1)\n" +
+                "(A->((A->A)->A))->(A->A) (M.P. 1, 2)\n" +
+                "(A->((A->A)->A)) (сх. акс. 1)\n" +
+                "A->A (M.P. 5, 4)\n");
         assertEquals(validator.validate(file), proof);
     }
 
     @Test
     public void testMore() throws Exception {
         PrintWriter pw = new PrintWriter(file);
-        pw.println("a&b->a");
-        pw.println("a->a|b");
-        pw.println("(a->a|b)->(a&b)->a->a|b");
-        pw.println("a&b->a->a|b");
-        pw.println("(a&b->a)->((a&b->(a->a|b))->(a&b->a|b))");
-        pw.println("(a&b->(a->a|b))->(a&b->a|b)");
-        pw.println("a&b->a|b");
+        pw.println("A&B->A");
+        pw.println("A->A|B");
+        pw.println("(A->A|B)->(A&B)->A->A|B");
+        pw.println("A&B->A->A|B");
+        pw.println("(A&B->A)->((A&B->(A->A|B))->(A&B->A|B))");
+        pw.println("(A&B->(A->A|B))->(A&B->A|B)");
+        pw.println("A&B->A|B");
         pw.close();
-        Proof proof = new Proof("a&b->a (сх. акс. 4)\n" +
-                "a->a|b (сх. акс. 6)\n" +
-                "(a->a|b)->(a&b)->a->a|b (сх. акс. 1)\n" +
-                "a&b->a->a|b (M.P. 2, 3)\n" +
-                "(a&b->a)->((a&b->(a->a|b))->(a&b->a|b)) (сх. акс. 2)\n" +
-                "(a&b->(a->a|b))->(a&b->a|b) (M.P. 1, 5)\n" +
-                "a&b->a|b (M.P. 4, 6)\n");
+        Proof proof = new Proof("A&B->A (сх. акс. 4)\n" +
+                "A->A|B (сх. акс. 6)\n" +
+                "(A->A|B)->(A&B)->A->A|B (сх. акс. 1)\n" +
+                "A&B->A->A|B (M.P. 2, 3)\n" +
+                "(A&B->A)->((A&B->(A->A|B))->(A&B->A|B)) (сх. акс. 2)\n" +
+                "(A&B->(A->A|B))->(A&B->A|B) (M.P. 1, 5)\n" +
+                "A&B->A|B (M.P. 4, 6)\n");
         assertEquals(validator.validate(file), proof);
     }
 

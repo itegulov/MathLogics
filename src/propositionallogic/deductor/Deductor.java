@@ -1,4 +1,4 @@
-package deductor;
+package propositionallogic.deductor;
 
 import com.sun.istack.internal.NotNull;
 import com.sun.istack.internal.Nullable;

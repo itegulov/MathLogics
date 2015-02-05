@@ -3,10 +3,12 @@ package structure.logic;
 import com.sun.istack.internal.NotNull;
 import structure.AbstractExpression;
 import structure.Expression;
+import structure.predicate.Quantifier;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public final class Gap extends AbstractExpression {
     private int num;
@@ -72,5 +74,15 @@ public final class Gap extends AbstractExpression {
     public Object clone() throws CloneNotSupportedException {
         super.clone();
         return new Gap(num);
+    }
+
+    @Override
+    public Set<Variable> getFreeVariables() {
+        throw new IllegalStateException("cannot get free variables in expressions with gaps");
+    }
+
+    @Override
+    public void getQuantifiers(Set<Variable> quantifiers) {
+        throw new IllegalStateException("cannot get quantifiers in expressions with gaps");
     }
 }

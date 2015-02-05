@@ -1,18 +1,18 @@
 package structure.logic;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import structure.AbstractExpression;
 import structure.Expression;
+import structure.predicate.Quantifier;
+import structure.predicate.Term;
 
-public final class Variable extends AbstractExpression {
+public final class Variable extends Term {
     private String name;
     private Boolean currentValue;
 
     public Variable(String name) {
+        super(name);
         this.name = name;
     }
 
@@ -109,5 +109,16 @@ public final class Variable extends AbstractExpression {
             throw new IllegalStateException("variable doesn't have a value: " + name);
         }
         return currentValue;
+    }
+
+    @Override
+    public Set<Variable> getFreeVariables() {
+        //TODO: implement
+        return null;
+    }
+
+    @Override
+    public void getQuantifiers(Set<Variable> quantifiers) {
+        //TODO: implement
     }
 }

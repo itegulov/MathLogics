@@ -2,9 +2,11 @@ package structure.logic;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import structure.AbstractExpression;
 import structure.Expression;
+import structure.predicate.Quantifier;
 
 public abstract class BinaryOperator extends AbstractExpression {
     //TODO: javadoc
@@ -85,5 +87,18 @@ public abstract class BinaryOperator extends AbstractExpression {
         List<Expression> result = left.getParticularProof(hypothesis);
         result.addAll(right.getParticularProof(hypothesis));
         return result;
+    }
+
+    @Override
+    public void getQuantifiers(Set<Variable> quantifiers) {
+        left.getQuantifiers(quantifiers);
+        right.getQuantifiers(quantifiers);
+    }
+
+    @Override
+    public Set<Variable> getFreeVariables() {
+        Set<Variable> set = left.getFreeVariables();
+        set.addAll(right.getFreeVariables());
+        return set;
     }
 }

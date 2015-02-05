@@ -9,15 +9,12 @@ import structure.Expression;
 import parser.ParseException;
 import parser.Parser;
 import scanner.FastLineScanner;
-import validator.HashValidator;
-import validator.Validator;
+import propositionallogic.validator.HashValidator;
+import propositionallogic.validator.Validator;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
-import java.util.function.Function;
-import java.util.function.Supplier;
-import java.util.function.UnaryOperator;
 
 public final class Proof {
     //TODO: javadoc

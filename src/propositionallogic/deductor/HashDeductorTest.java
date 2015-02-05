@@ -1,4 +1,4 @@
-package deductor;
+package propositionallogic.deductor;
 
 import org.junit.After;
 import org.junit.Before;
@@ -11,7 +11,7 @@ import structure.logic.Variable;
 import java.io.File;
 import java.io.PrintWriter;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class HashDeductorTest {
     private File file;
@@ -31,14 +31,14 @@ public class HashDeductorTest {
     @Test
     public void testDeductSimple() throws Exception {
         PrintWriter pw = new PrintWriter(file);
-        pw.println("a|-a");
-        pw.println("a");
+        pw.println("A|-A");
+        pw.println("A");
         pw.close();
-        Proof proof = new Proof("a->(a->a) (сх. акс. 1)\n" +
-                "(a->(a->a))->((a->((a->a)->a))->(a->a)) (сх. акс. 2)\n" +
-                "(a->((a->a)->a))->(a->a) (M.P. 2, 1)\n" +
-                "a->((a->a)->a) (сх. акс. 1)\n" +
-                "a->a (M.P. 4, 3)");
+        Proof proof = new Proof("A->(A->A) (сх. акс. 1)\n" +
+                "(A->(A->A))->((A->((A->A)->A))->(A->A)) (сх. акс. 2)\n" +
+                "(A->((A->A)->A))->(A->A) (M.P. 2, 1)\n" +
+                "A->((A->A)->A) (сх. акс. 1)\n" +
+                "A->A (M.P. 4, 3)");
         assertEquals(deductor.deduct(file, null), proof);
     }
 
@@ -50,7 +50,7 @@ public class HashDeductorTest {
 
     @Test
     public void testDeductWithProofed() throws Exception {
-        Statement[] statements = {new Statement(new Variable("a"), new Assumption(), 1)};
+        Statement[] statements = {new Statement(new Variable("A"), new Assumption(), 1)};
         Proof proof = new Proof(new File("res/tests/deductor_assumption.out"));
         assertEquals(deductor.deduct(new File("res/tests/deductor_assumption.in"), statements), proof);
     }

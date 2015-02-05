@@ -1,7 +1,7 @@
 package rules;
 
 import proof.Proof;
-import validator.HashValidator;
+import propositionallogic.validator.HashValidator;
 
 import java.io.File;
 import java.io.FileNotFoundException;

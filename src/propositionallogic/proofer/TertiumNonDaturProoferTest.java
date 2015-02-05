@@ -1,13 +1,11 @@
-package proofer;
+package propositionallogic.proofer;
 
-import deductor.Deductor;
-import deductor.HashDeductor;
+import propositionallogic.deductor.Deductor;
+import propositionallogic.deductor.HashDeductor;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import proof.Proof;
-
-import java.io.File;
 
 import static org.junit.Assert.*;
 

@@ -7,34 +7,27 @@ import structure.logic.Variable;
 
 import java.util.*;
 
-public class Term extends AbstractExpression {
+public class Predicate extends AbstractExpression {
     protected String name;
     protected Term[] arguments;
-    private Set<Variable> quantifiers;
 
-    public Term(String name) {
+    public Predicate(String name) {
         this.name = name;
-        arguments = new Term[0];
-        quantifiers = new HashSet<>();
+        this.arguments = new Term[0];
     }
 
-    public Term(String name, Term... arguments) {
+    public Predicate(String name, Term... arguments) {
         this.name = name;
         this.arguments = arguments;
     }
 
-    public Term(String name, ArrayList<Term> list) {
-        this.name = name;
+    public Predicate(String name, ArrayList<Term> list) {
         this.arguments = list.toArray(new Term[list.size()]);
-        quantifiers = new HashSet<>(3);
+        this.name = name;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public Term[] getArguments() {
-        return arguments;
+    public void setArguments(Term[] arguments) {
+        this.arguments = arguments;
     }
 
     @Override
@@ -50,14 +43,16 @@ public class Term extends AbstractExpression {
     @Override
     public boolean treeMatch(@NotNull Expression other) {
         if (hasSameType(other)) {
-            Term otherTerm = (Term) other;
-            if (name.equals(otherTerm.name) && arguments.length == otherTerm.arguments.length) {
+            Predicate predicate = (Predicate) other;
+            if (name.equals(predicate.name) && arguments.length == predicate.arguments.length) {
+                boolean f = false;
                 for (int i = 0; i < arguments.length; i++) {
-                    if (!arguments[i].treeMatch(otherTerm.arguments[i])) {
-                        return false;
+                    if (!arguments[i].treeMatch(predicate.arguments[i])) {
+                        f = true;
+                        break;
                     }
                 }
-                return true;
+                if (!f) return true;
             }
         }
         return false;
@@ -65,12 +60,12 @@ public class Term extends AbstractExpression {
 
     @Override
     public Map<String, Variable> getVariables() {
-        throw new IllegalStateException("predicates don't contain variables");
+        throw new IllegalStateException("cannot get variables in predicates");
     }
 
     @Override
     public String toJavaCode() {
-        StringBuilder sb = new StringBuilder("new Term(").append("\"").append(name).append("\"");
+        StringBuilder sb = new StringBuilder("new Predicate(").append("\"").append(name).append("\"");
         for (Term argument : arguments) {
             sb.append(",").append(argument.toJavaCode());
         }
@@ -80,7 +75,7 @@ public class Term extends AbstractExpression {
 
     @Override
     public boolean matches(@NotNull Expression other, @NotNull Map<String, Expression> map) {
-        throw new IllegalStateException("predicates can't be matched");
+        throw new IllegalStateException("cannot match predicate");
     }
 
     @Override
@@ -99,37 +94,33 @@ public class Term extends AbstractExpression {
 
     @Override
     public Expression replaceAll(Map<Integer, Expression> replacement) {
-        throw new IllegalStateException("predicates can't be replaced");
+        Predicate predicate = new Predicate(this.name);
+        Term[] args = new Term[arguments.length];
+        for (int i = 0; i < arguments.length; i++) {
+            args[i] = (Term) arguments[i].replaceAll(replacement);
+        }
+        predicate.setArguments(args);
+        return predicate;
     }
 
     @Override
     public List<Expression> getParticularProof(List<Expression> hypothesis) {
-        throw new IllegalStateException("can't proof predicates");
+        throw new IllegalStateException("cannot proof predicate");
     }
 
     @Override
     public Set<Variable> getFreeVariables() {
-        Set<Variable> vars = new HashSet<>();
-        for (Term term : arguments) {
-            vars.addAll(term.getFreeVariables());
+        Set<Variable> set = new HashSet<>();
+        for (Term t : arguments) {
+            set.addAll(t.getFreeVariables());
         }
-        /*
-        if (!this.quantifiers.contains(name)) {
-            vars.add(name);
-        }
-        */
-        return vars;
+        return set;
     }
 
     @Override
     public void getQuantifiers(Set<Variable> quantifiers) {
-        Set<Variable> set = new HashSet<>();
-        for (Term term : arguments) {
-            term.getQuantifiers(quantifiers);
+        for (Term t : arguments) {
+            t.getQuantifiers(quantifiers);
         }
-        for (Variable s : quantifiers) {
-            set.add(s);
-        }
-        this.quantifiers = set;
     }
 }

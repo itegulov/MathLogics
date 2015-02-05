@@ -4,11 +4,11 @@ import com.sun.istack.internal.NotNull;
 import structure.Expression;
 import structure.logic.*;
 
-public final class LogicParser implements Parser<Expression> {
-    private String s;
-    private int next;
+public class LogicParser implements Parser<Expression> {
+    protected String s;
+    protected int next;
 
-    private char getChar() {
+    protected char getChar() {
         if (next < 0 || next >= s.length()) {
             next++;
             return '>';
@@ -16,25 +16,25 @@ public final class LogicParser implements Parser<Expression> {
         return s.charAt(next++);
     }
 
-    private void returnChar() {
+    protected void returnChar() {
         next--;
     }
 
-    private boolean isChar(char c) {
+    protected boolean isChar(char c) {
         return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
     }
 
-    private Variable getVariable(char c) {
+    protected Variable getVariable(char c) {
         StringBuilder sb = new StringBuilder();
         do {
             sb.append(c);
             c = getChar();
-        } while (isChar(c));
+        } while (Character.isDigit(c));
         returnChar();
         return new Variable(sb.toString());
     }
 
-    private Gap getGap(char c) {
+    protected Gap getGap(char c) {
         StringBuilder sb = new StringBuilder();
         do {
             sb.append(c);
@@ -44,7 +44,7 @@ public final class LogicParser implements Parser<Expression> {
         return new Gap(Integer.parseInt(sb.toString()));
     }
 
-    private void skipWhitespaces() throws ParseException {
+    protected void skipWhitespaces() throws ParseException {
         char c = getChar();
         while (Character.isWhitespace(c)) {
             c = getChar();
@@ -52,7 +52,7 @@ public final class LogicParser implements Parser<Expression> {
         returnChar();
     }
 
-    private Expression parseFactor() throws ParseException {
+    protected Expression parseFactor() throws ParseException {
         skipWhitespaces();
         char c = getChar();
 
@@ -60,7 +60,7 @@ public final class LogicParser implements Parser<Expression> {
             return getGap(c);
         }
 
-        if (isChar(c)) {
+        if (Character.isUpperCase(c)) {
             return getVariable(c);
         }
 
@@ -80,7 +80,7 @@ public final class LogicParser implements Parser<Expression> {
         }
     }
 
-    private Expression parseAnd(@NotNull Expression left) throws ParseException {
+    protected Expression parseAnd(@NotNull Expression left) throws ParseException {
         skipWhitespaces();
         char c = getChar();
 
@@ -93,7 +93,7 @@ public final class LogicParser implements Parser<Expression> {
         }
     }
 
-    private Expression parseOr(@NotNull Expression left) throws ParseException {
+    protected Expression parseOr(@NotNull Expression left) throws ParseException {
         skipWhitespaces();
         char c = getChar();
 
@@ -108,7 +108,7 @@ public final class LogicParser implements Parser<Expression> {
 
 
 
-    private Expression parseEntailment(@NotNull Expression left) throws ParseException {
+    protected Expression parseEntailment(@NotNull Expression left) throws ParseException {
         skipWhitespaces();
         char c = getChar();
 
@@ -126,7 +126,7 @@ public final class LogicParser implements Parser<Expression> {
         }
     }
 
-    private Expression parseFormula() throws ParseException {
+    protected Expression parseFormula() throws ParseException {
         return parseEntailment(parseOr(parseAnd(parseFactor())));
     }
 
