@@ -1,4 +1,4 @@
-package rules;
+package proof;
 
 import parser.LogicParser;
 import parser.ParseException;

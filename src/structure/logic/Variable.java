@@ -4,10 +4,11 @@ import java.util.*;
 
 import structure.AbstractExpression;
 import structure.Expression;
+import structure.predicate.Predicate;
 import structure.predicate.Quantifier;
 import structure.predicate.Term;
 
-public final class Variable extends Term {
+public final class Variable extends Predicate {
     private String name;
     private Boolean currentValue;
 
@@ -109,16 +110,5 @@ public final class Variable extends Term {
             throw new IllegalStateException("variable doesn't have a value: " + name);
         }
         return currentValue;
-    }
-
-    @Override
-    public Set<Variable> getFreeVariables() {
-        //TODO: implement
-        return null;
-    }
-
-    @Override
-    public void getQuantifiers(Set<Variable> quantifiers) {
-        //TODO: implement
     }
 }

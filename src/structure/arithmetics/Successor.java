@@ -22,10 +22,10 @@ public class Successor extends Term {
     }
 
     @Override
-    public Set<Variable> getFreeVariables() {
-        HashSet<Variable> vars = new HashSet<>();
+    public Set<String> getFreeVars() {
+        HashSet<String> vars = new HashSet<>();
         for (Term t : arguments) {
-            vars.addAll(t.getFreeVariables());
+            vars.addAll(t.getFreeVars());
         }
         return vars;
     }

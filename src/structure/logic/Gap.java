@@ -1,9 +1,12 @@
 package structure.logic;
 
 import com.sun.istack.internal.NotNull;
+import exceptions.TreeMismatchException;
+import javafx.util.Pair;
 import structure.AbstractExpression;
 import structure.Expression;
 import structure.predicate.Quantifier;
+import structure.predicate.Term;
 
 import java.util.HashMap;
 import java.util.List;
@@ -77,12 +80,22 @@ public final class Gap extends AbstractExpression {
     }
 
     @Override
-    public Set<Variable> getFreeVariables() {
+    public Set<String> getFreeVars() {
         throw new IllegalStateException("cannot get free variables in expressions with gaps");
     }
 
     @Override
-    public void getQuantifiers(Set<Variable> quantifiers) {
-        throw new IllegalStateException("cannot get quantifiers in expressions with gaps");
+    public void setQuantifiers(Set<String> quantifiers) {
+        throw new IllegalStateException("cannot set quantifiers in expressions with gaps");
+    }
+
+    @Override
+    public int markFreeVariableOccurrences(String variableName) {
+        throw new IllegalStateException("cannot mark free variables in expressions with gaps");
+    }
+
+    @Override
+    public Set<Pair<Term, Term>> getReplacedVariableOccurrences(Expression originalExpr) throws TreeMismatchException {
+        throw new IllegalStateException("cannot get replaced variables in expressions with gaps");
     }
 }

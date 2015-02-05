@@ -1,6 +1,8 @@
 package structure.predicate;
 
 import com.sun.istack.internal.NotNull;
+import exceptions.TreeMismatchException;
+import javafx.util.Pair;
 import structure.AbstractExpression;
 import structure.Expression;
 import structure.logic.Variable;
@@ -21,10 +23,10 @@ public abstract class Quantifier extends AbstractExpression {
     }
 
     @Override
-    public Set<Variable> getFreeVariables() {
-        Set<Variable> variables = exp.getFreeVariables();
-        variables.remove(variable);
-        return variables;
+    public Set<String> getFreeVars() {
+        Set<String> vars = exp.getFreeVars();
+        vars.remove(variable.getName());
+        return vars;
     }
 
     @Override
@@ -53,12 +55,12 @@ public abstract class Quantifier extends AbstractExpression {
     }
 
     @Override
-    public void getQuantifiers(Set<Variable> quantifiers) {
-        boolean contained = quantifiers.contains(variable);
-        //quantifiers.add(variable);
-        exp.getQuantifiers(quantifiers);
-        if (!contained) {
-            quantifiers.remove(variable);
+    public void setQuantifiers(Set<String> quantifiers) {
+        boolean f = quantifiers.contains(variable.getName());
+        quantifiers.add(variable.getName());
+        exp.setQuantifiers(quantifiers);
+        if (!f) {
+            quantifiers.remove(variable.getName());
         }
     }
 
@@ -70,5 +72,26 @@ public abstract class Quantifier extends AbstractExpression {
     @Override
     public Expression replaceAll(Map<Integer, Expression> replacement) {
         throw new IllegalStateException("cannot replace expressions with quantifiers");
+    }
+
+    @Override
+    public int markFreeVariableOccurrences(String variableName) {
+        return exp.markFreeVariableOccurrences(variableName);
+    }
+
+    @Override
+    public Set<Pair<Term, Term>> getReplacedVariableOccurrences(Expression originalExpr) throws TreeMismatchException {
+        if (!hasSameType(originalExpr) || !variable.getName().equals(((Quantifier) originalExpr).getVariable().getName())) {
+            throw new TreeMismatchException(originalExpr, this);
+        }
+        return exp.getReplacedVariableOccurrences(((Quantifier) originalExpr).getExp());
+    }
+
+    public Term getVariable() {
+        return variable;
+    }
+
+    public Expression getExp() {
+        return exp;
     }
 }

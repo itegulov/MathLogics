@@ -2,8 +2,11 @@ package structure;
 
 import com.sun.istack.internal.NotNull;
 
+import exceptions.TreeMismatchException;
+import javafx.util.Pair;
 import structure.logic.Variable;
 import structure.predicate.Quantifier;
+import structure.predicate.Term;
 
 import java.util.List;
 import java.util.Map;
@@ -112,15 +115,24 @@ public interface Expression extends Cloneable {
 
     /**
      * Gets set of free variables in expression
-     * @return          set of free variables
+     * @return          set consisting of free variable names
      */
-    Set<Variable> getFreeVariables();
+    Set<String> getFreeVars();
 
     /**
      * Travels through expression tree and writes all quantifiers to set
      * @param quantifiers   set, in which quantifiers will be written
      */
-    void getQuantifiers(Set<Variable> quantifiers);
+    void setQuantifiers(Set<String> quantifiers);
+
+    /**
+     * Gets count variables free occurrences count
+     * @param variableName  name of the variable to check
+     * @return              count of free occurrences
+     */
+    int markFreeVariableOccurrences(String variableName);
+
+    Set<Pair<Term, Term>> getReplacedVariableOccurrences(Expression originalExpr) throws TreeMismatchException;
 
     Object clone() throws CloneNotSupportedException;
 }

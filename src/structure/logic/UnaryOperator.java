@@ -4,9 +4,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import exceptions.TreeMismatchException;
+import javafx.util.Pair;
 import structure.AbstractExpression;
 import structure.Expression;
-import structure.predicate.Quantifier;
+import structure.predicate.Term;
 
 public abstract class UnaryOperator extends AbstractExpression {
     protected Expression exp;
@@ -70,12 +72,25 @@ public abstract class UnaryOperator extends AbstractExpression {
     }
 
     @Override
-    public void getQuantifiers(Set<Variable> quantifiers) {
-        exp.getQuantifiers(quantifiers);
+    public void setQuantifiers(Set<String> quantifiers) {
+        exp.setQuantifiers(quantifiers);
     }
 
     @Override
-    public Set<Variable> getFreeVariables() {
-        return exp.getFreeVariables();
+    public Set<String> getFreeVars() {
+        return exp.getFreeVars();
+    }
+
+    @Override
+    public int markFreeVariableOccurrences(String variableName) {
+        return exp.markFreeVariableOccurrences(variableName);
+    }
+
+    @Override
+    public Set<Pair<Term, Term>> getReplacedVariableOccurrences(Expression originalExpr) throws TreeMismatchException {
+        if (!hasSameType(originalExpr)) {
+            throw new TreeMismatchException(originalExpr, this);
+        }
+        return exp.getReplacedVariableOccurrences(((UnaryOperator) originalExpr).exp);
     }
 }

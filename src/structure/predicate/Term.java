@@ -1,6 +1,8 @@
 package structure.predicate;
 
 import com.sun.istack.internal.NotNull;
+import exceptions.TreeMismatchException;
+import javafx.util.Pair;
 import structure.AbstractExpression;
 import structure.Expression;
 import structure.logic.Variable;
@@ -8,9 +10,10 @@ import structure.logic.Variable;
 import java.util.*;
 
 public class Term extends AbstractExpression {
-    protected String name;
+    public Set<String> quantifiers;
+    public boolean isFree = false;
+    public String name;
     protected Term[] arguments;
-    private Set<Variable> quantifiers;
 
     public Term(String name) {
         this.name = name;
@@ -35,6 +38,28 @@ public class Term extends AbstractExpression {
 
     public Term[] getArguments() {
         return arguments;
+    }
+
+    public List<String> getTermNames() {
+        List<String> result;
+        if (arguments.length == 0) {
+            result = new ArrayList<>();
+        } else {
+            result = arguments[0].getTermNames();
+            for (int i = 1; i < arguments.length; i++) {
+                result.addAll(arguments[i].getTermNames());
+            }
+        }
+        result.add(name);
+        return result;
+    }
+
+    public boolean matchTerm(Term t) {
+        return (t.name.equals(name) && hasSameArgumentLength(t));
+    }
+
+    public boolean hasSameArgumentLength(Term t) {
+        return t.arguments.length == arguments.length;
     }
 
     @Override
@@ -108,26 +133,64 @@ public class Term extends AbstractExpression {
     }
 
     @Override
-    public Set<Variable> getFreeVariables() {
-        Set<Variable> vars = new HashSet<>();
-        for (Term term : arguments) {
-            vars.addAll(term.getFreeVariables());
+    public Set<String> getFreeVars() {
+        HashSet<String> vars = new HashSet<>();
+        for (Term t : arguments) {
+            vars.addAll(t.getFreeVars());
         }
-        /*
-        if (!this.quantifiers.contains(name)) {
+        if (!this.quantifiers.contains(this.name))
             vars.add(name);
-        }
-        */
         return vars;
     }
 
     @Override
-    public void getQuantifiers(Set<Variable> quantifiers) {
-        Set<Variable> set = new HashSet<>();
-        for (Term term : arguments) {
-            term.getQuantifiers(quantifiers);
+    public int markFreeVariableOccurrences(String variableName) {
+        int result = 0;
+        for (Term t : arguments) {
+            result += t.markFreeVariableOccurrences(variableName);
         }
-        for (Variable s : quantifiers) {
+        if (this.name.equals(variableName)) {
+            boolean f = true;
+            for (String s : quantifiers) {
+                if (s.equals(variableName)) {
+                    f = false;
+                    break;
+                }
+            }
+            if (f) {
+                isFree = true;
+                result++;
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public Set<Pair<Term, Term>> getReplacedVariableOccurrences(Expression originalExpr) throws TreeMismatchException {
+        Set<Pair<Term, Term>> set = new HashSet<>();
+        if (!(originalExpr instanceof Term)) {
+            throw new TreeMismatchException(originalExpr, this);
+        }
+        Term term = (Term) originalExpr;
+        if (term.isFree) {
+            set.add(new Pair<>(term, this));
+        }
+        if (hasSameArgumentLength(term)) {
+            for (int i = 0; i < arguments.length; i++) {
+                Term t = arguments[i];
+                set.addAll(t.getReplacedVariableOccurrences(term.arguments[i]));
+            }
+        }
+        return set;
+    }
+
+    @Override
+    public void setQuantifiers(Set<String> quantifiers) {
+        for (Term t : arguments) {
+            t.setQuantifiers(quantifiers);
+        }
+        Set<String> set = new HashSet<>();
+        for (String s : quantifiers) {
             set.add(s);
         }
         this.quantifiers = set;

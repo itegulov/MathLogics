@@ -4,9 +4,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import exceptions.TreeMismatchException;
+import javafx.util.Pair;
 import structure.AbstractExpression;
 import structure.Expression;
-import structure.predicate.Quantifier;
+import structure.predicate.Term;
 
 public abstract class BinaryOperator extends AbstractExpression {
     //TODO: javadoc
@@ -90,15 +92,32 @@ public abstract class BinaryOperator extends AbstractExpression {
     }
 
     @Override
-    public void getQuantifiers(Set<Variable> quantifiers) {
-        left.getQuantifiers(quantifiers);
-        right.getQuantifiers(quantifiers);
+    public void setQuantifiers(Set<String> quantifiers) {
+        left.setQuantifiers(quantifiers);
+        right.setQuantifiers(quantifiers);
     }
 
     @Override
-    public Set<Variable> getFreeVariables() {
-        Set<Variable> set = left.getFreeVariables();
-        set.addAll(right.getFreeVariables());
+    public Set<String> getFreeVars() {
+        Set<String> h = left.getFreeVars();
+        h.addAll(right.getFreeVars());
+        return h;
+    }
+
+    @Override
+    public int markFreeVariableOccurrences(String variableName) {
+        int result = left.markFreeVariableOccurrences(variableName);
+        result += right.markFreeVariableOccurrences(variableName);
+        return result;
+    }
+
+    @Override
+    public Set<Pair<Term, Term>> getReplacedVariableOccurrences(Expression originalExpr) throws TreeMismatchException {
+        if (!hasSameType(originalExpr)) {
+            throw new TreeMismatchException(originalExpr, this);
+        }
+        Set<Pair<Term, Term>> set = left.getReplacedVariableOccurrences(((BinaryOperator) originalExpr).left);
+        set.addAll(right.getReplacedVariableOccurrences(((BinaryOperator) originalExpr).right));
         return set;
     }
 }

@@ -1,6 +1,8 @@
 package structure.predicate;
 
 import com.sun.istack.internal.NotNull;
+import exceptions.TreeMismatchException;
+import javafx.util.Pair;
 import structure.AbstractExpression;
 import structure.Expression;
 import structure.logic.Variable;
@@ -109,18 +111,40 @@ public class Predicate extends AbstractExpression {
     }
 
     @Override
-    public Set<Variable> getFreeVariables() {
-        Set<Variable> set = new HashSet<>();
+    public Set<String> getFreeVars() {
+        Set<String> set = new HashSet<>();
         for (Term t : arguments) {
-            set.addAll(t.getFreeVariables());
+            set.addAll(t.getFreeVars());
         }
         return set;
     }
 
     @Override
-    public void getQuantifiers(Set<Variable> quantifiers) {
+    public void setQuantifiers(Set<String> quantifiers) {
         for (Term t : arguments) {
-            t.getQuantifiers(quantifiers);
+            t.setQuantifiers(quantifiers);
         }
+    }
+
+    @Override
+    public int markFreeVariableOccurrences(String variableName) {
+        int result = 0;
+        for (Term t : arguments) {
+            result += t.markFreeVariableOccurrences(variableName);
+        }
+        return result;
+    }
+
+    @Override
+    public Set<Pair<Term, Term>> getReplacedVariableOccurrences(Expression originalExpr) throws TreeMismatchException {
+        Set<Pair<Term, Term>> set = new HashSet<>();
+        if (!match(originalExpr)) {
+            throw new TreeMismatchException(originalExpr, this);
+        }
+        for (int i = 0; i < arguments.length; i++) {
+            Term t = arguments[i];
+            set.addAll(t.getReplacedVariableOccurrences(((Predicate) originalExpr).arguments[i]));
+        }
+        return set;
     }
 }

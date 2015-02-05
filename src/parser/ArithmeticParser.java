@@ -3,19 +3,16 @@ package parser;
 import structure.Expression;
 import structure.arithmetics.*;
 import structure.logic.*;
-import structure.predicate.*;
+import structure.predicate.Exists;
+import structure.predicate.ForAll;
+import structure.predicate.Predicate;
+import structure.predicate.Term;
 
 import java.util.ArrayList;
 
 public class ArithmeticParser {
     private static String expression;
     private static int index;
-
-    public Expression parse(String expression) throws ParseException {
-        ArithmeticParser.expression = expression.replaceAll("\\s+", "") + ";";
-        index = 0;
-        return implication();
-    }
 
     private static char getChar() {
         return expression.charAt(index++);
@@ -25,6 +22,33 @@ public class ArithmeticParser {
         index--;
     }
 
+    private static Term variableOrNull() throws ParseException {
+        if (getChar() == '0') {
+            return new Zero();
+        } else {
+            returnChar();
+            return variable();
+        }
+    }
+
+    private static Term variable() throws ParseException {
+        int start = index, end = index + 1;
+        char nextChar = getChar();
+        if (!Character.isLetter(nextChar) || !Character.isLowerCase(nextChar))
+            throw new ParseException("cannot parse: " + expression);
+        while (Character.isDigit(getChar()))
+            end++;
+        returnChar();
+        String value = expression.substring(start, end);
+        return new Term(value);
+    }
+
+    public Expression parse(String expression) throws ParseException {
+        ArithmeticParser.expression = expression.replaceAll("\\s+", "") + ";";
+        index = 0;
+        return implication();
+    }
+
     protected Expression implication() throws ParseException {
         Expression s = Or();
         char nextChar = getChar();
@@ -32,8 +56,9 @@ public class ArithmeticParser {
             if (getChar() != '>')
                 throw new ParseException("cannot parse: " + expression);
             s = new Entailment(s, implication());
-        } else
+        } else {
             returnChar();
+        }
         return s;
     }
 
@@ -70,8 +95,9 @@ public class ArithmeticParser {
             Expression result;
             try {
                 result = implication();
-                if (getChar() != ')')
+                if (getChar() != ')') {
                     throw new ParseException("cannot parse: " + expression);
+                }
             } catch (ParseException pe) {
                 index = saveIndex;
                 result = predicate(false);
@@ -122,7 +148,7 @@ public class ArithmeticParser {
         Term t = summand();
         char nextChar = getChar();
         while (nextChar == '+') {
-            ArrayList<Term> list = new ArrayList<Term>();
+            ArrayList<Term> list = new ArrayList<>();
             list.add(t);
             list.add(summand());
             t = new Plus(list);
@@ -184,7 +210,6 @@ public class ArithmeticParser {
                             t = new Term(t.getName(), list);
                         }
                     }
-                    // t = new Function(t.name, list);
                 } else {
                     returnChar();
                 }
@@ -192,7 +217,7 @@ public class ArithmeticParser {
         }
         if (getChar() == '\'') {
             do {
-                ArrayList<Term> list = new ArrayList<Term>();
+                ArrayList<Term> list = new ArrayList<>();
                 list.add(t);
                 t = new Successor(list);
             }
@@ -203,29 +228,8 @@ public class ArithmeticParser {
         return t;
     }
 
-    private static Term variableOrNull() throws ParseException {
-        if (getChar() == '0') {
-            return new Zero();
-        } else {
-            returnChar();
-            return variable();
-        }
-    }
-
-    private static Term variable() throws ParseException {
-        int start = index, end = index + 1;
-        char nextChar = getChar();
-        if (!Character.isLetter(nextChar) || !Character.isLowerCase(nextChar))
-            throw new ParseException("cannot parse: " + expression);
-        while (Character.isDigit(getChar()))
-            end++;
-        returnChar();
-        String value = expression.substring(start, end);
-        return new Term(value);
-    }
-
     protected ArrayList<Term> terms() throws ParseException {
-        ArrayList<Term> list = new ArrayList<Term>();
+        ArrayList<Term> list = new ArrayList<>();
         list.add(term());
         while (getChar() == ',')
             list.add(term());
