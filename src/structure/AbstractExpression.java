@@ -26,7 +26,7 @@ public abstract class AbstractExpression implements Expression {
     @Override
     public boolean equals(Object obj) {
         return obj instanceof AbstractExpression
-                && obj.toString().equals(toString());
+                && ((AbstractExpression) obj).treeMatch(this);
     }
 
     public Object clone() throws CloneNotSupportedException {

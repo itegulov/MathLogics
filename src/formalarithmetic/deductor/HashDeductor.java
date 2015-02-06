@@ -23,6 +23,7 @@ import java.io.FileNotFoundException;
 import java.util.*;
 
 public class HashDeductor implements Deductor {
+    //TODO: optimize
     private boolean containsStatement(@NotNull final Statement[] proofed, @NotNull final Statement statement) {
         if (proofed == null) {
             return false;
@@ -86,9 +87,8 @@ public class HashDeductor implements Deductor {
             int line = 0;
             for (Statement statement : proof.getStatements()) {
                 line++;
-                Proof tempProof = validator.validate(newProof, all);
-                if (!tempProof.check(proofed)) {
-                    System.out.println("WUT");
+                if (line % 100 == 0) {
+                    System.out.println("Line: " + line);
                 }
                 Expression currentExp = statement.getExp();
                 StatementType statementType = statement.getType();
@@ -151,7 +151,6 @@ public class HashDeductor implements Deductor {
                     newProof.addExpression(new Entailment(currentExp, new Entailment(currentAssumption, currentExp)), null);
                     Expression expression = new Entailment(currentAssumption, currentExp);
                     newProof.addExpression(expression, null);
-                    //TODO: check
                 } else {
                     if (statementType.getClass() == ExistsDerivationRule.class) {
                         if (currentExp instanceof Entailment &&

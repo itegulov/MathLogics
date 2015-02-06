@@ -181,6 +181,10 @@ public final class Proof {
                 BinaryOperator bo = (BinaryOperator) target.getExp();
                 Expression left = bo.getLeft();
                 if (allExists(left)) {
+                    Statement st = all.get(left);
+                    if (st.getLine() >= statement.getLine()) {
+                        continue;
+                    }
                     Statement antecedent = getAll(left);
                     return new ModusPonens(antecedent, target);
                 }
