@@ -65,7 +65,6 @@ public class HashValidator implements Validator {
             if (statement.getType() == null) {
                 final Expression expression = statement.getExp();
                 boolean found = false;
-
                 /**
                  * Modus Ponens checking
                  */
@@ -193,7 +192,7 @@ public class HashValidator implements Validator {
                         Term var = exists.getVariable();
                         try {
                             exists.getExp().setQuantifiers(new HashSet<>());
-                            entailment.getRight().setQuantifiers(new HashSet<>());
+                            entailment.getLeft().setQuantifiers(new HashSet<>());
                             int freeCount = exists.getExp().markFreeVariableOccurrences(var.getName());
                             Set<Pair<Term, Term>> replaced = entailment.getLeft().getReplacedVariableOccurrences(exists.getExp());
                             boolean cond = true;
@@ -248,6 +247,7 @@ public class HashValidator implements Validator {
                 /**
                  * For all derivation rule
                  */
+                InvalidProofException e1 = null;
                 if (!found) {
                     if (expression instanceof Entailment &&
                             ((Entailment) expression).getRight() instanceof ForAll) {
@@ -258,15 +258,18 @@ public class HashValidator implements Validator {
                                         entailment.getLeft(),
                                         forAll.getExp()
                                 ).toString());
-                        Expression prev = state.getExp();
-                        Term var = forAll.getVariable();
-                        if (prev != null) {
-                            Set<String> freeVars = ((Entailment) prev).getLeft().getFreeVars();
-                            if (freeVars.contains(var.getName())) {
-                                throw new InvalidProofException(DenialReason.ERROR_2.create(row, var.getName(), entailment.getLeft().toString()));
+                        if (state != null) {
+                            Expression prev = state.getExp();
+                            Term var = forAll.getVariable();
+                            if (prev != null) {
+                                Set<String> freeVars = ((Entailment) prev).getLeft().getFreeVars();
+                                if (freeVars.contains(var.getName())) {
+                                    e1 = new InvalidProofException(DenialReason.ERROR_2.create(row, var.getName(), entailment.getLeft().toString()));
+                                } else {
+                                    found = true;
+                                    statement.setType(new ForAllDerivationRule(state));
+                                }
                             }
-                            found = true;
-                            statement.setType(new ForAllDerivationRule(state));
                         }
                     }
                 }
@@ -274,6 +277,7 @@ public class HashValidator implements Validator {
                 /**
                  * Exists derivation rule
                  */
+                InvalidProofException e2 = null;
                 if (!found) {
                     if (expression instanceof Entailment &&
                             ((Entailment) expression).getLeft() instanceof Exists) {
@@ -284,14 +288,17 @@ public class HashValidator implements Validator {
                                         exists.getExp(),
                                         entailment.getRight()
                                 ).toString());
-                        Expression prev = state.getExp();
-                        Term var = exists.getVariable();
-                        if (prev != null) {
-                            if (((Entailment) prev).getRight().getFreeVars().contains(var.getName())) {
-                                throw new InvalidProofException(DenialReason.ERROR_2.create(row, var.getName(), entailment.getRight().toString()));
+                        if (state != null) {
+                            Expression prev = state.getExp();
+                            Term var = exists.getVariable();
+                            if (prev != null) {
+                                if (((Entailment) prev).getRight().getFreeVars().contains(var.getName())) {
+                                    e2 = new InvalidProofException(DenialReason.ERROR_2.create(row, var.getName(), entailment.getRight().toString()));
+                                } else {
+                                    found = true;
+                                    statement.setType(new ExistsDerivationRule(state));
+                                }
                             }
-                            found = true;
-                            statement.setType(new ExistsDerivationRule(state));
                         }
                     }
                 }
@@ -303,7 +310,6 @@ public class HashValidator implements Validator {
                     if (expression instanceof Entailment) {
                         Entailment entailment = (Entailment) expression;
                         Expression left = entailment.getLeft();
-                        Expression right = entailment.getRight();
                         if (left instanceof And &&
                                 ((And) left).getRight() instanceof ForAll &&
                                 ((ForAll) ((And) left).getRight()).getExp() instanceof Entailment) {
@@ -390,12 +396,20 @@ public class HashValidator implements Validator {
                 if (found) {
                     proofed.put(expression.toString(), statement);
                     continue;
+                } else {
+                    if (e1 != null) {
+                        throw e1;
+                    } else if (e2 != null) {
+                        throw e2;
+                    }
                 }
 
                 //Couldn't match an axiom, match an assumption or apply Modus Ponens rule
                 statement.setType(new Error());
 
                 throw new InvalidProofException("Доказательство некорректно начиная с " + row + " высказывания: " + expression.toString());
+            } else {
+                proofed.put(statement.getExp().toString(), statement);
             }
         }
         return proof;

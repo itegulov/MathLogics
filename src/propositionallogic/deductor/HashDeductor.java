@@ -49,7 +49,6 @@ public final class HashDeductor implements Deductor {
 
     @Override
     public Proof deduct(@NotNull Proof proof, @NotNull final Statement[] assumptions, @Nullable final Statement[] proofed) throws ParseException {
-
         Validator validator = new HashValidator();
         Statement[] all;
         if (proofed != null) {

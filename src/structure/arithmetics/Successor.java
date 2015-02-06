@@ -1,6 +1,5 @@
 package structure.arithmetics;
 
-import structure.logic.Variable;
 import structure.predicate.Term;
 
 import java.util.ArrayList;

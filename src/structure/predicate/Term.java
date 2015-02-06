@@ -24,6 +24,7 @@ public class Term extends AbstractExpression {
     public Term(String name, Term... arguments) {
         this.name = name;
         this.arguments = arguments;
+        quantifiers = new HashSet<>();
     }
 
     public Term(String name, ArrayList<Term> list) {
