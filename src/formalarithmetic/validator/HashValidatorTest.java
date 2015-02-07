@@ -135,8 +135,8 @@ public class HashValidatorTest {
 
         Proof proof = validator.validate(file);
         List<Statement> statementList = new ArrayList<>();
-        statementList.add(new Statement(parser.parse("(x'+0=(x+0)')&@y(((x)'+y=(x+y)')->((x)'+(y)'=(x+(y)')'))->((x)'+y=(x+y)')"), new InductionRule(), 0));
-        statementList.add(new Statement(parser.parse("P(0)&@x123 (P(x123) -> P(x123')) -> P(x123)"), new InductionRule(), 1));
+        statementList.add(new Statement(parser.parse("(x'+0=(x+0)')&@y(((x)'+y=(x+y)')->((x)'+(y)'=(x+(y)')'))->((x)'+y=(x+y)')"), InductionRule.INDUCTION_RULE, 0));
+        statementList.add(new Statement(parser.parse("P(0)&@x123 (P(x123) -> P(x123')) -> P(x123)"), InductionRule.INDUCTION_RULE, 1));
         assertEquals(proof.getStatements(), statementList);
     }
 }

@@ -9,7 +9,6 @@ public enum PredicateAxiom implements StatementType {
         this.text = text;
     }
 
-
     @Override
     public String toString() {
         return text;

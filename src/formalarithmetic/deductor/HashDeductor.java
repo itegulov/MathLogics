@@ -77,7 +77,6 @@ public class HashDeductor implements Deductor {
         }
         proof = validator.validate(proof, all);
         ArithmeticParser parser = new ArithmeticParser();
-        Map<String, Expression> proofedMap = new HashMap<>();
         for (int i = assumptions.length - 1; i < assumptions.length; i++) {
             Statement assumption = assumptions[i];
             Expression currentAssumption = assumption.getExp();
@@ -93,11 +92,46 @@ public class HashDeductor implements Deductor {
                 Expression currentExp = statement.getExp();
                 StatementType statementType = statement.getType();
                 if (statement.getExp().equals(currentAssumption)) {
-                    newProof.addExpression(parser.parse("(1)->(1)->(1)".replaceAll("1", currentExp.toString())), null);
-                    newProof.addExpression(parser.parse("((1)->((1)->(1)))->((1)->(((1)->(1))->(1)))->((1)->(1))".replaceAll("1", currentExp.toString())), null);
-                    newProof.addExpression(parser.parse("((1)->(((1)->(1))->1))->((1)->(1))".replaceAll("1", currentExp.toString())), null);
-                    newProof.addExpression(parser.parse("((1)->(((1)->(1))->(1)))".replaceAll("1", currentExp.toString())), null);
-                    newProof.addExpression(parser.parse("(1)->(1)".replaceAll("1", currentExp.toString())), null);
+                    newProof.addExpression(new Entailment(currentExp, new Entailment(currentExp, currentExp)), Axiom.AxiomOne);
+                    newProof.addExpression(new Entailment(
+                            new Entailment(
+                                    currentExp,
+                                    new Entailment(currentExp, currentExp)
+                            ),
+                            new Entailment(
+                                    new Entailment(
+                                            currentExp,
+                                            new Entailment(
+                                                    new Entailment(currentExp, currentExp),
+                                                    currentExp
+                                            )
+                                    ),
+                                    new Entailment(currentExp, currentExp)
+                            )
+                    ), Axiom.AxiomTwo);
+                    newProof.addExpression(new Entailment(
+                            new Entailment(
+                                    currentExp,
+                                    new Entailment(
+                                            new Entailment(currentExp, currentExp),
+                                            currentExp
+                                    )
+                            ),
+                            new Entailment(currentExp, currentExp)
+                    ), null);
+                    newProof.addExpression(new Entailment(
+                            currentExp,
+                            new Entailment(
+                                    new Entailment(currentExp, currentExp),
+                                    currentExp
+                            )
+                    ), Axiom.AxiomOne);
+                    newProof.addExpression(new Entailment(currentExp, currentExp), null);
+                    //newProof.addExpression(parser.parse("(1)->(1)->(1)".replaceAll("1", currentExp.toString())), null);
+                    //newProof.addExpression(parser.parse("((1)->((1)->(1)))->((1)->(((1)->(1))->(1)))->((1)->(1))".replaceAll("1", currentExp.toString())), null);
+                    //newProof.addExpression(parser.parse("((1)->(((1)->(1))->1))->((1)->(1))".replaceAll("1", currentExp.toString())), null);
+                    //newProof.addExpression(parser.parse("((1)->(((1)->(1))->(1)))".replaceAll("1", currentExp.toString())), null);
+                    //newProof.addExpression(parser.parse("(1)->(1)".replaceAll("1", currentExp.toString())), null);
                 } else if (statementType.getClass() == Axiom.class
                         || containsStatement(assumptions, statement)
                         || containsStatement(proofed, statement)) {
@@ -107,19 +141,38 @@ public class HashDeductor implements Deductor {
                     newProof.addExpression(expression, null);
                 } else if (statementType.getClass() == ModusPonens.class) {
                     Statement antecedent = ((ModusPonens) statementType).getFirst();
-                    Expression expression = parser.parse("((1)->(2))->(((1)->((2)->(3)))->((1)->(3)))"
-                            .replaceAll("1", currentAssumption.toString())
-                            .replaceAll("2", antecedent.getExp().toString())
-                            .replaceAll("3", currentExp.toString()));
+                    Expression expression = new Entailment(
+                            new Entailment(currentAssumption, antecedent.getExp()),
+                            new Entailment(
+                                    new Entailment(
+                                            currentAssumption,
+                                            new Entailment(
+                                                    antecedent.getExp(),
+                                                    currentExp
+                                            )
+                                    ),
+                                    new Entailment(
+                                            currentAssumption,
+                                            currentExp
+                                    )
+                            )
+                    );
                     newProof.addExpression(expression, null);
-                    expression = parser.parse("(((1)->((2)->(3)))->((1)->(3)))"
-                            .replaceAll("1", currentAssumption.toString())
-                            .replaceAll("2", antecedent.getExp().toString())
-                            .replaceAll("3", currentExp.toString()));
+                    expression = new Entailment(
+                            new Entailment(
+                                    currentAssumption,
+                                    new Entailment(
+                                            antecedent.getExp(),
+                                            currentExp
+                                    )
+                            ),
+                            new Entailment(
+                                    currentAssumption,
+                                    currentExp
+                            )
+                    );
                     newProof.addExpression(expression, null);
-                    expression = parser.parse("(1)->(3)"
-                            .replaceAll("1", currentAssumption.toString())
-                            .replaceAll("3", currentExp.toString()));
+                    expression = new Entailment(currentAssumption, currentExp);
                     newProof.addExpression(expression, null);
                 } else if (statementType.getClass() == PredicateAxiom.class) {
                     Expression expr = statement.getExp();
@@ -157,11 +210,11 @@ public class HashDeductor implements Deductor {
                                 ((Entailment) currentExp).getLeft() instanceof Exists) {
                             Entailment entailment = (Entailment) currentExp;
                             Exists exists = (Exists) entailment.getLeft();
-                            Expression prev = proofedMap.get(
+                            Expression prev = proof.getAll(
                                     new Entailment(
                                             exists.getExp(),
                                             entailment.getRight()
-                                    ).toString());
+                                    )).getExp();
                             Term var = exists.getVariable();
                             boolean cond = (prev != null);
                             if (cond) {
@@ -177,11 +230,22 @@ public class HashDeductor implements Deductor {
                                             DenialReason.ERROR_3.create(line, "правило", var.getName(), getHypoExp(var, assumptions).toString(), prev.toString(), currentExp.toString())
                                     );
                                 }
+                                /*
                                 for (ExistsRule rule : ExistsRule.values()) {
                                     newProof.addExpression(rule.replace(currentAssumption,
                                             exists.getExp(),
                                             entailment.getRight(), var), null);
                                 }
+                                */
+                                ExistsRule.addExistsProof1(currentAssumption,
+                                        exists.getExp(),
+                                        entailment.getRight(), var, newProof);
+                                ExistsRule.addExistsProof2(currentAssumption,
+                                        exists.getExp(),
+                                        entailment.getRight(), var, newProof);
+                                ExistsRule.addExistsProof3(currentAssumption,
+                                        exists.getExp(),
+                                        entailment.getRight(), var, newProof);
                             }
                         } else {
                             throw new IllegalStateException("Illegal exists derivation rule");
@@ -189,11 +253,11 @@ public class HashDeductor implements Deductor {
                     } else if (statementType.getClass() == ForAllDerivationRule.class) {
                         if (currentExp instanceof Entailment &&
                                 ((Entailment) currentExp).getRight() instanceof ForAll) {
-                            Expression prev = proofedMap.get(
+                            Expression prev = proof.getAll(
                                     new Entailment(
                                             ((Entailment) currentExp).getLeft(),
                                             ((ForAll) ((Entailment) currentExp).getRight()).getExp()
-                                    ).toString());
+                                    )).getExp();
                             Term var = ((ForAll) ((Entailment) currentExp).getRight()).getVariable();
                             boolean cond = (prev != null);
                             if (cond) {
@@ -209,18 +273,23 @@ public class HashDeductor implements Deductor {
                                             DenialReason.ERROR_3.create(line, "правило", var.getName(), getHypoExp(var, assumptions).toString(), prev.toString(), currentExp.toString())
                                     );
                                 }
+                                /*
                                 for (ForAllRule rule : ForAllRule.values()) {
                                     newProof.addExpression(rule.replace(currentAssumption,
                                             ((Entailment) currentExp).getLeft(),
                                             ((ForAll) ((Entailment) currentExp).getRight()).getExp(), var), null);
                                 }
+                                */
+                                ForAllRule.addForAllProof(currentAssumption,
+                                        ((Entailment) currentExp).getLeft(),
+                                        ((ForAll) ((Entailment) currentExp).getRight()).getExp(),
+                                        var, newProof);
                             }
                         } else {
                             throw new IllegalStateException("Illegal for all derivation rule");
                         }
                     }
                 }
-                proofedMap.put(currentExp.toString(), currentExp);
             }
             proof = validator.validate(newProof, all);
             proof.check(proofed);

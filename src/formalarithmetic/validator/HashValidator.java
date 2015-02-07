@@ -388,7 +388,7 @@ public class HashValidator implements Validator {
                     }
 
                     if (found) {
-                        statement.setType(new InductionRule());
+                        statement.setType(InductionRule.INDUCTION_RULE);
                     }
                 }
 

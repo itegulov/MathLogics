@@ -36,6 +36,6 @@ public class HashDeductorTest {
 
     @Test
     public void testDeduct2() throws Exception {
-        System.out.println(deductor.deduct(new File("res/tests/fa_deductor_correct8.in"), null));
+        System.out.println(deductor.deduct(new File("res/tests/fa_deductor_correct11.in"), null));
     }
 }
