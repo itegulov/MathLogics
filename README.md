@@ -2,4 +2,6 @@ MathLogics
 ==========
 
 My mathlogics homework
-Realized first and second homework. Now working on the third
+
+
+HW1, HW2, HW3, HW4 are ready
