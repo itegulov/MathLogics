@@ -58,7 +58,8 @@ public class HashDeductor implements Deductor {
             assumptions[i] = new Statement(parser.parse(assumptionStrings[i]), new Assumption(), 0);
         }
         Validator validator = new HashValidator();
-        Proof proof = validator.validate(scanner, assumptions);
+        Proof proof;
+        proof = validator.validate(scanner, assumptions);
         return deduct(proof, assumptions, proofed);
     }
 
@@ -127,11 +128,6 @@ public class HashDeductor implements Deductor {
                             )
                     ), Axiom.AxiomOne);
                     newProof.addExpression(new Entailment(currentExp, currentExp), null);
-                    //newProof.addExpression(parser.parse("(1)->(1)->(1)".replaceAll("1", currentExp.toString())), null);
-                    //newProof.addExpression(parser.parse("((1)->((1)->(1)))->((1)->(((1)->(1))->(1)))->((1)->(1))".replaceAll("1", currentExp.toString())), null);
-                    //newProof.addExpression(parser.parse("((1)->(((1)->(1))->1))->((1)->(1))".replaceAll("1", currentExp.toString())), null);
-                    //newProof.addExpression(parser.parse("((1)->(((1)->(1))->(1)))".replaceAll("1", currentExp.toString())), null);
-                    //newProof.addExpression(parser.parse("(1)->(1)".replaceAll("1", currentExp.toString())), null);
                 } else if (statementType.getClass() == Axiom.class
                         || containsStatement(assumptions, statement)
                         || containsStatement(proofed, statement)) {
@@ -187,7 +183,7 @@ public class HashDeductor implements Deductor {
                     }
                     if (hyposVars.contains(var.getName())) {
                         throw new InvalidProofException(
-                            DenialReason.ERROR_4.create(line, var.getName(), getHypoExp(var, assumptions).toString(), expr.toString())
+                            DenialReason.ERROR_3.create(line, "схема аксиом", var.getName(), getHypoExp(var, assumptions).toString())
                         );
                     }
                     newProof.addExpression(currentExp, null);
@@ -227,16 +223,9 @@ public class HashDeductor implements Deductor {
                                 cond = !hyposVars.contains(var.getName());
                                 if (!cond) {
                                     throw new InvalidProofException(
-                                            DenialReason.ERROR_3.create(line, "правило", var.getName(), getHypoExp(var, assumptions).toString(), prev.toString(), currentExp.toString())
+                                            DenialReason.ERROR_3.create(line, "правило", var.getName(), getHypoExp(var, assumptions).toString())
                                     );
                                 }
-                                /*
-                                for (ExistsRule rule : ExistsRule.values()) {
-                                    newProof.addExpression(rule.replace(currentAssumption,
-                                            exists.getExp(),
-                                            entailment.getRight(), var), null);
-                                }
-                                */
                                 ExistsRule.addExistsProof1(currentAssumption,
                                         exists.getExp(),
                                         entailment.getRight(), var, newProof);
@@ -270,16 +259,9 @@ public class HashDeductor implements Deductor {
                                 cond = !hyposVars.contains(var.getName());
                                 if (!cond) {
                                     throw new InvalidProofException(
-                                            DenialReason.ERROR_3.create(line, "правило", var.getName(), getHypoExp(var, assumptions).toString(), prev.toString(), currentExp.toString())
+                                            DenialReason.ERROR_3.create(line, "правило", var.getName(), getHypoExp(var, assumptions).toString())
                                     );
                                 }
-                                /*
-                                for (ForAllRule rule : ForAllRule.values()) {
-                                    newProof.addExpression(rule.replace(currentAssumption,
-                                            ((Entailment) currentExp).getLeft(),
-                                            ((ForAll) ((Entailment) currentExp).getRight()).getExp(), var), null);
-                                }
-                                */
                                 ForAllRule.addForAllProof(currentAssumption,
                                         ((Entailment) currentExp).getLeft(),
                                         ((ForAll) ((Entailment) currentExp).getRight()).getExp(),

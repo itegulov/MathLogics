@@ -46,7 +46,11 @@ public class ArithmeticParser {
     public Expression parse(String expression) throws ParseException {
         ArithmeticParser.expression = expression.replaceAll("\\s+", "") + ";";
         index = 0;
-        return implication();
+        Expression e = implication();
+        if (index != expression.length()) {
+            throw new ParseException("Illegal character: " + expression.charAt(index));
+        }
+        return e;
     }
 
     protected Expression implication() throws ParseException {

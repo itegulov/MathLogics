@@ -41,16 +41,16 @@ public class HashValidator implements Validator {
     public Proof validate(@NotNull final FastLineScanner in, @Nullable final Statement[] assumptions) throws InvalidProofException {
         final Proof proof = new Proof();
         final ArithmeticParser expressionParser = new ArithmeticParser();
+        int line = 0;
         while (in.hasMore()) {
+            line++;
             final String s;
             s = in.next();
             try {
                 final Expression expression = expressionParser.parse(s);
                 proof.addExpression(expression, null);
             } catch (ParseException e) {
-                //Couldn't parse an structure.expressionession
-                proof.addExpression(null, new proof.Error());
-                return proof;
+                throw new InvalidProofException("Вывод некорректен начиная с формулы " + line);
             }
         }
         return validate(proof, assumptions);
@@ -407,7 +407,7 @@ public class HashValidator implements Validator {
                 //Couldn't match an axiom, match an assumption or apply Modus Ponens rule
                 statement.setType(new Error());
 
-                throw new InvalidProofException("Доказательство некорректно начиная с " + row + " высказывания: " + expression.toString());
+                throw new InvalidProofException("Вывод некорректен начиная с формулы номер " + row);
             } else {
                 proofed.put(statement.getExp().toString(), statement);
             }
