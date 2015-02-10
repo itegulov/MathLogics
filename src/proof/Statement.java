@@ -60,10 +60,10 @@ public final class Statement {
     }
 
     public String asSimpleString() {
-        return exp.toString();
+        return exp.toString() + " (" + type.toString() + ")";
     }
 
-    public Statement replaceAll(Map<Expression, Expression> replacement) {
+    public Statement replaceAll(Map<Integer, Expression> replacement) {
         return new Statement(exp.replaceAll(replacement), type, line);
     }
 

@@ -27,20 +27,8 @@ public final class Or extends BinaryOperator {
     }
 
     @Override
-    public Expression replaceAll(Map<Expression, Expression> replacement) {
-        Or or = new Or(null, null);
-        if (replacement.containsKey(left)) {
-            or.left = replacement.get(left);
-        } else {
-            or.left = left.replaceAll(replacement);
-        }
-
-        if (replacement.containsKey(right)) {
-            or.right = replacement.get(right);
-        } else {
-            or.right = right.replaceAll(replacement);
-        }
-        return or;
+    public Expression replaceAll(Map<Integer, Expression> replacement) {
+        return new Or(left.replaceAll(replacement), right.replaceAll(replacement));
     }
 
     @Override

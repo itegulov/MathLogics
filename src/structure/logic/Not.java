@@ -27,10 +27,7 @@ public final class Not extends UnaryOperator {
     }
 
     @Override
-    public Expression replaceAll(Map<Expression, Expression> replacement) {
-        if (replacement.containsKey(exp)) {
-            return new Not(replacement.get(exp));
-        }
+    public Expression replaceAll(Map<Integer, Expression> replacement) {
         return new Not(exp.replaceAll(replacement));
     }
 

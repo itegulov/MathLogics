@@ -2,10 +2,15 @@ package structure;
 
 import com.sun.istack.internal.NotNull;
 
+import exceptions.TreeMismatchException;
+import javafx.util.Pair;
 import structure.logic.Variable;
+import structure.predicate.Quantifier;
+import structure.predicate.Term;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Expression is the interface for all type of expressions met in the math logics.
@@ -13,7 +18,7 @@ import java.util.Map;
  * matched with other expressions.
  * @author  Daniyar Itegulov
  * @since %I% %G%
- * @version 1.2
+ * @version 1.3
  */
 public interface Expression extends Cloneable {
     /**
@@ -70,13 +75,7 @@ public interface Expression extends Cloneable {
      * results to <code>"new And(new Variable("a"), new Variable("b"))"</code>
      * @return          interpretation of expression if Java code
      */
-    public String toJavaCode();
-
-    /**
-     * Checks if this expression is binary
-     * @return          <code>true</code> if this expression is binary and false otherwise
-     */
-    public boolean isBinary();
+    String toJavaCode();
 
     /**
      * Checks if other expression suits this expression. Following rules are used:
@@ -90,29 +89,50 @@ public interface Expression extends Cloneable {
      * @param map       map, which specifies which expression collerates with variable
      * @return          <code>true</code> if other expression matches all rules
      */
-    public boolean matches(@NotNull Expression other, @NotNull Map<String, Expression> map);
+    boolean matches(@NotNull Expression other, @NotNull Map<String, Expression> map);
 
     /**
      * Converts expression to human-readable string
      * @return          human-readable string interpretation of expression
      */
-    public StringBuilder asString();
+    StringBuilder asString();
 
     /**
      * Finds all nodes in expression tree, which contained in map and replaces them with
      * appropriate new expression
      * @param replacement   map, which contains what expression you need to replace and what
      *                      expression you want it is to be replaced with
-     * @return
+     * @return              expression, with replaced nodes
      */
-    Expression replaceAll(Map<Expression, Expression> replacement);
+    Expression replaceAll(Map<Integer, Expression> replacement);
 
     /**
-     *
-     * @param hypothesis
-     * @return
+     * Proofs this expression in assumption with hypothesis
+     * @param hypothesis    assumption list
+     * @return              list of expression which contains proof of this expression
      */
     List<Expression> getParticularProof(List<Expression> hypothesis);
+
+    /**
+     * Gets set of free variables in expression
+     * @return          set consisting of free variable names
+     */
+    Set<String> getFreeVars();
+
+    /**
+     * Travels through expression tree and writes all quantifiers to set
+     * @param quantifiers   set, in which quantifiers will be written
+     */
+    void setQuantifiers(Set<String> quantifiers);
+
+    /**
+     * Gets count variables free occurrences count
+     * @param variableName  name of the variable to check
+     * @return              count of free occurrences
+     */
+    int markFreeVariableOccurrences(String variableName);
+
+    Set<Pair<Term, Term>> getReplacedVariableOccurrences(Expression originalExpr) throws TreeMismatchException;
 
     Object clone() throws CloneNotSupportedException;
 }

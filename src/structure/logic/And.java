@@ -28,20 +28,8 @@ public final class And extends BinaryOperator {
     }
 
     @Override
-    public Expression replaceAll(Map<Expression, Expression> replacement) {
-        And and = new And(null, null);
-        if (replacement.containsKey(left)) {
-            and.left = replacement.get(left);
-        } else {
-            and.left = left.replaceAll(replacement);
-        }
-
-        if (replacement.containsKey(right)) {
-            and.right = replacement.get(right);
-        } else {
-            and.right = right.replaceAll(replacement);
-        }
-        return and;
+    public Expression replaceAll(Map<Integer, Expression> replacement) {
+        return new And(left.replaceAll(replacement), right.replaceAll(replacement));
     }
 
     @Override

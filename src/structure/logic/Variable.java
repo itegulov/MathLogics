@@ -1,18 +1,19 @@
 package structure.logic;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import structure.AbstractExpression;
 import structure.Expression;
+import structure.predicate.Predicate;
+import structure.predicate.Quantifier;
+import structure.predicate.Term;
 
-public final class Variable extends AbstractExpression {
+public final class Variable extends Predicate {
     private String name;
     private Boolean currentValue;
 
     public Variable(String name) {
+        super(name);
         this.name = name;
     }
 
@@ -34,11 +35,6 @@ public final class Variable extends AbstractExpression {
         Map<String, Variable> map = new HashMap<>();
         map.put(name, this);
         return map;
-    }
-
-    @Override
-    public boolean isBinary() {
-        return false;
     }
 
     @Override
@@ -64,7 +60,7 @@ public final class Variable extends AbstractExpression {
     }
 
     @Override
-    public Expression replaceAll(Map<Expression, Expression> replacement) {
+    public Expression replaceAll(Map<Integer, Expression> replacement) {
         try {
             return (Expression) clone();
         } catch (CloneNotSupportedException e) {

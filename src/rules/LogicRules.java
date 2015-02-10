@@ -1,12 +1,12 @@
 package rules;
 
 import proof.Proof;
-import validator.HashValidator;
+import propositionallogic.validator.HashValidator;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 
-public class LogicRules {
+public final class LogicRules {
     public static final Proof CONTRAPOSITION_RULE_PROOF;
 
     static {

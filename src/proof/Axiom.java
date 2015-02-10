@@ -1,8 +1,7 @@
 package proof;
 
-import structure.AbstractExpression;
 import structure.Expression;
-import parser.ExpressionParser;
+import parser.LogicParser;
 import parser.ParseException;
 import parser.Parser;
 
@@ -10,15 +9,15 @@ import java.util.HashMap;
 
 public enum Axiom implements StatementType {
     //TODO: javadoc
-    AxiomOne("a->b->a",1), AxiomTwo("(a->b)->(a->b->c)->(a->c)", 2), AxiomThree("a->b->a&b", 3), AxiomFour("a&b->a", 4), AxiomFive("a&b->b", 5),
-    AxiomSix("a->a|b", 6), AxiomSeven("b->a|b", 7), AxiomEight("(a->c)->(b->c)->(a|b->c)", 8), AxiomNine("(a->b)->(a->!b)->!a", 9), AxiomTen("!!a->a", 10);
+    AxiomOne("A->B->A",1), AxiomTwo("(A->B)->(A->B->C)->(A->C)", 2), AxiomThree("A->B->A&B", 3), AxiomFour("A&B->A", 4), AxiomFive("A&B->B", 5),
+    AxiomSix("A->A|B", 6), AxiomSeven("B->A|B", 7), AxiomEight("(A->C)->(B->C)->(A|B->C)", 8), AxiomNine("(A->B)->(A->!B)->!A", 9), AxiomTen("!!A->A", 10);
 
 
     private Expression exp;
     private int number;
 
     Axiom(String s, int number) {
-        Parser<Expression> expressionParser = new ExpressionParser();
+        Parser<Expression> expressionParser = new LogicParser();
         try {
             exp = expressionParser.parse(s);
             this.number = number;
@@ -28,7 +27,7 @@ public enum Axiom implements StatementType {
     }
 
     public boolean matches(Expression other) {
-        return exp.matches(other, new HashMap<String, Expression>());
+        return exp.matches(other, new HashMap<>());
     }
 
     public int getNumber() {

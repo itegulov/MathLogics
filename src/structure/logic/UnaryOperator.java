@@ -2,9 +2,13 @@ package structure.logic;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import exceptions.TreeMismatchException;
+import javafx.util.Pair;
 import structure.AbstractExpression;
 import structure.Expression;
+import structure.predicate.Term;
 
 public abstract class UnaryOperator extends AbstractExpression {
     protected Expression exp;
@@ -21,11 +25,6 @@ public abstract class UnaryOperator extends AbstractExpression {
     }
 
     protected abstract boolean operation(boolean a);
-
-    @Override
-    public boolean isBinary() {
-        return false;
-    }
 
     @Override
     public boolean matches(Expression other, Map<String, Expression> map) {
@@ -70,5 +69,28 @@ public abstract class UnaryOperator extends AbstractExpression {
     @Override
     public List<Expression> getParticularProof(List<Expression> hypothesis) {
         return exp.getParticularProof(hypothesis);
+    }
+
+    @Override
+    public void setQuantifiers(Set<String> quantifiers) {
+        exp.setQuantifiers(quantifiers);
+    }
+
+    @Override
+    public Set<String> getFreeVars() {
+        return exp.getFreeVars();
+    }
+
+    @Override
+    public int markFreeVariableOccurrences(String variableName) {
+        return exp.markFreeVariableOccurrences(variableName);
+    }
+
+    @Override
+    public Set<Pair<Term, Term>> getReplacedVariableOccurrences(Expression originalExpr) throws TreeMismatchException {
+        if (!hasSameType(originalExpr)) {
+            throw new TreeMismatchException(originalExpr, this);
+        }
+        return exp.getReplacedVariableOccurrences(((UnaryOperator) originalExpr).exp);
     }
 }
