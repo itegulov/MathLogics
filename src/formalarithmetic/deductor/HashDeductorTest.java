@@ -1,6 +1,7 @@
 package formalarithmetic.deductor;
 
 import exceptions.InvalidProofException;
+import interfaces.Deductor;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;

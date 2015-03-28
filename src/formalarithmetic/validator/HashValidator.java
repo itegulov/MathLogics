@@ -1,10 +1,9 @@
 package formalarithmetic.validator;
 
-import com.sun.istack.internal.NotNull;
-import com.sun.istack.internal.Nullable;
 import exceptions.DenialReason;
 import exceptions.InvalidProofException;
 import exceptions.TreeMismatchException;
+import interfaces.Validator;
 import javafx.util.Pair;
 import parser.ArithmeticParser;
 import parser.ParseException;
@@ -27,18 +26,18 @@ import java.util.*;
 public class HashValidator implements Validator {
 
     @Override
-    public Proof validate(@NotNull final File f) throws FileNotFoundException, InvalidProofException {
+    public Proof validate(final File f) throws FileNotFoundException, InvalidProofException {
         return validate(f, null);
     }
 
     @Override
-    public Proof validate(@NotNull final File f, @Nullable final Statement[] assumptions) throws FileNotFoundException, InvalidProofException {
+    public Proof validate(final File f, final Statement[] assumptions) throws FileNotFoundException, InvalidProofException {
         final FastLineScanner in = new FastLineScanner(f);
         return validate(in, assumptions);
     }
 
     @Override
-    public Proof validate(@NotNull final FastLineScanner in, @Nullable final Statement[] assumptions) throws InvalidProofException {
+    public Proof validate(final FastLineScanner in, final Statement[] assumptions) throws InvalidProofException {
         final Proof proof = new Proof();
         final ArithmeticParser expressionParser = new ArithmeticParser();
         int line = 0;

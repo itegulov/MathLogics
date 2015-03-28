@@ -1,6 +1,7 @@
 package propositionallogic.proofer;
 
-import propositionallogic.deductor.Deductor;
+import exceptions.InvalidProofException;
+import interfaces.Deductor;
 import propositionallogic.deductor.HashDeductor;
 import parser.LogicParser;
 import parser.ParseException;
@@ -45,7 +46,11 @@ public final class TertiumNonDaturProofer implements Proofer {
             for (Expression expression : list) {
                 proof1.addExpression(expression, null);
             }
-            proof1 = deductor.deduct(proof1, new Statement[]{hypothesis.get(pos)}, all);
+            try {
+                proof1 = deductor.deduct(proof1, new Statement[]{hypothesis.get(pos)}, all);
+            } catch (InvalidProofException e) {
+                throw new IllegalStateException("Generated proof is invalid");
+            }
             hypothesis.set(pos, notVar);
             proof2 = new Proof();
             for (Statement st : proofed) {
@@ -59,14 +64,26 @@ public final class TertiumNonDaturProofer implements Proofer {
             for (Expression expression : list) {
                 proof2.addExpression(expression, null);
             }
-            proof2 = deductor.deduct(proof2, new Statement[]{hypothesis.get(pos)}, all);
+            try {
+                proof2 = deductor.deduct(proof2, new Statement[]{hypothesis.get(pos)}, all);
+            } catch (InvalidProofException e) {
+                throw new IllegalStateException("Generated proof is invalid");
+            }
         } else {
             proof1 = getProof(toProve, hypothesis, pos + 1);
             proof1 = new HashValidator().validate(proof1, proofed);
-            proof1 = deductor.deduct(proof1, new Statement[]{hypothesis.get(pos)}, all);
+            try {
+                proof1 = deductor.deduct(proof1, new Statement[]{hypothesis.get(pos)}, all);
+            } catch (InvalidProofException e) {
+                throw new IllegalStateException("Generated proof is invalid");
+            }
             hypothesis.set(pos, notVar);
             proof2 = getProof(toProve, hypothesis, pos + 1);
-            proof2 = deductor.deduct(proof2, new Statement[]{hypothesis.get(pos)}, all);
+            try {
+                proof2 = deductor.deduct(proof2, new Statement[]{hypothesis.get(pos)}, all);
+            } catch (InvalidProofException e) {
+                throw new IllegalStateException("Generated proof is invalid");
+            }
         }
         proof.addProof(proof1);
         proof.addProof(proof2);

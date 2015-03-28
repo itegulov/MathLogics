@@ -1,16 +1,16 @@
 package propositionallogic.deductor;
 
-import com.sun.istack.internal.NotNull;
-import com.sun.istack.internal.Nullable;
-import structure.logic.Entailment;
-import structure.Expression;
+import exceptions.InvalidProofException;
+import interfaces.Deductor;
+import interfaces.Validator;
 import parser.LogicParser;
 import parser.ParseException;
 import parser.Parser;
 import proof.*;
-import scanner.FastLineScanner;
 import propositionallogic.validator.HashValidator;
-import propositionallogic.validator.Validator;
+import scanner.FastLineScanner;
+import structure.Expression;
+import structure.logic.Entailment;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -18,7 +18,7 @@ import java.io.FileNotFoundException;
 public final class HashDeductor implements Deductor {
     //TODO: javadoc
 
-    private boolean containsStatement(@NotNull final Statement[] proofed, @NotNull final Statement statement) {
+    private boolean containsStatement(final Statement[] proofed, final Statement statement) {
         if (proofed == null) {
             return false;
         }
@@ -31,7 +31,7 @@ public final class HashDeductor implements Deductor {
     }
 
     @Override
-    public Proof deduct(@NotNull final File f, @Nullable final Statement[] proofed) throws FileNotFoundException, ParseException {
+    public Proof deduct(final File f, final Statement[] proofed) throws FileNotFoundException, ParseException, InvalidProofException {
         FastLineScanner scanner = new FastLineScanner(f);
         Parser<Expression> parser = new LogicParser();
 
@@ -48,7 +48,7 @@ public final class HashDeductor implements Deductor {
     }
 
     @Override
-    public Proof deduct(@NotNull Proof proof, @NotNull final Statement[] assumptions, @Nullable final Statement[] proofed) throws ParseException {
+    public Proof deduct(Proof proof, final Statement[] assumptions, final Statement[] proofed) throws ParseException, InvalidProofException {
         Validator validator = new HashValidator();
         Statement[] all;
         if (proofed != null) {
@@ -107,22 +107,5 @@ public final class HashDeductor implements Deductor {
             proof.check(proofed);
         }
         return proof;
-    }
-
-    public static void main(String[] args) {
-        if (args.length != 0) {
-            System.out.println("Illegal count of arguments");
-            return;
-        }
-        File f = new File("test.in");
-        Deductor d = new HashDeductor();
-        try {
-            Proof proof = d.deduct(f, null);
-            System.out.println(proof);
-        } catch (FileNotFoundException e) {
-            System.out.println("No such file");
-        } catch (ParseException e) {
-            System.out.println(e.getMessage());
-        }
     }
 }

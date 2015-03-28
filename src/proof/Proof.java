@@ -2,6 +2,7 @@ package proof;
 
 import com.sun.istack.internal.NotNull;
 import com.sun.istack.internal.Nullable;
+import exceptions.InvalidProofException;
 import functional.SupplierThatThrows;
 import parser.LogicParser;
 import structure.logic.BinaryOperator;
@@ -10,7 +11,7 @@ import parser.ParseException;
 import parser.Parser;
 import scanner.FastLineScanner;
 import propositionallogic.validator.HashValidator;
-import propositionallogic.validator.Validator;
+import interfaces.Validator;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -85,8 +86,19 @@ public final class Proof {
 
         Proof proof = (Proof) o;
         Validator validator = new HashValidator();
-        Proof otherValidated = validator.validate(proof, null);
-        Proof myValidated = validator.validate(this, null);
+        //TODO: do something with it!
+        Proof otherValidated = null;
+        try {
+            otherValidated = validator.validate(proof, null);
+        } catch (InvalidProofException e) {
+            e.printStackTrace();
+        }
+        Proof myValidated = null;
+        try {
+            myValidated = validator.validate(this, null);
+        } catch (InvalidProofException e) {
+            e.printStackTrace();
+        }
         int errorCount = 0;
         for (int i = 0; i < myValidated.getStatements().size(); i++) {
             if (myValidated.getStatements().get(i).getType().getClass() == Error.class) {

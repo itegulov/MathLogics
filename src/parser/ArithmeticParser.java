@@ -10,7 +10,7 @@ import structure.predicate.Term;
 
 import java.util.ArrayList;
 
-public class ArithmeticParser {
+public final class ArithmeticParser {
     private static String expression;
     private static int index;
 

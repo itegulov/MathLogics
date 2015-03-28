@@ -1,11 +1,10 @@
 package formalarithmetic.deductor;
 
-import com.sun.istack.internal.NotNull;
-import com.sun.istack.internal.Nullable;
 import exceptions.DenialReason;
 import exceptions.InvalidProofException;
 import formalarithmetic.validator.HashValidator;
-import formalarithmetic.validator.Validator;
+import interfaces.Deductor;
+import interfaces.Validator;
 import parser.ArithmeticParser;
 import parser.ParseException;
 import proof.*;
@@ -20,11 +19,12 @@ import structure.predicate.Term;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 public class HashDeductor implements Deductor {
     //TODO: optimize
-    private boolean containsStatement(@NotNull final Statement[] proofed, @NotNull final Statement statement) {
+    private boolean containsStatement(final Statement[] proofed, final Statement statement) {
         if (proofed == null) {
             return false;
         }
@@ -46,7 +46,7 @@ public class HashDeductor implements Deductor {
     }
 
     @Override
-    public Proof deduct(@NotNull File f, @Nullable Statement[] proofed) throws FileNotFoundException, ParseException, InvalidProofException {
+    public Proof deduct(File f, Statement[] proofed) throws FileNotFoundException, ParseException, InvalidProofException {
         FastLineScanner scanner = new FastLineScanner(f);
         ArithmeticParser parser = new ArithmeticParser();
 
@@ -64,7 +64,7 @@ public class HashDeductor implements Deductor {
     }
 
     @Override
-    public Proof deduct(@NotNull Proof proof, @NotNull Statement[] assumptions, @Nullable Statement[] proofed) throws ParseException, InvalidProofException {
+    public Proof deduct(Proof proof, Statement[] assumptions, Statement[] proofed) throws ParseException, InvalidProofException {
         Validator validator = new HashValidator();
         Statement[] all;
         if (proofed != null) {

@@ -2,11 +2,14 @@ package propositionallogic.validator;
 
 import com.sun.istack.internal.NotNull;
 import com.sun.istack.internal.Nullable;
-import structure.Expression;
-import parser.*;
+import interfaces.Validator;
+import parser.LogicParser;
+import parser.ParseException;
+import parser.Parser;
 import proof.*;
 import proof.Error;
 import scanner.FastLineScanner;
+import structure.Expression;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -36,7 +39,7 @@ public final class HashValidator implements Validator {
                 final Expression expression = expressionParser.parse(s);
                 proof.addExpression(expression, null);
             } catch (ParseException e) {
-                //Couldn't parse an structure.expression
+                //Couldn't parse a structure.expression
                 proof.addExpression(null, new Error());
                 return proof;
             }
