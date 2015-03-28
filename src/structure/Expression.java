@@ -1,11 +1,8 @@
 package structure;
 
-import com.sun.istack.internal.NotNull;
-
 import exceptions.TreeMismatchException;
 import javafx.util.Pair;
 import structure.logic.Variable;
-import structure.predicate.Quantifier;
 import structure.predicate.Term;
 
 import java.util.List;
@@ -13,12 +10,10 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Expression is the interface for all type of expressions met in the math logics.
- * Expressions can be evaluated, generate Java code, can be converted to string,
- * matched with other expressions.
+ * Interface for all type of expressions, met in the math logic theories.
+ * It provides easy way to work with them.
+ *
  * @author  Daniyar Itegulov
- * @since %I% %G%
- * @version 1.3
  */
 public interface Expression extends Cloneable {
     /**
@@ -28,7 +23,7 @@ public interface Expression extends Cloneable {
      * @param args      a Map, which specifies what values were given to variables
      * @return          result of evaluating the expression
     */
-    boolean evaluate(@NotNull Map<String, Boolean> args);
+    boolean evaluate(Map<String, Boolean> args);
 
     /**
      * Evaluate using known information (works only in particular cases, for example
@@ -43,7 +38,7 @@ public interface Expression extends Cloneable {
      * @param other     expression, which needs, to be checked
      * @return          <code>true</code> if other expression coincide with this
      */
-    boolean match(@NotNull Expression other);
+    boolean match(Expression other);
 
     /**
      * Checks if other expression and this expression represent expressions, which coincide
@@ -51,7 +46,7 @@ public interface Expression extends Cloneable {
      * @param other     expression, which needs, to be checked
      * @return          <code>true</code> if other expression coincide with this
      */
-    boolean treeMatch(@NotNull Expression other);
+    boolean treeMatch(Expression other);
 
     /**
      * Checks if other expression and this expression has same exactly the same type
@@ -59,7 +54,7 @@ public interface Expression extends Cloneable {
      * @return          <code>true</code> if other expression's and this expression's types
      *                  coincide
      */
-    boolean hasSameType(@NotNull Expression other);
+    boolean hasSameType(Expression other);
 
     /**
      * Returns all variables names and some one node of all variable nodes, which have this name
@@ -89,7 +84,7 @@ public interface Expression extends Cloneable {
      * @param map       map, which specifies which expression collerates with variable
      * @return          <code>true</code> if other expression matches all rules
      */
-    boolean matches(@NotNull Expression other, @NotNull Map<String, Expression> map);
+    boolean matches(Expression other, Map<String, Expression> map);
 
     /**
      * Converts expression to human-readable string

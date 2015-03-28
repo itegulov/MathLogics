@@ -10,7 +10,7 @@ import structure.predicate.Term;
 
 import java.util.ArrayList;
 
-public final class ArithmeticParser {
+public final class ArithmeticParser implements Parser<Expression> {
     private static String expression;
     private static int index;
 
@@ -43,6 +43,7 @@ public final class ArithmeticParser {
         return new Term(value);
     }
 
+    @Override
     public Expression parse(String expression) throws ParseException {
         ArithmeticParser.expression = expression.replaceAll("\\s+", "") + ";";
         index = 0;

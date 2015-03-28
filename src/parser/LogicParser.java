@@ -4,6 +4,10 @@ import com.sun.istack.internal.NotNull;
 import structure.Expression;
 import structure.logic.*;
 
+/**
+ * Implementation of {@link Parser}, that
+ * //TODO: javadoc it
+ */
 public final class LogicParser implements Parser<Expression> {
     private String s;
     private int next;

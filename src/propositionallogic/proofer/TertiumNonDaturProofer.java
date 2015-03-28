@@ -2,15 +2,21 @@ package propositionallogic.proofer;
 
 import exceptions.InvalidProofException;
 import interfaces.Deductor;
-import propositionallogic.deductor.HashDeductor;
+import interfaces.Proofer;
 import parser.LogicParser;
 import parser.ParseException;
 import parser.Parser;
-import proof.*;
+import proof.Assumption;
+import proof.Proof;
+import proof.Statement;
+import propositionallogic.deductor.HashDeductor;
+import propositionallogic.validator.HashValidator;
 import rules.LogicRules;
 import structure.Expression;
-import structure.logic.*;
-import propositionallogic.validator.HashValidator;
+import structure.logic.Entailment;
+import structure.logic.Not;
+import structure.logic.Or;
+import structure.logic.Variable;
 
 import java.util.*;
 

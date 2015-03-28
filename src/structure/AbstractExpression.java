@@ -1,7 +1,5 @@
 package structure;
 
-import java.util.Map;
-
 public abstract class AbstractExpression implements Expression {
     @Override
     public boolean match(Expression other) {

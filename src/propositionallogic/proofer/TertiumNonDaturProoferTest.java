@@ -1,5 +1,6 @@
 package propositionallogic.proofer;
 
+import interfaces.Proofer;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
