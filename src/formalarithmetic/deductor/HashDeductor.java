@@ -181,11 +181,13 @@ public class HashDeductor implements Deductor {
                     } else {
                         throw new IllegalStateException("Illegal predicate axiom");
                     }
+                    /*
                     if (hyposVars.contains(var.getName())) {
                         throw new InvalidProofException(
                             DenialReason.ERROR_3.create(line, "схема аксиом", var.getName(), getHypoExp(var, assumptions).toString())
                         );
                     }
+                    */
                     newProof.addExpression(currentExp, null);
                     newProof.addExpression(new Entailment(currentExp, new Entailment(currentAssumption, currentExp)), null);
                     Expression expression = new Entailment(currentAssumption, currentExp);

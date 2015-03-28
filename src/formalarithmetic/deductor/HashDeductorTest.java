@@ -7,17 +7,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import parser.ParseException;
-import proof.Assumption;
-import proof.Proof;
-import proof.Statement;
-import structure.logic.Entailment;
-import structure.logic.Variable;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.PrintWriter;
-
-import static org.junit.Assert.*;
 
 public class HashDeductorTest {
     private File file;
@@ -62,8 +54,8 @@ public class HashDeductorTest {
     @Test
     public void testDeductIncorrect4() throws InvalidProofException, FileNotFoundException, ParseException {
         exception.expect(InvalidProofException.class);
-        exception.expectMessage("Вывод некорректен, начиная с формулы номер 1: " +
-                "используется схема аксиом с квантором по переменной x, входящей свободно в допущение @x(P(x))&Q(x)");
+        exception.expectMessage("Вывод некорректен, начиная с формулы номер 2: " +
+                "используется правило с квантором по переменной x, входящей свободно в допущение @x(P(x))&Q(x)");
         System.out.println(deductor.deduct(new File("res/tests/formal_arithmetic_deductor/incorrect/incorrect4.in"), null));
     }
 
@@ -123,7 +115,7 @@ public class HashDeductorTest {
     
     @Test 
     public void testDeductGood() throws Exception {
-        //deductor.deduct(new File("res/tests/formal_arithmetic_deductor/correct/correct1.in"), null);
+        deductor.deduct(new File("res/tests/formal_arithmetic_deductor/correct/correct1.in"), null);
         deductor.deduct(new File("res/tests/formal_arithmetic_deductor/correct/correct2.in"), null);
         for (int i = 5; i <= 10; i++) {
             deductor.deduct(new File("res/tests/formal_arithmetic_deductor/correct/correct" + i + ".in"), null);
