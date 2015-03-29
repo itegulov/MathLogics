@@ -4,19 +4,19 @@ import structure.Expression;
 
 import java.util.Map;
 
-public final class Statement {
+public final class Statement<E extends Expression> {
     //TODO: javadoc
-    private Expression exp;
+    private E exp;
     private StatementType type;
     private int line;
 
-    public Statement(Expression exp, StatementType type, int line) {
+    public Statement(E exp, StatementType type, int line) {
         this.exp = exp;
         this.type = type;
         this.line = line;
     }
 
-    public Expression getExp() {
+    public E getExp() {
         return exp;
     }
 
@@ -56,18 +56,20 @@ public final class Statement {
         if (exp == null) {
             return type.toString();
         }
-        return "(" + line + ") " + exp.toString() + " (" + type.toString() + ")";
+        return "(" + line + ") " + asSimpleString();
     }
 
     public String asSimpleString() {
         return exp.toString() + " (" + type.toString() + ")";
     }
 
-    public Statement replaceAll(Map<Integer, Expression> replacement) {
-        return new Statement(exp.replaceAll(replacement), type, line);
+    public Statement<Expression> replaceAll(Map<Integer, Expression> replacement) {
+        return new Statement<>(exp.replaceAll(replacement), type, line);
     }
 
     public void setLine(int line) {
         this.line = line;
     }
+
+
 }

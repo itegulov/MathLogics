@@ -3,13 +3,13 @@ package structure.predicate;
 import com.sun.istack.internal.NotNull;
 import exceptions.TreeMismatchException;
 import javafx.util.Pair;
-import structure.AbstractExpression;
+import structure.AbstractFormalArithmeticExpression;
 import structure.Expression;
 import structure.logic.Variable;
 
 import java.util.*;
 
-public class Term extends AbstractExpression {
+public class Term extends AbstractFormalArithmeticExpression {
     public Set<String> quantifiers;
     public boolean isFree = false;
     public String name;
@@ -61,16 +61,6 @@ public class Term extends AbstractExpression {
 
     public boolean hasSameArgumentLength(Term t) {
         return t.arguments.length == arguments.length;
-    }
-
-    @Override
-    public boolean evaluate(@NotNull Map<String, Boolean> args) {
-        throw new IllegalStateException("cannot evaluate predicates");
-    }
-
-    @Override
-    public boolean evaluate() {
-        throw new IllegalStateException("cannot evaluate predicates");
     }
 
     @Override

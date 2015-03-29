@@ -1,16 +1,15 @@
 package structure.predicate;
 
-import com.sun.istack.internal.NotNull;
 import structure.Expression;
-import structure.logic.Variable;
+import structure.FormalArithmeticExpression;
 
 public final class Exists extends Quantifier {
-    public Exists(Term variable, Expression exp) {
+    public Exists(Term variable, FormalArithmeticExpression exp) {
         super(variable, exp, "?");
     }
 
     @Override
-    public boolean treeMatch(@NotNull Expression other) {
+    public boolean treeMatch(Expression other) {
         return hasSameType(other)
                 && variable.treeMatch(((Exists) other).variable)
                 && exp.treeMatch(((Exists) other).exp);

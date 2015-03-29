@@ -1,14 +1,12 @@
 package rules;
 
-import parser.ArithmeticParser;
-import parser.ParseException;
-import proof.Proof;
+import proof.LogicalProof;
 import structure.Expression;
 import structure.logic.*;
 import structure.predicate.*;
 
 public class ForAllRule {
-    public static void addForAllProof(Expression alpha, Expression e, Expression e1, Term variable, Proof proof) {
+    public static void addForAllProof(Expression alpha, Expression e, Expression e1, Term variable, LogicalProof proof) {
         proof.addExpression(new Entailment(new And(alpha, e), alpha), null);
         proof.addExpression(new Entailment(new Entailment(new And(alpha, e), alpha), new Entailment(new Entailment(alpha, new Entailment(e, e1)), new Entailment(new And(alpha, e), alpha))), null);
         proof.addExpression(new Entailment(new Entailment(alpha, new Entailment(e, e1)), new Entailment(new And(alpha, e), alpha)), null);

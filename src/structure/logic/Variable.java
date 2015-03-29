@@ -1,14 +1,15 @@
 package structure.logic;
 
-import java.util.*;
-
-import structure.AbstractExpression;
 import structure.Expression;
+import structure.LogicExpression;
 import structure.predicate.Predicate;
-import structure.predicate.Quantifier;
-import structure.predicate.Term;
 
-public final class Variable extends Predicate {
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public final class Variable extends Predicate implements LogicExpression {
     private String name;
     private Boolean currentValue;
 
@@ -60,13 +61,33 @@ public final class Variable extends Predicate {
     }
 
     @Override
-    public Expression replaceAll(Map<Integer, Expression> replacement) {
+    public LogicExpression replaceAll(Map<Integer, Expression> replacement) {
         try {
-            return (Expression) clone();
+            return (LogicExpression) clone();
         } catch (CloneNotSupportedException e) {
             e.printStackTrace();
             return null;
         }
+    }
+
+    @Override
+    public List<LogicExpression> getParticularProof(final List<LogicExpression> hypothesis) {
+        boolean f = false;
+        List<LogicExpression> list = new ArrayList<>();
+        if (hypothesis.contains(this)) {
+            currentValue = true;
+            if (!list.contains(this)) list.add(this);
+            f = true;
+        }
+        if (!f && hypothesis.contains(new Not(this))) {
+            currentValue = false;
+            if (!list.contains(new Not(this))) list.add(new Not(this));
+            f = true;
+        }
+        if (!f) {
+            throw new IllegalArgumentException("no such variable in hypothesis: " + name);
+        }
+        return list;
     }
 
     @Override
@@ -82,26 +103,6 @@ public final class Variable extends Predicate {
 
     public String getName() {
         return name;
-    }
-
-    @Override
-    public List<Expression> getParticularProof(List<Expression> hypothesis) {
-        boolean f = false;
-        List<Expression> list = new ArrayList<>();
-        if (hypothesis.contains(this)) {
-            currentValue = true;
-            if (!list.contains(this)) list.add(this);
-            f = true;
-        }
-        if (!f && hypothesis.contains(new Not(this))) {
-            currentValue = false;
-            if (!list.contains(new Not(this))) list.add(new Not(this));
-            f = true;
-        }
-        if (!f) {
-            throw new IllegalArgumentException("no such variable in hypothesis: " + name);
-        }
-        return list;
     }
 
     @Override

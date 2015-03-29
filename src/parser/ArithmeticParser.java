@@ -1,6 +1,6 @@
 package parser;
 
-import structure.Expression;
+import structure.FormalArithmeticExpression;
 import structure.arithmetics.*;
 import structure.logic.*;
 import structure.predicate.Exists;
@@ -10,7 +10,7 @@ import structure.predicate.Term;
 
 import java.util.ArrayList;
 
-public final class ArithmeticParser implements Parser<Expression> {
+public final class ArithmeticParser implements Parser<FormalArithmeticExpression> {
     private static String expression;
     private static int index;
 
@@ -44,18 +44,18 @@ public final class ArithmeticParser implements Parser<Expression> {
     }
 
     @Override
-    public Expression parse(String expression) throws ParseException {
+    public FormalArithmeticExpression parse(String expression) throws ParseException {
         ArithmeticParser.expression = expression.replaceAll("\\s+", "") + ";";
         index = 0;
-        Expression e = implication();
+        FormalArithmeticExpression e = implication();
         if (index != expression.length()) {
             throw new ParseException("Illegal character: " + expression.charAt(index));
         }
         return e;
     }
 
-    protected Expression implication() throws ParseException {
-        Expression s = Or();
+    protected FormalArithmeticExpression implication() throws ParseException {
+        FormalArithmeticExpression s = Or();
         char nextChar = getChar();
         if (nextChar == '-') {
             if (getChar() != '>')
@@ -67,8 +67,8 @@ public final class ArithmeticParser implements Parser<Expression> {
         return s;
     }
 
-    protected Expression Or() throws ParseException {
-        Expression l = And();
+    protected FormalArithmeticExpression Or() throws ParseException {
+        FormalArithmeticExpression l = And();
         char nextChar = getChar();
         while (nextChar == '|') {
             l = new Or(l, And());
@@ -78,8 +78,8 @@ public final class ArithmeticParser implements Parser<Expression> {
         return l;
     }
 
-    protected Expression And() throws ParseException {
-        Expression l = unary();
+    protected FormalArithmeticExpression And() throws ParseException {
+        FormalArithmeticExpression l = unary();
         char nextChar = getChar();
         while (nextChar == '&') {
             l = new And(l, unary());
@@ -89,7 +89,7 @@ public final class ArithmeticParser implements Parser<Expression> {
         return l;
     }
 
-    protected Expression unary() throws ParseException {
+    protected FormalArithmeticExpression unary() throws ParseException {
         char nextChar = getChar();
         if (Character.isLetter(nextChar) || Character.isDigit(nextChar)) {
             return predicate(Character.isUpperCase(nextChar));
@@ -97,7 +97,7 @@ public final class ArithmeticParser implements Parser<Expression> {
             return new Not(unary());
         } else if (nextChar == '(') {
             int saveIndex = index;
-            Expression result;
+            FormalArithmeticExpression result;
             try {
                 result = implication();
                 if (getChar() != ')') {
@@ -120,7 +120,7 @@ public final class ArithmeticParser implements Parser<Expression> {
         }
     }
 
-    protected Expression predicate(boolean firstCharIsUpperCase) throws ParseException {
+    protected FormalArithmeticExpression predicate(boolean firstCharIsUpperCase) throws ParseException {
         if (firstCharIsUpperCase) {
             int start = index - 1, end = index;
             char nextChar;

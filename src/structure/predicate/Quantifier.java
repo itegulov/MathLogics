@@ -3,20 +3,21 @@ package structure.predicate;
 import com.sun.istack.internal.NotNull;
 import exceptions.TreeMismatchException;
 import javafx.util.Pair;
-import structure.AbstractExpression;
+import structure.AbstractFormalArithmeticExpression;
 import structure.Expression;
+import structure.FormalArithmeticExpression;
 import structure.logic.Variable;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public abstract class Quantifier extends AbstractExpression {
+public abstract class Quantifier extends AbstractFormalArithmeticExpression {
     protected Term variable;
-    protected Expression exp;
+    protected FormalArithmeticExpression exp;
     protected String quantifierName;
 
-    public Quantifier(Term variable, Expression exp, String quantifierName) {
+    public Quantifier(Term variable, FormalArithmeticExpression exp, String quantifierName) {
         this.variable = variable;
         this.exp = exp;
         this.quantifierName = quantifierName;
@@ -27,16 +28,6 @@ public abstract class Quantifier extends AbstractExpression {
         Set<String> vars = exp.getFreeVars();
         vars.remove(variable.getName());
         return vars;
-    }
-
-    @Override
-    public boolean evaluate() {
-        throw new IllegalStateException("cannot evaluate expressions with quantifiers");
-    }
-
-    @Override
-    public boolean evaluate(@NotNull Map<String, Boolean> args) {
-        throw new IllegalStateException("cannot evaluate expressions with quantifiers");
     }
 
     @Override

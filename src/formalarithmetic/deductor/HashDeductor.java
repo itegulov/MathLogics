@@ -12,6 +12,7 @@ import rules.ExistsRule;
 import rules.ForAllRule;
 import scanner.FastLineScanner;
 import structure.Expression;
+import structure.FormalArithmeticExpression;
 import structure.logic.Entailment;
 import structure.predicate.Exists;
 import structure.predicate.ForAll;
@@ -36,8 +37,8 @@ public class HashDeductor implements Deductor {
         return false;
     }
 
-    private Expression getHypoExp(Term variable, Statement[] assumptions) {
-        for (Statement assumption : assumptions) {
+    private Expression getHypoExp(Term variable, Statement<FormalArithmeticExpression>[] assumptions) {
+        for (Statement<FormalArithmeticExpression> assumption : assumptions) {
             if (assumption.getExp().getFreeVars().contains(variable.getName())) {
                 return assumption.getExp();
             }
@@ -46,7 +47,7 @@ public class HashDeductor implements Deductor {
     }
 
     @Override
-    public Proof deduct(File f, Statement[] proofed) throws FileNotFoundException, ParseException, InvalidProofException {
+    public LogicalProof deduct(File f, Statement[] proofed) throws FileNotFoundException, ParseException, InvalidProofException {
         FastLineScanner scanner = new FastLineScanner(f);
         ArithmeticParser parser = new ArithmeticParser();
 
@@ -58,13 +59,13 @@ public class HashDeductor implements Deductor {
             assumptions[i] = new Statement(parser.parse(assumptionStrings[i]), new Assumption(), 0);
         }
         Validator validator = new HashValidator();
-        Proof proof;
+        LogicalProof proof;
         proof = validator.validate(scanner, assumptions);
         return deduct(proof, assumptions, proofed);
     }
 
     @Override
-    public Proof deduct(Proof proof, Statement[] assumptions, Statement[] proofed) throws ParseException, InvalidProofException {
+    public LogicalProof deduct(LogicalProof proof, Statement[] assumptions, Statement[] proofed) throws ParseException, InvalidProofException {
         Validator validator = new HashValidator();
         Statement[] all;
         if (proofed != null) {
@@ -83,7 +84,7 @@ public class HashDeductor implements Deductor {
             Expression currentAssumption = assumption.getExp();
             Set<String> hyposVars = new HashSet<>();
             hyposVars.addAll(assumption.getExp().getFreeVars());
-            Proof newProof = new Proof();
+            LogicalProof newProof = new LogicalProof();
             int line = 0;
             for (Statement statement : proof.getStatements()) {
                 line++;

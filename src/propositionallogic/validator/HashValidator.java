@@ -1,7 +1,5 @@
 package propositionallogic.validator;
 
-import com.sun.istack.internal.NotNull;
-import com.sun.istack.internal.Nullable;
 import interfaces.Validator;
 import parser.LogicParser;
 import parser.ParseException;
@@ -10,33 +8,34 @@ import proof.*;
 import proof.Error;
 import scanner.FastLineScanner;
 import structure.Expression;
+import structure.LogicExpression;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 
-public final class HashValidator implements Validator {
+public final class HashValidator implements Validator<LogicExpression> {
     //TODO: javadoc
 
     @Override
-    public Proof validate(@NotNull final File f) throws FileNotFoundException {
+    public Proof<LogicExpression> validate(final File f) throws FileNotFoundException {
         return validate(f, null);
     }
 
     @Override
-    public Proof validate(@NotNull final File f, @Nullable final Statement[] assumptions) throws FileNotFoundException {
+    public Proof<LogicExpression> validate(final File f, final Statement<LogicExpression>[] assumptions) throws FileNotFoundException {
         final FastLineScanner in = new FastLineScanner(f);
         return validate(in, assumptions);
     }
 
     @Override
-    public Proof validate(@NotNull final FastLineScanner in, @Nullable final Statement[] assumptions) {
-        final Proof proof = new Proof();
-        final Parser<Expression> expressionParser = new LogicParser();
+    public Proof<LogicExpression> validate(final FastLineScanner in, final Statement<LogicExpression>[] assumptions) {
+        final LogicalProof proof = new LogicalProof();
+        final Parser<LogicExpression> expressionParser = new LogicParser();
         while (in.hasMore()) {
             final String s;
             s = in.next();
             try {
-                final Expression expression = expressionParser.parse(s);
+                final LogicExpression expression = expressionParser.parse(s);
                 proof.addExpression(expression, null);
             } catch (ParseException e) {
                 //Couldn't parse a structure.expression
@@ -48,27 +47,15 @@ public final class HashValidator implements Validator {
     }
 
     @Override
-    public Proof validate(final Proof proof, final Statement[] assumptions) {
-        for (final Statement statement : proof.getStatements()) {
+    public Proof<LogicExpression> validate(final Proof<LogicExpression> proof, final Statement<LogicExpression>[] assumptions) {
+        for (final Statement<LogicExpression> statement : proof.getStatements()) {
             if (statement.getType() == null) {
                 final Expression expression = statement.getExp();
                 boolean found = false;
-                ModusPonens proofModusPonens = proof.findModusPonens(statement);
-                if (proofModusPonens != null) {
-                    statement.setType(proofModusPonens);
-                    found = true;
-                }
-                if (!found) {
-                    for (Axiom axiom : Axiom.values()) {
-                        if (axiom.matches(expression)) {
-                            statement.setType(axiom);
-                            found = true;
-                            break;
-                        }
-                    }
-                }
-
-                if (!found) {
+                StatementType statementType = proof.findBasis(statement);
+                if (!(statementType instanceof Error)) {
+                    statement.setType(statementType);
+                } else {
                     if (assumptions != null) {
                         for (Statement assumption : assumptions) {
                             if (assumption.getExp().equals(expression)) {
@@ -79,13 +66,10 @@ public final class HashValidator implements Validator {
                         }
                     }
                 }
-
-                if (found) {
-                    continue;
+                if (!found) {
+                    //Couldn't match an axiom, match an assumption or apply Modus Ponens rule
+                    statement.setType(new Error());
                 }
-
-                //Couldn't match an axiom, match an assumption or apply Modus Ponens rule
-                statement.setType(new Error());
             }
         }
         return proof;

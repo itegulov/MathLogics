@@ -1,16 +1,16 @@
 package rules;
 
-import proof.Proof;
+import proof.LogicalProof;
 import propositionallogic.validator.HashValidator;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 
 public final class LogicRules {
-    public static final Proof CONTRAPOSITION_RULE_PROOF;
+    public static final LogicalProof CONTRAPOSITION_RULE_PROOF;
 
     static {
-        Proof proof;
+        LogicalProof proof;
         HashValidator hashValidator = new HashValidator();
         try {
             proof = hashValidator.validate(new File("res/rules/contraposition_rule.proof"));
@@ -21,10 +21,10 @@ public final class LogicRules {
         CONTRAPOSITION_RULE_PROOF = proof;
     }
 
-    public static final Proof TERTIUM_NON_DATUR_PROOF;
+    public static final LogicalProof TERTIUM_NON_DATUR_PROOF;
 
     static {
-        Proof proof;
+        LogicalProof proof;
         HashValidator hashValidator = new HashValidator();
         try {
             proof = hashValidator.validate(new File("res/rules/tertium_non_datur.proof"));

@@ -1,7 +1,9 @@
 package interfaces;
 
 import parser.ParseException;
+import proof.LogicalProof;
 import proof.Proof;
+import structure.Expression;
 
 /**
  * Interface, providing way to proof some {@link structure.Expression}.
@@ -12,14 +14,14 @@ import proof.Proof;
  *
  * @author Daniyar Itegulov
  */
-public interface Proofer {
+public interface Proofer<E extends Expression> {
     /**
-     * Generates {@link Proof}, that proofs {@code statement} without any
+     * Generates {@link LogicalProof}, that proofs {@code statement} without any
      * assumptions.
      *
      * @param statement string, describing expression to proof
      * @return generated proof
      * @throws ParseException if {@code statement} is invalid expression
      */
-    Proof proof(String statement) throws ParseException;
+    Proof<E> proof(String statement) throws ParseException;
 }

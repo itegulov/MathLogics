@@ -2,14 +2,16 @@ package interfaces;
 
 import exceptions.InvalidProofException;
 import parser.ParseException;
+import proof.LogicalProof;
 import proof.Proof;
 import proof.Statement;
+import structure.Expression;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 
 /**
- * Interface, providing way to deduct some {@link proof.Proof}.
+ * Interface, providing way to deduct some {@link LogicalProof}.
  * It isn't bounded to some theory (propositional logic, formal
  * arithmetic or some other), so it's somehow general for all
  * math logic theories. But deduction theorem must be proofed
@@ -17,7 +19,7 @@ import java.io.FileNotFoundException;
  *
  * @author Daniyar Itegulov
  */
-public interface Deductor {
+public interface Deductor<E extends Expression> {
     /**
      * Deducts {@code file}, containing proof, consisting
      * of statements line by line. Assumes, that {@code proofed}
@@ -28,7 +30,7 @@ public interface Deductor {
      * A,B,...,C|-D
      * <p>
      * Which means, that D can be proofed if A,B,...,C are trusted to be
-     * true. Creates formal {@link proof.Proof}, which lifts all assumptions:
+     * true. Creates formal {@link LogicalProof}, which lifts all assumptions:
      * <p>
      * |-A->B->...->C->D
      *
@@ -41,7 +43,7 @@ public interface Deductor {
      * @throws InvalidProofException if proof, provided in {@code file} is
      * invalid
      */
-    Proof deduct(final File file, final Statement[] proofed) throws FileNotFoundException, ParseException, InvalidProofException;
+    Proof<E> deduct(final File file, final Statement<E>[] proofed) throws FileNotFoundException, ParseException, InvalidProofException;
 
     /**
      * Deducts {@code proof} with left-turnstile elements {@code assumptions}.
@@ -56,5 +58,5 @@ public interface Deductor {
      * @throws InvalidProofException
      * @see #deduct(File, Statement[])
      */
-    Proof deduct(final Proof proof, final Statement[] assumptions, final Statement[] proofed) throws ParseException, InvalidProofException;
+    Proof<E> deduct(final Proof<E> proof, final Statement<E>[] assumptions, final Statement<E>[] proofed) throws ParseException, InvalidProofException;
 }

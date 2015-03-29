@@ -45,7 +45,7 @@ public class HashValidatorTest {
         pw.println("!!A->A");
         pw.close();
 
-        Proof proof = new Proof("A->B->A (сх. акс. 1)\n" +
+        LogicalProof proof = new LogicalProof("A->B->A (сх. акс. 1)\n" +
                 "(A->B)->(A->B->C)->(A->C) (сх. акс. 2)\n" +
                 "A->B->A&B (сх. акс. 3)\n" +
                 "A&B->A (сх. акс. 4)\n" +
@@ -74,7 +74,7 @@ public class HashValidatorTest {
         );
         pw.close();
 
-        Proof proof = validator.validate(file);
+        LogicalProof proof = validator.validate(file);
 
         List<Statement> statementList = new ArrayList<>();
         statementList.add(new Statement(parser.parse("Q(a)->?aQ(a)"), PredicateAxiom.AXIOM_EXISTS, 0));
@@ -117,7 +117,7 @@ public class HashValidatorTest {
         );
         pw.close();
 
-        Proof proof = validator.validate(file);
+        LogicalProof proof = validator.validate(file);
 
         List<Statement> statementList = new ArrayList<>();
         statementList.add(new Statement(parser.parse("Q(b)->P(a)->Q(b)"), Axiom.AxiomOne, 0));
@@ -134,7 +134,7 @@ public class HashValidatorTest {
         );
         pw.close();
 
-        Proof proof = validator.validate(file);
+        LogicalProof proof = validator.validate(file);
         List<Statement> statementList = new ArrayList<>();
         statementList.add(new Statement(parser.parse("(x'+0=(x+0)')&@y(((x)'+y=(x+y)')->((x)'+(y)'=(x+(y)')'))->((x)'+y=(x+y)')"), InductionRule.INDUCTION_RULE, 0));
         statementList.add(new Statement(parser.parse("P(0)&@x123 (P(x123) -> P(x123')) -> P(x123)"), InductionRule.INDUCTION_RULE, 1));

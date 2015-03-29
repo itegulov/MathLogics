@@ -1,13 +1,8 @@
 package structure;
 
-import exceptions.TreeMismatchException;
-import javafx.util.Pair;
 import structure.logic.Variable;
-import structure.predicate.Term;
 
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Interface for all type of expressions, met in the math logic theories.
@@ -16,22 +11,6 @@ import java.util.Set;
  * @author  Daniyar Itegulov
  */
 public interface Expression extends Cloneable {
-    /**
-     * Returns the result of evaluating the expression. Variable values must be
-     * specified in {@link java.util.Map}. Throws {@link java.lang.IllegalArgumentException}
-     * if some variables value hasn't been specified.
-     * @param args      a Map, which specifies what values were given to variables
-     * @return          result of evaluating the expression
-    */
-    boolean evaluate(Map<String, Boolean> args);
-
-    /**
-     * Evaluate using known information (works only in particular cases, for example
-     * after assigning all variables in expression some value through setCurrentValue
-     * @return          result of evaluating the expression
-     */
-    boolean evaluate();
-
     /**
      * Checks if other expression and this expression represent expressions, which coincide
      * character by character in string representation
@@ -100,34 +79,6 @@ public interface Expression extends Cloneable {
      * @return              expression, with replaced nodes
      */
     Expression replaceAll(Map<Integer, Expression> replacement);
-
-    /**
-     * Proofs this expression in assumption with hypothesis
-     * @param hypothesis    assumption list
-     * @return              list of expression which contains proof of this expression
-     */
-    List<Expression> getParticularProof(List<Expression> hypothesis);
-
-    /**
-     * Gets set of free variables in expression
-     * @return          set consisting of free variable names
-     */
-    Set<String> getFreeVars();
-
-    /**
-     * Travels through expression tree and writes all quantifiers to set
-     * @param quantifiers   set, in which quantifiers will be written
-     */
-    void setQuantifiers(Set<String> quantifiers);
-
-    /**
-     * Gets count variables free occurrences count
-     * @param variableName  name of the variable to check
-     * @return              count of free occurrences
-     */
-    int markFreeVariableOccurrences(String variableName);
-
-    Set<Pair<Term, Term>> getReplacedVariableOccurrences(Expression originalExpr) throws TreeMismatchException;
 
     Object clone() throws CloneNotSupportedException;
 }

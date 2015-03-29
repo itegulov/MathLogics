@@ -1,25 +1,27 @@
 package interfaces;
 
 import exceptions.InvalidProofException;
+import proof.LogicalProof;
 import proof.Proof;
 import proof.Statement;
 import scanner.FastLineScanner;
+import structure.Expression;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 
 /**
- * Interface, providing way to validate some {@link proof.Proof}.
+ * Interface, providing way to validate some {@link LogicalProof}.
  * It isn't bounded to some theory (propositional logic, formal
  * arithmetic or some other), so it's somehow general for all
  * math logic theories.
  *
  * @author Daniyar Itegulov
  */
-public interface Validator {
+public interface Validator<E extends Expression> {
     /**
      * Validates {@code file}, containing proof, consisting
-     * of statements line by line. Creates formal {@link proof.Proof},
+     * of statements line by line. Creates formal {@link LogicalProof},
      * which match that one in the file.
      *
      * @param file file, containing proof
@@ -28,13 +30,13 @@ public interface Validator {
      * @throws InvalidProofException if {@code proof} contains invalid
      * proof: at least one statement has no suitable basis
      */
-    Proof validate(final File file) throws FileNotFoundException, InvalidProofException;
+    Proof<E> validate(final File file) throws FileNotFoundException, InvalidProofException;
 
     /**
      * Validates {@code file}, containing proof, consisting
      * of statements line by line. Assumes, that {@code assumptions}
      * contains {@link proof.Statement}, that can be trusted to be true.
-     * Creates formal {@link proof.Proof}, which match that one in the file
+     * Creates formal {@link LogicalProof}, which match that one in the file
      * ({@code assumptions} can be used)
      *
      * @param file file, containing proof
@@ -44,13 +46,13 @@ public interface Validator {
      * @throws InvalidProofException if {@code proof} contains invalid
      * proof: at least one statement has no suitable basis
      */
-    Proof validate(final File file, final Statement[] assumptions) throws FileNotFoundException, InvalidProofException;
+    Proof<E> validate(final File file, final Statement<E>[] assumptions) throws FileNotFoundException, InvalidProofException;
 
     /**
      * Validates left data from {@code in}, containing proof, consisting
      * of statements line by line. Assumes, that {@code assumptions}
      * contains {@link proof.Statement}, that can be trusted to be true.
-     * Creates formal {@link proof.Proof}, which match that one in the file
+     * Creates formal {@link LogicalProof}, which match that one in the file
      * ({@code assumptions} can be used)
      *
      * @param in fast line scanner, which contains proof data
@@ -59,7 +61,7 @@ public interface Validator {
      * @throws InvalidProofException if {@code proof} contains invalid
      * proof: at least one statement has no suitable basis
      */
-    Proof validate(final FastLineScanner in, final Statement[] assumptions) throws InvalidProofException;
+    Proof<E> validate(final FastLineScanner in, final Statement<E>[] assumptions) throws InvalidProofException;
 
     /**
      * Validates {@code proof}. If some {@link proof.Statement} from {@code proof} has
@@ -72,5 +74,5 @@ public interface Validator {
      * @throws InvalidProofException if {@code proof} contains invalid
      * proof: at least one statement has no suitable basis
      */
-    Proof validate(final Proof proof, final Statement[] assumptions) throws InvalidProofException;
+    Proof<E> validate(final Proof<E> proof, final Statement<E>[] assumptions) throws InvalidProofException;
 }

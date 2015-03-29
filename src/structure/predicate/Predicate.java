@@ -3,13 +3,14 @@ package structure.predicate;
 import com.sun.istack.internal.NotNull;
 import exceptions.TreeMismatchException;
 import javafx.util.Pair;
-import structure.AbstractExpression;
+import structure.AbstractFormalArithmeticExpression;
 import structure.Expression;
+import structure.FormalArithmeticExpression;
 import structure.logic.Variable;
 
 import java.util.*;
 
-public class Predicate extends AbstractExpression {
+public class Predicate extends AbstractFormalArithmeticExpression {
     protected String name;
     protected Term[] arguments;
 
@@ -30,16 +31,6 @@ public class Predicate extends AbstractExpression {
 
     public void setArguments(Term[] arguments) {
         this.arguments = arguments;
-    }
-
-    @Override
-    public boolean evaluate(@NotNull Map<String, Boolean> args) {
-        throw new IllegalStateException("cannot evaluate predicates");
-    }
-
-    @Override
-    public boolean evaluate() {
-        throw new IllegalStateException("cannot evaluate predicates");
     }
 
     @Override
@@ -110,11 +101,6 @@ public class Predicate extends AbstractExpression {
         }
         predicate.setArguments(args);
         return predicate;
-    }
-
-    @Override
-    public List<Expression> getParticularProof(List<Expression> hypothesis) {
-        throw new IllegalStateException("cannot proof predicate");
     }
 
     @Override

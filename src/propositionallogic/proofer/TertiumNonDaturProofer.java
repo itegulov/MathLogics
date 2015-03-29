@@ -7,12 +7,14 @@ import parser.LogicParser;
 import parser.ParseException;
 import parser.Parser;
 import proof.Assumption;
+import proof.LogicalProof;
 import proof.Proof;
 import proof.Statement;
 import propositionallogic.deductor.HashDeductor;
 import propositionallogic.validator.HashValidator;
 import rules.LogicRules;
 import structure.Expression;
+import structure.LogicExpression;
 import structure.logic.Entailment;
 import structure.logic.Not;
 import structure.logic.Or;
@@ -20,36 +22,36 @@ import structure.logic.Variable;
 
 import java.util.*;
 
-public final class TertiumNonDaturProofer implements Proofer {
-    private Deductor deductor = new HashDeductor();
-    private Parser<Expression> parser = new LogicParser();
-    private Statement[] proofed;
+public final class TertiumNonDaturProofer implements Proofer<LogicExpression> {
+    private Deductor<LogicExpression> deductor = new HashDeductor();
+    private Parser<LogicExpression> parser = new LogicParser();
+    private Statement<LogicExpression>[] proofed;
 
-    private Proof getProof(Expression toProve, List<Statement> hypothesis, int pos) throws ParseException {
-        Proof proof = new Proof();
-        Statement var = new Statement(hypothesis.get(pos).getExp(), new Assumption(), -1);
-        Statement notVar = new Statement(new Not(hypothesis.get(pos).getExp()), new Assumption(), -1);
+    private Proof<LogicExpression> getProof(LogicExpression toProve, List<Statement<LogicExpression>> hypothesis, int pos) throws ParseException {
+        LogicalProof proof = new LogicalProof();
+        Statement<LogicExpression> var = new Statement<>(hypothesis.get(pos).getExp(), new Assumption(), -1);
+        Statement<LogicExpression> notVar = new Statement<>(new Not(hypothesis.get(pos).getExp()), new Assumption(), -1);
 
-        Proof proof1;
-        Proof proof2;
+        Proof<LogicExpression> proof1;
+        Proof<LogicExpression> proof2;
 
-        Statement[] all = new Statement[proofed.length + pos];
+        Statement<LogicExpression>[] all = new Statement[proofed.length + pos];
         for (int i = 0; i < pos; i++) {
             all[i] = hypothesis.get(i);
         }
         System.arraycopy(proofed, 0, all, pos, proofed.length);
 
         if (pos == hypothesis.size() - 1) {
-            proof1 = new Proof();
+            proof1 = new LogicalProof();
             for (Statement st : proofed) {
                 proof1.addStatement(st);
             }
-            List<Expression> hypothesisExp = new ArrayList<>();
-            for (Statement st : hypothesis) {
+            List<LogicExpression> hypothesisExp = new ArrayList<>();
+            for (Statement<LogicExpression> st : hypothesis) {
                 hypothesisExp.add(st.getExp());
             }
-            List<Expression> list = toProve.getParticularProof(hypothesisExp);
-            for (Expression expression : list) {
+            List<LogicExpression> list = toProve.getParticularProof(hypothesisExp);
+            for (LogicExpression expression : list) {
                 proof1.addExpression(expression, null);
             }
             try {
@@ -58,16 +60,16 @@ public final class TertiumNonDaturProofer implements Proofer {
                 throw new IllegalStateException("Generated proof is invalid");
             }
             hypothesis.set(pos, notVar);
-            proof2 = new Proof();
-            for (Statement st : proofed) {
+            proof2 = new LogicalProof();
+            for (Statement<LogicExpression> st : proofed) {
                 proof2.addStatement(st);
             }
             hypothesisExp = new ArrayList<>();
-            for (Statement st : hypothesis) {
+            for (Statement<LogicExpression> st : hypothesis) {
                 hypothesisExp.add(st.getExp());
             }
             list = toProve.getParticularProof(hypothesisExp);
-            for (Expression expression : list) {
+            for (LogicExpression expression : list) {
                 proof2.addExpression(expression, null);
             }
             try {
@@ -105,9 +107,9 @@ public final class TertiumNonDaturProofer implements Proofer {
     }
 
     @Override
-    public Proof proof(String statement) throws ParseException {
-        Parser<Expression> parser = new LogicParser();
-        Expression expression = parser.parse(statement);
+    public Proof<LogicExpression> proof(String statement) throws ParseException {
+        Parser<LogicExpression> parser = new LogicParser();
+        LogicExpression expression = parser.parse(statement);
         Map<String, Variable> variables = expression.getVariables();
         Collection<Variable> variableValues = variables.values();
         int variablesCount = variables.size();
@@ -139,29 +141,19 @@ public final class TertiumNonDaturProofer implements Proofer {
                 throw new IllegalStateException(sb.toString());
             }
         }
-        Proof proof = new Proof();
-        List<Statement> proofedList = new ArrayList<>();
-        List<Statement> hypothesis = new ArrayList<>();
+        Proof<LogicExpression> proof = new LogicalProof();
+        List<Statement<LogicExpression>> proofedList = new ArrayList<>();
+        List<Statement<LogicExpression>> hypothesis = new ArrayList<>();
         for (Variable var : variableValues) {
             Map<Integer, Expression> expressionMap = new HashMap<>();
             expressionMap.put(1, var);
-            Proof newProof = LogicRules.TERTIUM_NON_DATUR_PROOF.replace(expressionMap);
+            Proof<LogicExpression> newProof = LogicRules.TERTIUM_NON_DATUR_PROOF.replace(expressionMap);
             proof.addProof(newProof);
             proofedList.add(newProof.getStatements().get(newProof.getStatements().size() - 1));
-            hypothesis.add(new Statement(var, new Assumption(), -1));
+            hypothesis.add(new Statement<>(var, new Assumption(), -1));
         }
         proofed = proofedList.toArray(new Statement[proofedList.size()]);
         proof.addProof(getProof(expression, hypothesis, 0));
         return proof;
-    }
-
-    public static void main(String[] args) {
-        try {
-            Proof proof = new TertiumNonDaturProofer().proof("!!(!!P->P)");
-            proof = new HashValidator().validate(proof, null);
-            System.out.println(proof);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
     }
 }

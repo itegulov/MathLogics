@@ -1,21 +1,22 @@
 package structure.logic;
 
+import exceptions.TreeMismatchException;
+import javafx.util.Pair;
+import structure.AbstractLogicExpression;
+import structure.Expression;
+import structure.LogicExpression;
+import structure.predicate.Term;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import exceptions.TreeMismatchException;
-import javafx.util.Pair;
-import structure.AbstractExpression;
-import structure.Expression;
-import structure.predicate.Term;
-
-public abstract class BinaryOperator extends AbstractExpression {
+public abstract class BinaryOperator extends AbstractLogicExpression {
     //TODO: javadoc
-    protected Expression left, right;
+    protected LogicExpression left, right;
     protected final String operationName;
 
-    public BinaryOperator(Expression left, Expression right, String operationName) {
+    public BinaryOperator(LogicExpression left, LogicExpression right, String operationName) {
         this.left = left;
         this.right = right;
         this.operationName = operationName;
@@ -62,11 +63,11 @@ public abstract class BinaryOperator extends AbstractExpression {
         return binaryOperator.left.equals(left) && binaryOperator.right.equals(right) && binaryOperator.operationName.equals(operationName);
     }
 
-    public Expression getLeft() {
+    public LogicExpression getLeft() {
         return left;
     }
 
-    public Expression getRight() {
+    public LogicExpression getRight() {
         return right;
     }
 
@@ -85,8 +86,8 @@ public abstract class BinaryOperator extends AbstractExpression {
     }
 
     @Override
-    public List<Expression> getParticularProof(List<Expression> hypothesis) {
-        List<Expression> result = left.getParticularProof(hypothesis);
+    public List<LogicExpression> getParticularProof(List<LogicExpression> hypothesis) {
+        List<LogicExpression> result = left.getParticularProof(hypothesis);
         result.addAll(right.getParticularProof(hypothesis));
         return result;
     }

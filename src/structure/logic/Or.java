@@ -1,12 +1,13 @@
 package structure.logic;
 import structure.Expression;
+import structure.LogicExpression;
 
 import java.util.List;
 import java.util.Map;
 
 public final class Or extends BinaryOperator {
     //TODO: javadoc
-    public Or(Expression left, Expression right) {
+    public Or(LogicExpression left, LogicExpression right) {
         super(left, right, "|");
     }
 
@@ -27,7 +28,7 @@ public final class Or extends BinaryOperator {
     }
 
     @Override
-    public Expression replaceAll(Map<Integer, Expression> replacement) {
+    public LogicExpression replaceAll(Map<Integer, Expression> replacement) {
         return new Or(left.replaceAll(replacement), right.replaceAll(replacement));
     }
 
@@ -37,12 +38,12 @@ public final class Or extends BinaryOperator {
     }
 
     @Override
-    public List<Expression> getParticularProof(List<Expression> hypothesis) {
-        List<Expression> result = super.getParticularProof(hypothesis);
+    public List<LogicExpression> getParticularProof(List<LogicExpression> hypothesis) {
+        List<LogicExpression> result = super.getParticularProof(hypothesis);
         boolean l = left.evaluate();
         boolean r = right.evaluate();
-        Expression a = left;
-        Expression b = right;
+        LogicExpression a = left;
+        LogicExpression b = right;
         if (l & r) {
             result.add(new Entailment(a, new Or(a, b)));
             result.add(a);

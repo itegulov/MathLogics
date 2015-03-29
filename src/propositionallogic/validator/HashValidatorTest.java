@@ -4,7 +4,9 @@ import interfaces.Validator;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import proof.LogicalProof;
 import proof.Proof;
+import structure.LogicExpression;
 
 import java.io.File;
 import java.io.PrintWriter;
@@ -13,7 +15,7 @@ import static org.junit.Assert.assertEquals;
 
 public class HashValidatorTest {
     private File file;
-    private Validator validator;
+    private Validator<LogicExpression> validator;
 
     @Before
     public void setUp() throws Exception {
@@ -40,7 +42,7 @@ public class HashValidatorTest {
         pw.println("(A->B)->(A->!B)->!A");
         pw.println("!!A->A");
         pw.close();
-        Proof proof = new Proof("A->B->A (сх. акс. 1)\n" +
+        Proof<LogicExpression> proof = new LogicalProof("A->B->A (сх. акс. 1)\n" +
                 "(A->B)->(A->B->C)->(A->C) (сх. акс. 2)\n" +
                 "A->B->A&B (сх. акс. 3)\n" +
                 "A&B->A (сх. акс. 4)\n" +
@@ -74,7 +76,7 @@ public class HashValidatorTest {
         pw.println("((A&!A)->A)->((A&!A)->!A)->!(A&!A)");
         pw.println("(A->B)->(A->B->C)->(A->C)");
         pw.close();
-        Proof proof = new Proof("(A&B)&C->A&B (сх. акс. 4)\n" +
+        Proof<LogicExpression> proof = new LogicalProof("(A&B)&C->A&B (сх. акс. 4)\n" +
                 "(A&B)&C->C (сх. акс. 5)\n" +
                 "A|B->(A|B)|C (сх. акс. 6)\n" +
                 "C->(A|B)|C (сх. акс. 7)\n" +
@@ -102,7 +104,7 @@ public class HashValidatorTest {
         pw.println("(A->((A->A)->A))");
         pw.println("A->A");
         pw.close();
-        Proof proof = new Proof("A->A->A (сх. акс. 1)\n" +
+        Proof<LogicExpression> proof = new LogicalProof("A->A->A (сх. акс. 1)\n" +
                 "(A->(A->A))->(A->((A->A)->A))->(A->A) (сх. акс. 2)\n" +
                 "(A->((A->A)->A))->(A->A) (M.P. 1, 2)\n" +
                 "(A->((A->A)->A)) (сх. акс. 1)\n" +
@@ -116,7 +118,7 @@ public class HashValidatorTest {
         pw.println("A->A->A");
         pw.println("B->A");
         pw.close();
-        Proof proof = new Proof("A->A->A (сх. акс. 1)\n" +
+        Proof<LogicExpression> proof = new LogicalProof("A->A->A (сх. акс. 1)\n" +
                 "B->A (Не доказано)\n");
         assertEquals(validator.validate(file), proof);
     }
@@ -131,7 +133,7 @@ public class HashValidatorTest {
         pw.println("(A->((A->A)->A))");
         pw.println("A->A");
         pw.close();
-        Proof proof = new Proof("A->A->A (сх. акс. 1)\n" +
+        Proof<LogicExpression> proof = new LogicalProof("A->A->A (сх. акс. 1)\n" +
                 "(A->A)->(A->((A->A)->A))->(A->A) (сх. акс. 1)\n" +
                 "(A->(A->A))->(A->((A->A)->A))->(A->A) (сх. акс. 2)\n" +
                 "(A->((A->A)->A))->(A->A) (M.P. 1, 3)\n" +
@@ -147,7 +149,7 @@ public class HashValidatorTest {
         pw.println("(A->((A->A)->A))");
         pw.println("A->A");
         pw.close();
-        proof = new Proof("A->A->A (сх. акс. 1)\n" +
+        proof = new LogicalProof("A->A->A (сх. акс. 1)\n" +
                 "(A->(A->A))->(A->((A->A)->A))->(A->A) (сх. акс. 2)\n" +
                 "(A->A)->(A->((A->A)->A))->(A->A) (сх. акс. 1)\n" +
                 "(A->((A->A)->A))->(A->A) (M.P. 1, 2)\n" +
@@ -167,7 +169,7 @@ public class HashValidatorTest {
         pw.println("(A&B->(A->A|B))->(A&B->A|B)");
         pw.println("A&B->A|B");
         pw.close();
-        Proof proof = new Proof("A&B->A (сх. акс. 4)\n" +
+        Proof<LogicExpression> proof = new LogicalProof("A&B->A (сх. акс. 4)\n" +
                 "A->A|B (сх. акс. 6)\n" +
                 "(A->A|B)->(A&B)->A->A|B (сх. акс. 1)\n" +
                 "A&B->A->A|B (M.P. 2, 3)\n" +
@@ -179,8 +181,8 @@ public class HashValidatorTest {
 
     @Test
     public void testMaxTest() throws Exception {
-        Proof answer = validator.validate(new File("res/tests/maxtest.in"));
-        Proof goodAnswer = new Proof(new File("res/tests/maxtest.out"));
+        Proof<LogicExpression> answer = validator.validate(new File("res/tests/maxtest.in"));
+        Proof<LogicExpression> goodAnswer = new LogicalProof(new File("res/tests/maxtest.out"));
         assertEquals(answer, goodAnswer);
     }
 }

@@ -1,16 +1,14 @@
 package rules;
 
-import parser.ArithmeticParser;
-import parser.ParseException;
-import proof.Proof;
+import proof.LogicalProof;
 import structure.Expression;
+import structure.FormalArithmeticExpression;
 import structure.logic.Entailment;
-import structure.logic.Variable;
 import structure.predicate.Exists;
 import structure.predicate.Term;
 
 public class ExistsRule {
-    public static void addExistsProof1(Expression alpha, Expression e, Expression e1, Term variable, Proof proof) {
+    public static void addExistsProof1(Expression alpha, Expression e, Expression e1, Term variable, LogicalProof proof) {
         proof.addExpression(new Entailment(new Entailment(alpha, new Entailment(e
                 , e1)), new Entailment(new Entailment(alpha, new Entailment(e
                 , e1)), new Entailment(alpha, new Entailment(e, e1))))
@@ -1022,7 +1020,7 @@ public class ExistsRule {
                 , new Entailment(alpha, e1))))), null);
     }
 
-    public static void addExistsProof2(Expression alpha, Expression e, Expression e1, Term variable, Proof proof) {
+    public static void addExistsProof2(Expression alpha, FormalArithmeticExpression e, Expression e1, Term variable, LogicalProof proof) {
         proof.addExpression(new Entailment(new Entailment(new Entailment(alpha, new Entailment(e
                 , e1)), new Entailment(e, new Entailment(alpha, e)))
                 , new Entailment(new Entailment(new Entailment(alpha, new Entailment(e, e1))
@@ -1258,11 +1256,11 @@ public class ExistsRule {
                 , null);
         proof.addExpression(new Entailment(e, new Entailment(alpha, e1))
                 , null);
-        proof.addExpression(new Entailment(new Exists(variable,e), new Entailment(alpha
+        proof.addExpression(new Entailment(new Exists(variable, e), new Entailment(alpha
                 , e1)), null);
         proof.addExpression(new Entailment(new Entailment(new Exists(variable,e), new Entailment(alpha
                 , e1)), new Entailment(new Entailment(new Exists(variable,e), new Entailment(alpha
-                , e1)), new Entailment(new Exists(variable,e), new Entailment(alpha
+                , e1)), new Entailment(new Exists(variable, e), new Entailment(alpha
                 , e1)))), null);
         proof.addExpression(new Entailment(new Entailment(new Exists(variable,e), new Entailment(alpha
                 , e1)), new Entailment(new Entailment(new Entailment(new Exists(variable,e)
@@ -1274,13 +1272,13 @@ public class ExistsRule {
                 , new Entailment(alpha, e1)), new Entailment(new Exists(variable,e)
                 , new Entailment(alpha, e1)))), new Entailment(new Entailment(new Entailment(new Exists(variable,e)
                 , new Entailment(alpha, e1)), new Entailment(new Entailment(new Entailment(new Exists(variable,e)
-                , new Entailment(alpha, e1)), new Entailment(new Exists(variable,e)
-                , new Entailment(alpha, e1))), new Entailment(new Exists(variable,e)
-                , new Entailment(alpha, e1)))), new Entailment(new Entailment(new Exists(variable,e)
-                , new Entailment(alpha, e1)), new Entailment(new Exists(variable,e)
+                , new Entailment(alpha, e1)), new Entailment(new Exists(variable, e)
+                , new Entailment(alpha, e1))), new Entailment(new Exists(variable, e)
+                , new Entailment(alpha, e1)))), new Entailment(new Entailment(new Exists(variable, e)
+                , new Entailment(alpha, e1)), new Entailment(new Exists(variable, e)
                 , new Entailment(alpha, e1))))), null);
-        proof.addExpression(new Entailment(new Entailment(new Entailment(new Exists(variable,e)
-                , new Entailment(alpha, e1)), new Entailment(new Entailment(new Entailment(new Exists(variable,e)
+        proof.addExpression(new Entailment(new Entailment(new Entailment(new Exists(variable, e)
+                , new Entailment(alpha, e1)), new Entailment(new Entailment(new Entailment(new Exists(variable, e)
                 , new Entailment(alpha, e1)), new Entailment(new Exists(variable,e)
                 , new Entailment(alpha, e1))), new Entailment(new Exists(variable,e)
                 , new Entailment(alpha, e1)))), new Entailment(new Entailment(new Exists(variable,e)
@@ -1756,7 +1754,7 @@ public class ExistsRule {
                 , new Exists(variable,e)))))))), null);
     }
 
-    public static void addExistsProof3(Expression alpha, Expression e, Expression e1, Term variable, Proof proof) {
+    public static void addExistsProof3(Expression alpha, FormalArithmeticExpression e, Expression e1, Term variable, LogicalProof proof) {
         proof.addExpression(new Entailment(new Entailment(new Entailment(new Exists(variable,e)
                 , new Entailment(alpha, e1)), new Entailment(new Entailment(alpha
                 , new Entailment(new Exists(variable,e), new Entailment(new Exists(variable,e)

@@ -3,9 +3,9 @@ package structure.logic;
 import com.sun.istack.internal.NotNull;
 import exceptions.TreeMismatchException;
 import javafx.util.Pair;
-import structure.AbstractExpression;
+import structure.AbstractLogicExpression;
 import structure.Expression;
-import structure.predicate.Quantifier;
+import structure.LogicExpression;
 import structure.predicate.Term;
 
 import java.util.HashMap;
@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public final class Gap extends AbstractExpression {
+public final class Gap extends AbstractLogicExpression {
     private int num;
 
     public Gap(int num) {
@@ -61,7 +61,7 @@ public final class Gap extends AbstractExpression {
             return replacement.get(num);
         }
         try {
-            return (Expression) clone();
+            return (LogicExpression) clone();
         } catch (CloneNotSupportedException e) {
             e.printStackTrace();
             return null;
@@ -69,7 +69,7 @@ public final class Gap extends AbstractExpression {
     }
 
     @Override
-    public List<Expression> getParticularProof(List<Expression> hypothesis) {
+    public List<LogicExpression> getParticularProof(List<LogicExpression> hypothesis) {
         throw new IllegalStateException("cannot get particular proofs on expressions with gaps");
     }
 

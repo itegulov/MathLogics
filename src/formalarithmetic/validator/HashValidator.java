@@ -7,10 +7,12 @@ import interfaces.Validator;
 import javafx.util.Pair;
 import parser.ArithmeticParser;
 import parser.ParseException;
+import parser.Parser;
 import proof.*;
 import proof.Error;
 import scanner.FastLineScanner;
 import structure.Expression;
+import structure.FormalArithmeticExpression;
 import structure.arithmetics.Successor;
 import structure.arithmetics.Zero;
 import structure.logic.And;
@@ -23,30 +25,30 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
 
-public class HashValidator implements Validator {
+public class HashValidator implements Validator<FormalArithmeticExpression> {
 
     @Override
-    public Proof validate(final File f) throws FileNotFoundException, InvalidProofException {
+    public Proof<FormalArithmeticExpression> validate(final File f) throws FileNotFoundException, InvalidProofException {
         return validate(f, null);
     }
 
     @Override
-    public Proof validate(final File f, final Statement[] assumptions) throws FileNotFoundException, InvalidProofException {
+    public Proof<FormalArithmeticExpression> validate(final File f, final Statement<FormalArithmeticExpression>[] assumptions) throws FileNotFoundException, InvalidProofException {
         final FastLineScanner in = new FastLineScanner(f);
         return validate(in, assumptions);
     }
 
     @Override
-    public Proof validate(final FastLineScanner in, final Statement[] assumptions) throws InvalidProofException {
-        final Proof proof = new Proof();
-        final ArithmeticParser expressionParser = new ArithmeticParser();
+    public Proof<FormalArithmeticExpression> validate(final FastLineScanner in, final Statement<FormalArithmeticExpression>[] assumptions) throws InvalidProofException {
+        final Proof<FormalArithmeticExpression> proof = new FormalArithmeticProof();
+        final Parser<FormalArithmeticExpression> expressionParser = new ArithmeticParser();
         int line = 0;
         while (in.hasMore()) {
             line++;
             final String s;
             s = in.next();
             try {
-                final Expression expression = expressionParser.parse(s);
+                final FormalArithmeticExpression expression = expressionParser.parse(s);
                 proof.addExpression(expression, null);
             } catch (ParseException e) {
                 throw new InvalidProofException("Вывод некорректен начиная с формулы " + line);
@@ -56,7 +58,7 @@ public class HashValidator implements Validator {
     }
 
     @Override
-    public Proof validate(Proof proof, Statement[] assumptions) throws InvalidProofException {
+    public Proof<FormalArithmeticExpression> validate(Proof<FormalArithmeticExpression> proof, Statement<FormalArithmeticExpression>[] assumptions) throws InvalidProofException {
         Map<String, Statement> proofed = new HashMap<>();
         int row = 0;
         for (Statement statement : proof.getStatements()) {

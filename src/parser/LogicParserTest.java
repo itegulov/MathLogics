@@ -3,6 +3,7 @@ package parser;
 import structure.Expression;
 import structure.ExpressionRandomGenerator;
 import structure.ExpressionRandomGeneratorPseudo;
+import structure.LogicExpression;
 import structure.logic.*;
 import org.junit.Before;
 import org.junit.Rule;
@@ -13,7 +14,7 @@ import static org.junit.Assert.*;
 
 public class LogicParserTest {
     ExpressionRandomGenerator generator;
-    Parser<Expression> expressionParser;
+    Parser<LogicExpression> expressionParser;
 
     @Rule
     public ExpectedException exception = ExpectedException.none();

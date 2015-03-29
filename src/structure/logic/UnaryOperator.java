@@ -1,20 +1,21 @@
 package structure.logic;
 
+import exceptions.TreeMismatchException;
+import javafx.util.Pair;
+import structure.AbstractLogicExpression;
+import structure.Expression;
+import structure.LogicExpression;
+import structure.predicate.Term;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import exceptions.TreeMismatchException;
-import javafx.util.Pair;
-import structure.AbstractExpression;
-import structure.Expression;
-import structure.predicate.Term;
-
-public abstract class UnaryOperator extends AbstractExpression {
-    protected Expression exp;
+public abstract class UnaryOperator extends AbstractLogicExpression {
+    protected LogicExpression exp;
     protected final String operationName;
 
-    public UnaryOperator(Expression exp, String operationName) {
+    public UnaryOperator(LogicExpression exp, String operationName) {
         this.exp = exp;
         this.operationName = operationName;
     }
