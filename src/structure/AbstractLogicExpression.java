@@ -18,7 +18,9 @@ public abstract class AbstractLogicExpression implements LogicExpression {
 
     @Override
     public String toString() {
-        return asString().toString();
+        StringBuilder sb = new StringBuilder();
+        asString(sb);
+        return sb.toString();
     }
 
     @Override

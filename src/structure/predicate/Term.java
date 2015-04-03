@@ -77,7 +77,7 @@ public class Term extends AbstractFormalArithmeticExpression {
     }
 
     @Override
-    public Map<String, Variable<FormalArithmeticExpression>> getVariables() {
+    public void getVariables(Map<String, Variable<FormalArithmeticExpression>> map) {
         throw new IllegalStateException("predicates don't contain variables");
     }
 
@@ -97,28 +97,29 @@ public class Term extends AbstractFormalArithmeticExpression {
     }
 
     @Override
-    public StringBuilder asString() {
-        StringBuilder sb = new StringBuilder();
+    public void asString(StringBuilder sb) {
         sb.append(name);
         if (arguments.length != 0) {
-            sb.append("(");
+            sb.append('(');
             for (int i = 0; i < arguments.length; i++) {
-                sb.append(arguments[i].asString()).append(i == arguments.length - 1 ? "" : ",");
+                arguments[i].asString(sb);
+                if (i != arguments.length - 1) {
+                    sb.append(',');
+                }
             }
-            sb.append(")");
+            sb.append(')');
         }
-        return sb;
     }
 
     @Override
-    public Set<String> getFreeVars() {
-        HashSet<String> vars = new HashSet<>();
+    public Set<String> getFreeVars(Set<String> set) {
         for (Term t : arguments) {
-            vars.addAll(t.getFreeVars());
+            t.getFreeVars(set);
         }
-        if (!this.quantifiers.contains(this.name))
-            vars.add(name);
-        return vars;
+        if (!this.quantifiers.contains(this.name)) {
+            set.add(name);
+        }
+        return set;
     }
 
     @Override

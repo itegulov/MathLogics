@@ -9,9 +9,7 @@ public class Zero extends Term {
     }
 
     @Override
-    public StringBuilder asString() {
-        StringBuilder sb = new StringBuilder();
+    public void asString(StringBuilder sb) {
         sb.append(name);
-        return sb;
     }
 }

@@ -6,7 +6,6 @@ import structure.Expression;
 import structure.LogicExpression;
 import structure.Variable;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -33,8 +32,7 @@ public final class Gap extends AbstractLogicExpression {
     }
 
     @Override
-    public Map<String, Variable<LogicExpression>> getVariables() {
-        return new HashMap<>();
+    public void getVariables(Map<String, Variable<LogicExpression>> map) {
     }
 
     @Override
@@ -48,8 +46,8 @@ public final class Gap extends AbstractLogicExpression {
     }
 
     @Override
-    public StringBuilder asString() {
-        return new StringBuilder(Integer.toString(num));
+    public void asString(StringBuilder sb) {
+        sb.append(Integer.toString(num));
     }
 
     @Override

@@ -34,13 +34,15 @@ public abstract class UnaryOperator extends AbstractLogicExpression {
     }
 
     @Override
-    public StringBuilder asString() {
-        StringBuilder s = exp.asString();
+    public void asString(StringBuilder sb) {
+        sb.append(operationName);
         if (exp instanceof BinaryOperator) {
-            s.insert(0, '(');
-            s.append(')');
+            sb.append('(');
+            exp.asString(sb);
+            sb.append(')');
+        } else {
+            exp.asString(sb);
         }
-        return s.insert(0, operationName);
     }
 
     @Override
@@ -58,8 +60,8 @@ public abstract class UnaryOperator extends AbstractLogicExpression {
     }
 
     @Override
-    public Map<String, Variable<LogicExpression>> getVariables() {
-        return exp.getVariables();
+    public void getVariables(Map<String, Variable<LogicExpression>> map) {
+        exp.getVariables(map);
     }
 
     @Override

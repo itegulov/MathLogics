@@ -1,7 +1,6 @@
 package structure.arithmetics;
 
 import structure.Expression;
-import structure.predicate.Predicate;
 import structure.predicate.Term;
 
 import java.util.ArrayList;
@@ -23,9 +22,11 @@ public class Plus extends Term {
     }
 
     @Override
-    public StringBuilder asString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("(").append(left.asString()).append(name).append(right.asString()).append(")");
-        return sb;
+    public void asString(StringBuilder sb) {
+        sb.append('(');
+        left.asString(sb);
+        sb.append(name);
+        right.asString(sb);
+        sb.append(')');
     }
 }

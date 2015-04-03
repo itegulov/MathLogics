@@ -37,25 +37,23 @@ public class Predicate extends AbstractFormalArithmeticExpression {
     }
 
     @Override
-    public boolean treeMatch(@NotNull Expression other) {
+    public boolean treeMatch(Expression other) {
         if (hasSameType(other)) {
             Predicate predicate = (Predicate) other;
             if (name.equals(predicate.name) && arguments.length == predicate.arguments.length) {
-                boolean f = false;
                 for (int i = 0; i < arguments.length; i++) {
                     if (!arguments[i].treeMatch(predicate.arguments[i])) {
-                        f = true;
-                        break;
+                        return false;
                     }
                 }
-                if (!f) return true;
+                return true;
             }
         }
         return false;
     }
 
     @Override
-    public Map<String, Variable<FormalArithmeticExpression>> getVariables() {
+    public void getVariables(Map<String, Variable<FormalArithmeticExpression>> map) {
         throw new IllegalStateException("cannot get variables in predicates");
     }
 
@@ -82,17 +80,18 @@ public class Predicate extends AbstractFormalArithmeticExpression {
     }
 
     @Override
-    public StringBuilder asString() {
-        StringBuilder sb = new StringBuilder();
+    public void asString(StringBuilder sb) {
         sb.append(name);
         if (arguments.length != 0) {
-            sb.append("(");
+            sb.append('(');
             for (int i = 0; i < arguments.length; i++) {
-                sb.append(arguments[i].asString()).append(i == arguments.length - 1 ? "" : ",");
+                arguments[i].asString(sb);
+                if (i != arguments.length - 1) {
+                    sb.append(',');
+                }
             }
-            sb.append(")");
+            sb.append(')');
         }
-        return sb;
     }
 
     @Override
@@ -107,10 +106,9 @@ public class Predicate extends AbstractFormalArithmeticExpression {
     }
 
     @Override
-    public Set<String> getFreeVars() {
-        Set<String> set = new HashSet<>();
+    public Set<String> getFreeVars(Set<String> set) {
         for (Term t : arguments) {
-            set.addAll(t.getFreeVars());
+            t.getFreeVars(set);
         }
         return set;
     }

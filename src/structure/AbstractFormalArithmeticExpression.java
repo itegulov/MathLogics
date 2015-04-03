@@ -21,7 +21,9 @@ public abstract class AbstractFormalArithmeticExpression implements FormalArithm
 
     @Override
     public String toString() {
-        return asString().toString();
+        StringBuilder sb = new StringBuilder();
+        asString(sb);
+        return sb.toString();
     }
 
     @Override

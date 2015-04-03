@@ -6,7 +6,6 @@ import structure.LogicExpression;
 import structure.Variable;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -32,10 +31,8 @@ public final class NVariable extends AbstractLogicExpression implements Variable
     }
 
     @Override
-    public Map<String, Variable<LogicExpression>> getVariables() {
-        Map<String, Variable<LogicExpression>> map = new HashMap<>();
+    public void getVariables(Map<String, Variable<LogicExpression>> map) {
         map.put(name, this);
-        return map;
     }
 
     @Override
@@ -63,8 +60,8 @@ public final class NVariable extends AbstractLogicExpression implements Variable
     }
 
     @Override
-    public StringBuilder asString() {
-        return new StringBuilder(name);
+    public void asString(StringBuilder sb) {
+        sb.append(name);
     }
 
     @Override

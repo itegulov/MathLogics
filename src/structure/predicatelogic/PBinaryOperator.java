@@ -34,18 +34,22 @@ public abstract class PBinaryOperator extends AbstractFormalArithmeticExpression
     }
 
     @Override
-    public StringBuilder asString() {
-        StringBuilder s1 = left.asString();
-        StringBuilder s2 = right.asString();
+    public void asString(StringBuilder sb) {
         if (left instanceof PBinaryOperator) {
-            s1.insert(0, '(');
-            s1.append(')');
+            sb.append('(');
+            left.asString(sb);
+            sb.append(')');
+        } else {
+            left.asString(sb);
         }
+        sb.append(operationName);
         if (right instanceof PBinaryOperator) {
-            s2.insert(0, '(');
-            s2.append(')');
+            sb.append('(');
+            right.asString(sb);
+            sb.append(')');
+        } else {
+            right.asString(sb);
         }
-        return s1.append(operationName).append(s2);
     }
 
     @Override
@@ -72,10 +76,8 @@ public abstract class PBinaryOperator extends AbstractFormalArithmeticExpression
     }
 
     @Override
-    public Map<String, Variable<FormalArithmeticExpression>> getVariables() {
-        Map<String, Variable<FormalArithmeticExpression>> variables = left.getVariables();
-        variables.putAll(right.getVariables());
-        return variables;
+    public void getVariables(Map<String, Variable<FormalArithmeticExpression>> map) {
+        right.getVariables(map);
     }
 
     @Override
@@ -85,10 +87,10 @@ public abstract class PBinaryOperator extends AbstractFormalArithmeticExpression
     }
 
     @Override
-    public Set<String> getFreeVars() {
-        Set<String> h = left.getFreeVars();
-        h.addAll(right.getFreeVars());
-        return h;
+    public Set<String> getFreeVars(Set<String> set) {
+        left.getFreeVars(set);
+        right.getFreeVars(set);
+        return set;
     }
 
     @Override

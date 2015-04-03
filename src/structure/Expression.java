@@ -34,10 +34,11 @@ public interface Expression<E extends Expression> extends Cloneable {
     boolean hasSameType(Expression other);
 
     /**
-     * Returns all variables names and some one node of all variable nodes, which have this name
-     * @return map, consisting of variable names and appropriate variable nodes
+     * Writes all variables names and some one node of all variable nodes, which have this name
+     * to given {@code Map}.
+     * @param map map, that will consist of variable names and appropriate variable nodes
      */
-    Map<String, Variable<E>> getVariables();
+    void getVariables(Map<String, Variable<E>> map);
 
     /**
      * Generates Java code of the expression, which can be used for testing
@@ -74,10 +75,10 @@ public interface Expression<E extends Expression> extends Cloneable {
     E replaceAll(Map<Integer, E> replacement);
 
     /**
-     * Converts expression to human-readable string
-     * @return          human-readable string interpretation of expression
+     * Converts expression to human-readable string. Writes result to {@code sb}
+     * @param sb string builder, that will contain result
      */
-    StringBuilder asString();
+    void asString(StringBuilder sb);
 
     Object clone() throws CloneNotSupportedException;
 }

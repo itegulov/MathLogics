@@ -315,7 +315,8 @@ public class FormalArithmeticProof implements Proof<FormalArithmeticExpression> 
                 Expression prev = state.getExp();
                 Term var = forAll.getVariable();
                 if (prev != null) {
-                    Set<String> freeVars = ((PEntailment) prev).getLeft().getFreeVars();
+                    Set<String> freeVars = new HashSet<>();
+                    ((PEntailment) prev).getLeft().getFreeVars(freeVars);
                     if (freeVars.contains(var.getName())) {
                         e1 = new InvalidProofException(DenialReason.ERROR_2.create(row, var.getName(), PEntailment.getLeft().toString()));
                     } else {
@@ -342,7 +343,7 @@ public class FormalArithmeticProof implements Proof<FormalArithmeticExpression> 
                 Expression prev = state.getExp();
                 Term var = exists.getVariable();
                 if (prev != null) {
-                    if (((PEntailment) prev).getRight().getFreeVars().contains(var.getName())) {
+                    if (((PEntailment) prev).getRight().getFreeVars(new HashSet<>()).contains(var.getName())) {
                         e2 = new InvalidProofException(DenialReason.ERROR_2.create(row, var.getName(), PEntailment.getRight().toString()));
                     } else {
                         return new ExistsDerivationRule(state);
@@ -465,7 +466,7 @@ public class FormalArithmeticProof implements Proof<FormalArithmeticExpression> 
 
     private Expression getHypoExp(Term variable, List<Statement<FormalArithmeticExpression>> assumptions) {
         for (Statement<FormalArithmeticExpression> assumption : assumptions) {
-            if (assumption.getExp().getFreeVars().contains(variable.getName())) {
+            if (assumption.getExp().getFreeVars(new HashSet<>()).contains(variable.getName())) {
                 return assumption.getExp();
             }
         }
@@ -478,7 +479,7 @@ public class FormalArithmeticProof implements Proof<FormalArithmeticExpression> 
                        final FormalArithmeticExpression currentAssumption,
                        final List<Statement<FormalArithmeticExpression>> proofed) throws InvalidProofException {
         Set<String> hyposVars = new HashSet<>();
-        hyposVars.addAll(currentAssumption.getFreeVars());
+        hyposVars.addAll(currentAssumption.getFreeVars(new HashSet<>()));
         FormalArithmeticExpression currentExp = statement.getExp();
         StatementType statementType = statement.getType();
         if (statement.getExp().equals(currentAssumption)) {
@@ -605,7 +606,7 @@ public class FormalArithmeticProof implements Proof<FormalArithmeticExpression> 
                     Term var = exists.getVariable();
                     boolean cond = (prev != null);
                     if (cond) {
-                        cond = !((PEntailment) prev).getRight().getFreeVars().contains(var.getName());
+                        cond = !((PEntailment) prev).getRight().getFreeVars(new HashSet<>()).contains(var.getName());
                         if (!cond) {
                             throw new InvalidProofException(
                                     DenialReason.ERROR_2.create(statement.getLine(), var.getName(), PEntailment.getRight().toString())
@@ -639,7 +640,7 @@ public class FormalArithmeticProof implements Proof<FormalArithmeticExpression> 
                     Term var = ((ForAll) ((PEntailment) currentExp).getRight()).getVariable();
                     boolean cond = (prev != null);
                     if (cond) {
-                        cond = !((PEntailment) prev).getLeft().getFreeVars().contains(var.getName());
+                        cond = !((PEntailment) prev).getLeft().getFreeVars(new HashSet<>()).contains(var.getName());
                         if (!cond) {
                             throw new InvalidProofException(
                                     DenialReason.ERROR_2.create(statement.getLine(), var.getName(), ((PEntailment) currentExp).getLeft().toString())

@@ -36,18 +36,21 @@ public abstract class BinaryOperator extends AbstractLogicExpression {
     }
 
     @Override
-    public StringBuilder asString() {
-        StringBuilder s1 = left.asString();
-        StringBuilder s2 = right.asString();
+    public void asString(StringBuilder sb) {
         if (left instanceof BinaryOperator) {
-            s1.insert(0, '(');
-            s1.append(')');
+            sb.append('(');
+            left.asString(sb);
+            sb.append(')');
+        } else {
+            left.asString(sb);
         }
         if (right instanceof BinaryOperator) {
-            s2.insert(0, '(');
-            s2.append(')');
+            sb.append('(');
+            right.asString(sb);
+            sb.append(')');
+        } else {
+            right.asString(sb);
         }
-        return s1.append(operationName).append(s2);
     }
 
     @Override
@@ -74,10 +77,9 @@ public abstract class BinaryOperator extends AbstractLogicExpression {
     }
 
     @Override
-    public Map<String, Variable<LogicExpression>> getVariables() {
-        Map<String, Variable<LogicExpression>> variables = left.getVariables();
-        variables.putAll(right.getVariables());
-        return variables;
+    public void getVariables(Map<String, Variable<LogicExpression>> map) {
+        left.getVariables(map);
+        right.getVariables(map);
     }
 
     @Override

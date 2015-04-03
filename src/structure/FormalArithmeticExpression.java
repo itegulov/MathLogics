@@ -14,9 +14,9 @@ public interface FormalArithmeticExpression extends Expression<FormalArithmeticE
 
     /**
      * Gets set of free variables in expression
-     * @return          set consisting of free variable names
+     * @param set set, that will consist of free variable names
      */
-    Set<String> getFreeVars();
+    Set<String> getFreeVars(Set<String> set);
 
     /**
      * Travels through expression tree and writes all quantifiers to set

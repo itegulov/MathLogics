@@ -32,13 +32,15 @@ public abstract class PUnaryOperator extends AbstractFormalArithmeticExpression 
     }
 
     @Override
-    public StringBuilder asString() {
-        StringBuilder s = exp.asString();
+    public void asString(StringBuilder sb) {
+        sb.append(operationName);
         if (exp instanceof PBinaryOperator) {
-            s.insert(0, '(');
-            s.append(')');
+            sb.append('(');
+            exp.asString(sb);
+            sb.append(')');
+        } else {
+            exp.asString(sb);
         }
-        return s.insert(0, operationName);
     }
 
     @Override
@@ -56,8 +58,8 @@ public abstract class PUnaryOperator extends AbstractFormalArithmeticExpression 
     }
 
     @Override
-    public Map<String, Variable<FormalArithmeticExpression>> getVariables() {
-        return exp.getVariables();
+    public void getVariables(Map<String, Variable<FormalArithmeticExpression>> map) {
+        exp.getVariables(map);
     }
 
 
@@ -67,8 +69,8 @@ public abstract class PUnaryOperator extends AbstractFormalArithmeticExpression 
     }
 
     @Override
-    public Set<String> getFreeVars() {
-        return exp.getFreeVars();
+    public Set<String> getFreeVars(Set<String> set) {
+        return exp.getFreeVars(set);
     }
 
     @Override

@@ -20,10 +20,8 @@ public final class PVariable extends AbstractFormalArithmeticExpression implemen
     }
 
     @Override
-    public Map<String, Variable<FormalArithmeticExpression>> getVariables() {
-        Map<String, Variable<FormalArithmeticExpression>> map = new HashMap<>();
+    public void getVariables(Map<String, Variable<FormalArithmeticExpression>> map) {
         map.put(name, this);
-        return map;
     }
 
     @Override
@@ -51,8 +49,8 @@ public final class PVariable extends AbstractFormalArithmeticExpression implemen
     }
 
     @Override
-    public StringBuilder asString() {
-        return new StringBuilder(name);
+    public void asString(StringBuilder sb) {
+        sb.append(name);
     }
 
     @Override
@@ -82,8 +80,8 @@ public final class PVariable extends AbstractFormalArithmeticExpression implemen
     }
 
     @Override
-    public Set<String> getFreeVars() {
-        return new HashSet<>();
+    public Set<String> getFreeVars(Set<String> set) {
+        return set;
     }
 
     @Override

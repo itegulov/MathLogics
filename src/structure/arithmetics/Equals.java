@@ -23,9 +23,11 @@ public class Equals extends Predicate {
     }
 
     @Override
-    public StringBuilder asString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("(").append(left.asString()).append(name).append(right.asString()).append(")");
-        return sb;
+    public void asString(StringBuilder sb) {
+        sb.append('(');
+        left.asString(sb);
+        sb.append('=');
+        right.asString(sb);
+        sb.append(')');
     }
 }

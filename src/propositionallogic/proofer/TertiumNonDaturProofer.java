@@ -132,7 +132,8 @@ public final class TertiumNonDaturProofer implements Proofer<LogicExpression> {
     public Proof<LogicExpression> proof(String statement) throws ParseException, FalseExpressionException {
         Parser<LogicExpression> parser = LogicParser.getInstance();
         LogicExpression expression = parser.parse(statement);
-        Map<String, Variable<LogicExpression>> variables = expression.getVariables();
+        Map<String, Variable<LogicExpression>> variables = new HashMap<>();
+        expression.getVariables(variables);
         Collection<Variable<LogicExpression>> variableValues = variables.values();
         int variablesCount = variables.size();
         for (int mask = 0; mask < (1 << variablesCount); mask++) {
