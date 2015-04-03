@@ -79,6 +79,28 @@ public class HashDeductor implements Deductor<FormalArithmeticExpression> {
     }
 
     @Override
+    public Proof<FormalArithmeticExpression> deductLast(final File file, final List<Statement<FormalArithmeticExpression>> proofed) throws FileNotFoundException, InvalidProofException {
+        FastLineScanner scanner = new FastLineScanner(file);
+        ArithmeticParser parser = new ArithmeticParser();
+
+        String assumptionsStatement = scanner.next();
+        String[] parts = assumptionsStatement.split("\\|\\-", 2);
+        String[] assumptionStrings = parts[0].split(",");
+        final List<Statement<FormalArithmeticExpression>> assumptions = new ArrayList<>(assumptionStrings.length);
+        for (String assumptionString : assumptionStrings) {
+            try {
+                assumptions.add(new Statement<>(parser.parse(assumptionString), new Assumption(), 0));
+            } catch (ParseException e) {
+                throw new InvalidProofException("Couldn't parse assumption");
+            }
+        }
+        Validator<FormalArithmeticExpression> validator = new HashValidator();
+        Proof<FormalArithmeticExpression> proof;
+        proof = validator.validate(scanner, assumptions);
+        return deductLast(proof, assumptions, proofed);
+    }
+
+    @Override
     public Proof<FormalArithmeticExpression> deductLast(Proof<FormalArithmeticExpression> proof,
                                                         final List<Statement<FormalArithmeticExpression>> assumptions,
                                                         final List<Statement<FormalArithmeticExpression>> proofed)

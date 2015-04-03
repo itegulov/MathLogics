@@ -11,7 +11,7 @@ public abstract class AbstractFormalArithmeticExpression implements FormalArithm
 
     @Override
     public boolean hasSameType(Expression other) {
-        return getClass().getSimpleName().equals(other.getClass().getSimpleName());
+        return getClass() == other.getClass();
     }
 
     @Override
@@ -26,8 +26,8 @@ public abstract class AbstractFormalArithmeticExpression implements FormalArithm
 
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof AbstractLogicExpression
-                && ((AbstractLogicExpression) obj).treeMatch(this);
+        return obj instanceof FormalArithmeticExpression
+                && ((FormalArithmeticExpression) obj).treeMatch(this);
     }
 
     public Object clone() throws CloneNotSupportedException {

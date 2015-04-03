@@ -74,6 +74,27 @@ public final class HashDeductor implements Deductor<LogicExpression> {
     }
 
     @Override
+    public Proof<LogicExpression> deductLast(final File file, final List<Statement<LogicExpression>> proofed) throws FileNotFoundException, InvalidProofException {
+        FastLineScanner scanner = new FastLineScanner(file);
+        Parser<LogicExpression> parser = new LogicParser();
+
+        String assumptionsStatement = scanner.next();
+        String[] parts = assumptionsStatement.split("\\|\\-", 2);
+        String[] assumptionStrings = parts[0].split(",");
+        final List<Statement<LogicExpression>> assumptions = new ArrayList<>(assumptionStrings.length);
+        for (String assumptionString : assumptionStrings) {
+            try {
+                assumptions.add(new Statement<>(parser.parse(assumptionString), new Assumption(), 0));
+            } catch (ParseException e) {
+                throw new InvalidProofException("Couldn't parse assumption");
+            }
+        }
+        Validator<LogicExpression> validator = new BasicValidator();
+        Proof<LogicExpression> proof = validator.validate(scanner, assumptions);
+        return deductAll(proof, assumptions, proofed);
+    }
+
+    @Override
     public Proof<LogicExpression> deductLast(Proof<LogicExpression> proof,
                                              final List<Statement<LogicExpression>> assumptions,
                                              final List<Statement<LogicExpression>> proofed) throws InvalidProofException {

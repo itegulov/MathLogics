@@ -11,18 +11,18 @@ import structure.predicatelogic.*;
 import java.util.ArrayList;
 
 public final class ArithmeticParser implements Parser<FormalArithmeticExpression> {
-    private static String expression;
-    private static int index;
+    private String expression;
+    private int index;
 
-    private static char getChar() {
+    private char getChar() {
         return expression.charAt(index++);
     }
 
-    private static void returnChar() {
+    private void returnChar() {
         index--;
     }
 
-    private static Term variablePOrNull() throws ParseException {
+    private Term variablePOrNull() throws ParseException {
         if (getChar() == '0') {
             return new Zero();
         } else {
@@ -31,7 +31,7 @@ public final class ArithmeticParser implements Parser<FormalArithmeticExpression
         }
     }
 
-    private static Term variable() throws ParseException {
+    private Term variable() throws ParseException {
         int start = index, end = index + 1;
         char nextChar = getChar();
         if (!Character.isLetter(nextChar) || !Character.isLowerCase(nextChar))
@@ -45,10 +45,10 @@ public final class ArithmeticParser implements Parser<FormalArithmeticExpression
 
     @Override
     public FormalArithmeticExpression parse(String expression) throws ParseException {
-        ArithmeticParser.expression = expression.replaceAll("\\s+", "") + ";";
+        this.expression = expression.replaceAll("\\s+", "") + ";";
         index = 0;
         FormalArithmeticExpression e = implication();
-        if (index != expression.length()) {
+        if (index != this.expression.length() - 1) {
             throw new ParseException("Illegal character: " + expression.charAt(index));
         }
         return e;

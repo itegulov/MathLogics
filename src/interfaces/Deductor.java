@@ -61,6 +61,30 @@ public interface Deductor<E extends Expression<E>> {
                        final List<Statement<E>> proofed) throws InvalidProofException;
 
     /**
+     * Deducts {@code file}, containing proof, consisting
+     * of statements line by line. Assumes, that {@code proofed}
+     * contains {@link proof.Statement}, that can be trusted to be true.
+     * <p>
+     * First line in {@code file} must be in this form:
+     * <p>
+     * A,B,...,C,D|-E
+     * <p>
+     * Which means, that D can be proofed if A,B,...,C,D are trusted to be
+     * true. Creates formal {@link LogicalProof}, which lifts last assumption:
+     * <p>
+     * A,B,...C|-D->E
+     *
+     * @param file file, containing proof
+     * @param proofed array of statements, which can be trusted to be true
+     * @return formal proof, deducted from {@code file}
+     * @throws FileNotFoundException if {@code file} wasn't found
+     * @throws InvalidProofException if proof, provided in {@code file} is
+     * invalid
+     */
+    Proof<E> deductLast(final File file,
+                       final List<Statement<E>> proofed) throws FileNotFoundException, InvalidProofException;
+
+    /**
      * Deducts {@code proof} with left-turnstile elements {@code assumptions}.
      * Lifts only last assumption in contrast of {@link #deductAll(Proof, List, List)}.
      * Assumes, that {@code proofed} contains {@link proof.Statement}, that can

@@ -57,7 +57,7 @@ public class FormalArithmeticProof implements Proof<FormalArithmeticExpression> 
             line++;
             String[] tokens = s.split(" ", 2);
             if (tokens[1].matches("\\(сх\\. акс\\.(.*)")) {
-                statements.add(new Statement<>(expressionParser.parse(tokens[0]), Axiom.values()[Integer.parseInt(tokens[1].substring(10, tokens[1].length() - 1)) - 1], line));
+                statements.add(new Statement<>(expressionParser.parse(tokens[0]), LogicAxiom.values()[Integer.parseInt(tokens[1].substring(10, tokens[1].length() - 1)) - 1], line));
             } else {
                 if (tokens[1].matches("\\(M\\.P\\.(.*)")) {
                     String lineNumbers = tokens[1].substring(6, tokens[1].length() - 1);
@@ -145,7 +145,7 @@ public class FormalArithmeticProof implements Proof<FormalArithmeticExpression> 
         /**
          * Logic axiom checking
          */
-        for (Axiom axiom : Axiom.values()) {
+        for (PredicateLogicAxiom axiom : PredicateLogicAxiom.values()) {
             if (axiom.matches(expression)) {
                 return axiom;
             }
@@ -482,7 +482,7 @@ public class FormalArithmeticProof implements Proof<FormalArithmeticExpression> 
         FormalArithmeticExpression currentExp = statement.getExp();
         StatementType statementType = statement.getType();
         if (statement.getExp().equals(currentAssumption)) {
-            newProof.addExpression(new PEntailment(currentExp, new PEntailment(currentExp, currentExp)), Axiom.AxiomOne);
+            newProof.addExpression(new PEntailment(currentExp, new PEntailment(currentExp, currentExp)), LogicAxiom.AxiomOne);
             newProof.addExpression(new PEntailment(
                     new PEntailment(
                             currentExp,
@@ -498,7 +498,7 @@ public class FormalArithmeticProof implements Proof<FormalArithmeticExpression> 
                             ),
                             new PEntailment(currentExp, currentExp)
                     )
-            ), Axiom.AxiomTwo);
+            ), LogicAxiom.AxiomTwo);
             newProof.addExpression(new PEntailment(
                     new PEntailment(
                             currentExp,
@@ -515,9 +515,9 @@ public class FormalArithmeticProof implements Proof<FormalArithmeticExpression> 
                             new PEntailment(currentExp, currentExp),
                             currentExp
                     )
-            ), Axiom.AxiomOne);
+            ), LogicAxiom.AxiomOne);
             newProof.addExpression(new PEntailment(currentExp, currentExp), null);
-        } else if (statementType.getClass() == Axiom.class
+        } else if (statementType.getClass() == PredicateLogicAxiom.class
                 || containsStatement(assumptions, statement)
                 || containsStatement(proofed, statement)) {
             newProof.addExpression(currentExp, null);
@@ -573,7 +573,7 @@ public class FormalArithmeticProof implements Proof<FormalArithmeticExpression> 
                     /*
                     if (hyposVars.contains(var.getName())) {
                         throw new InvalidProofException(
-                            DenialReason.ERROR_3.create(line, "схема аксиом", var.getName(), getHypoExp(var, assumptions).toString())
+                            DenialReason.ERROR_3.create(statement.getLine(), "схема аксиом", var.getName(), getHypoExp(var, assumptions).toString())
                         );
                     }
                     */
@@ -608,13 +608,13 @@ public class FormalArithmeticProof implements Proof<FormalArithmeticExpression> 
                         cond = !((PEntailment) prev).getRight().getFreeVars().contains(var.getName());
                         if (!cond) {
                             throw new InvalidProofException(
-                                    DenialReason.ERROR_2.create(line, var.getName(), PEntailment.getRight().toString())
+                                    DenialReason.ERROR_2.create(statement.getLine(), var.getName(), PEntailment.getRight().toString())
                             );
                         }
                         cond = !hyposVars.contains(var.getName());
                         if (!cond) {
                             throw new InvalidProofException(
-                                    DenialReason.ERROR_3.create(line, "правило", var.getName(), getHypoExp(var, assumptions).toString())
+                                    DenialReason.ERROR_3.create(statement.getLine(), "правило", var.getName(), getHypoExp(var, assumptions).toString())
                             );
                         }
                         ExistsRule.addExistsProof1(currentAssumption, exists.getExp(), PEntailment.getRight(), var, newProof);
@@ -642,13 +642,13 @@ public class FormalArithmeticProof implements Proof<FormalArithmeticExpression> 
                         cond = !((PEntailment) prev).getLeft().getFreeVars().contains(var.getName());
                         if (!cond) {
                             throw new InvalidProofException(
-                                    DenialReason.ERROR_2.create(line, var.getName(), ((PEntailment) currentExp).getLeft().toString())
+                                    DenialReason.ERROR_2.create(statement.getLine(), var.getName(), ((PEntailment) currentExp).getLeft().toString())
                             );
                         }
                         cond = !hyposVars.contains(var.getName());
                         if (!cond) {
                             throw new InvalidProofException(
-                                    DenialReason.ERROR_3.create(line, "правило", var.getName(), getHypoExp(var, assumptions).toString())
+                                    DenialReason.ERROR_3.create(statement.getLine(), "правило", var.getName(), getHypoExp(var, assumptions).toString())
                             );
                         }
                         ForAllRule.addForAllProof(currentAssumption, ((PEntailment) currentExp).getLeft(), ((ForAll) ((PEntailment) currentExp).getRight()).getExp(), var, newProof);
@@ -656,6 +656,8 @@ public class FormalArithmeticProof implements Proof<FormalArithmeticExpression> 
                 } else {
                     throw new IllegalStateException("Illegal for all derivation rule");
                 }
+            } else {
+                throw new InvalidProofException(statement.getLine() + "");
             }
         }
     }

@@ -33,14 +33,14 @@ public class HashDeductorTest {
         exception.expect(InvalidProofException.class);
         exception.expectMessage("Вывод некорректен, начиная с формулы номер 5: " +
                 "используется правило с квантором по переменной a, входящей свободно в допущение P(a)");
-        System.out.println(deductor.deductAll(new File("res/tests/formal_arithmetic_deductor/incorrect/incorrect1.in"), null));
+        System.out.println(deductor.deductLast(new File("res/tests/formal_arithmetic_deductor/incorrect/incorrect1.in"), null));
     }
 
     @Test
     public void testDeductIncorrect2() throws InvalidProofException, FileNotFoundException, ParseException {
         exception.expect(InvalidProofException.class);
         exception.expectMessage("Вывод некорректен начиная с формулы номер 1");
-        System.out.println(deductor.deductAll(new File("res/tests/formal_arithmetic_deductor/incorrect/incorrect2.in"), null));
+        System.out.println(deductor.deductLast(new File("res/tests/formal_arithmetic_deductor/incorrect/incorrect2.in"), null));
     }
 
     @Test
@@ -48,7 +48,7 @@ public class HashDeductorTest {
         exception.expect(InvalidProofException.class);
         exception.expectMessage("Вывод некорректен, начиная с формулы номер 2: " +
                 "переменная y входит свободно в формулу @t(P(f(y)))");
-        System.out.println(deductor.deductAll(new File("res/tests/formal_arithmetic_deductor/incorrect/incorrect3.in"), null));
+        System.out.println(deductor.deductLast(new File("res/tests/formal_arithmetic_deductor/incorrect/incorrect3.in"), null));
     }
 
     @Test
@@ -56,7 +56,7 @@ public class HashDeductorTest {
         exception.expect(InvalidProofException.class);
         exception.expectMessage("Вывод некорректен, начиная с формулы номер 2: " +
                 "используется правило с квантором по переменной x, входящей свободно в допущение @x(P(x))&Q(x)");
-        System.out.println(deductor.deductAll(new File("res/tests/formal_arithmetic_deductor/incorrect/incorrect4.in"), null));
+        System.out.println(deductor.deductLast(new File("res/tests/formal_arithmetic_deductor/incorrect/incorrect4.in"), null));
     }
 
     @Test
@@ -64,7 +64,7 @@ public class HashDeductorTest {
         exception.expect(InvalidProofException.class);
         exception.expectMessage("Вывод некорректен, начиная с формулы номер 6: " +
                 "переменная x входит свободно в формулу Q(x)&@x(P(x))");
-        System.out.println(deductor.deductAll(new File("res/tests/formal_arithmetic_deductor/incorrect/incorrect5.in"), null));
+        System.out.println(deductor.deductLast(new File("res/tests/formal_arithmetic_deductor/incorrect/incorrect5.in"), null));
     }
 
     @Test
@@ -72,7 +72,7 @@ public class HashDeductorTest {
         exception.expect(InvalidProofException.class);
         exception.expectMessage("Вывод некорректен, начиная с формулы номер 6: " +
                 "переменная x входит свободно в формулу @x(P(x))&Q(x)");
-        System.out.println(deductor.deductAll(new File("res/tests/formal_arithmetic_deductor/incorrect/incorrect6.in"), null));
+        System.out.println(deductor.deductLast(new File("res/tests/formal_arithmetic_deductor/incorrect/incorrect6.in"), null));
     }
 
     @Test
@@ -80,14 +80,14 @@ public class HashDeductorTest {
         exception.expect(InvalidProofException.class);
         exception.expectMessage("Вывод некорректен, начиная с формулы номер 1: " +
                 "терм ((y+(y*y))+(g((f(x)+(y*y)))*y)) не свободен для подстановки в формулу @x(P(x,y)) вместо переменной y");
-        System.out.println(deductor.deductAll(new File("res/tests/formal_arithmetic_deductor/incorrect/incorrect7.in"), null));
+        System.out.println(deductor.deductLast(new File("res/tests/formal_arithmetic_deductor/incorrect/incorrect7.in"), null));
     }
 
     @Test
     public void testDeductIncorrect8() throws InvalidProofException, FileNotFoundException, ParseException {
         exception.expect(InvalidProofException.class);
         exception.expectMessage("Вывод некорректен начиная с формулы номер 2");
-        System.out.println(deductor.deductAll(new File("res/tests/formal_arithmetic_deductor/incorrect/incorrect8.in"), null));
+        System.out.println(deductor.deductLast(new File("res/tests/formal_arithmetic_deductor/incorrect/incorrect8.in"), null));
     }
 
     @Test
@@ -95,7 +95,7 @@ public class HashDeductorTest {
         exception.expect(InvalidProofException.class);
         exception.expectMessage("Вывод некорректен, начиная с формулы номер 4: " +
                 "используется правило с квантором по переменной x, входящей свободно в допущение Q(x)");
-        System.out.println(deductor.deductAll(new File("res/tests/formal_arithmetic_deductor/incorrect/incorrect9.in"), null));
+        System.out.println(deductor.deductLast(new File("res/tests/formal_arithmetic_deductor/incorrect/incorrect9.in"), null));
     }
 
     @Test
@@ -103,30 +103,30 @@ public class HashDeductorTest {
         exception.expect(InvalidProofException.class);
         exception.expectMessage("Вывод некорректен, начиная с формулы номер 93: " +
                 "переменная x входит свободно в формулу Q(x)&((0=0)->((0=0)->(0=0)))");
-        System.out.println(deductor.deductAll(new File("res/tests/formal_arithmetic_deductor/incorrect/incorrect10.in"), null));
+        System.out.println(deductor.deductLast(new File("res/tests/formal_arithmetic_deductor/incorrect/incorrect10.in"), null));
     }
 
     @Test
     public void testDeductIncorrect11() throws InvalidProofException, FileNotFoundException, ParseException {
         exception.expect(InvalidProofException.class);
         exception.expectMessage("Вывод некорректен начиная с формулы 11750");
-        System.out.println(deductor.deductAll(new File("res/tests/formal_arithmetic_deductor/incorrect/incorrect11.in"), null));
+        System.out.println(deductor.deductLast(new File("res/tests/formal_arithmetic_deductor/incorrect/incorrect11.in"), null));
     }
     
     @Test 
     public void testDeductGood() throws Exception {
-        deductor.deductAll(new File("res/tests/formal_arithmetic_deductor/correct/correct1.in"), null);
-        deductor.deductAll(new File("res/tests/formal_arithmetic_deductor/correct/correct2.in"), null);
+        deductor.deductLast(new File("res/tests/formal_arithmetic_deductor/correct/correct1.in"), null);
+        deductor.deductLast(new File("res/tests/formal_arithmetic_deductor/correct/correct2.in"), null);
         for (int i = 5; i <= 10; i++) {
-            deductor.deductAll(new File("res/tests/formal_arithmetic_deductor/correct/correct" + i + ".in"), null);
+            deductor.deductLast(new File("res/tests/formal_arithmetic_deductor/correct/correct" + i + ".in"), null);
         }
         for (int i = 12; i <= 14; i++) {
-            deductor.deductAll(new File("res/tests/formal_arithmetic_deductor/correct/correct" + i + ".in"), null);
+            deductor.deductLast(new File("res/tests/formal_arithmetic_deductor/correct/correct" + i + ".in"), null);
         }
     }
 
     @Test
     public void testDeductHard() throws Exception {
-        //deductor.deductAll(new File("res/tests/formal_arithmetic_deductor/correct/correct11.in"), null);
+        deductor.deductLast(new File("res/tests/formal_arithmetic_deductor/correct/correct11.in"), null);
     }
 }

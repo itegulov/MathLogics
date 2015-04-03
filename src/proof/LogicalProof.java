@@ -46,7 +46,7 @@ public final class LogicalProof implements Proof<LogicExpression> {
             line++;
             String[] tokens = s.split(" ", 2);
             if (tokens[1].matches("\\(сх\\. акс\\.(.*)")) {
-                statements.add(new Statement<>(expressionParser.parse(tokens[0]), Axiom.values()[Integer.parseInt(tokens[1].substring(10, tokens[1].length() - 1)) - 1], line));
+                statements.add(new Statement<>(expressionParser.parse(tokens[0]), LogicAxiom.values()[Integer.parseInt(tokens[1].substring(10, tokens[1].length() - 1)) - 1], line));
             } else {
                 if (tokens[1].matches("\\(M\\.P\\.(.*)")) {
                     String lineNumbers = tokens[1].substring(6, tokens[1].length() - 1);
@@ -241,7 +241,7 @@ public final class LogicalProof implements Proof<LogicExpression> {
             return proofModusPonens;
         }
 
-        for (Axiom axiom : Axiom.values()) {
+        for (LogicAxiom axiom : LogicAxiom.values()) {
             if (axiom.matches(statement.getExp())) {
                 return axiom;
             }
@@ -285,7 +285,7 @@ public final class LogicalProof implements Proof<LogicExpression> {
                 newProof.addExpression(parser.parse("((1)->(((1)->(1))->1))->((1)->(1))".replaceAll("1", currentExp.toString())), null);
                 newProof.addExpression(parser.parse("((1)->(((1)->(1))->(1)))".replaceAll("1", currentExp.toString())), null);
                 newProof.addExpression(parser.parse("(1)->(1)".replaceAll("1", currentExp.toString())), null);
-            } else if (statementType.getClass() == Axiom.class || containsStatement(assumptions, statement) || containsStatement(proofed, statement)) {
+            } else if (statementType.getClass() == LogicAxiom.class || containsStatement(assumptions, statement) || containsStatement(proofed, statement)) {
                 newProof.addExpression(currentExp, null);
                 newProof.addExpression(new Entailment(currentExp, new Entailment(currentAssumption, currentExp)), null);
                 LogicExpression expression = new Entailment(currentAssumption, currentExp);
