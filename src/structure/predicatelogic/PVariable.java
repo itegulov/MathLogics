@@ -16,18 +16,16 @@ public final class PVariable extends AbstractFormalArithmeticExpression implemen
 
     @Override
     public boolean treeMatch(Expression other) {
-        return hasSameType(other) && (name != null && ((PVariable) other).name.equals(name));
+        return other.getClass() == getClass() && (name != null && ((PVariable) other).name.equals(name));
     }
 
     @Override
-    public Map<String, Variable<FormalArithmeticExpression>> getVariables() {
-        Map<String, Variable<FormalArithmeticExpression>> map = new HashMap<>();
+    public void getVariables(Map<String, Variable<FormalArithmeticExpression>> map) {
         map.put(name, this);
-        return map;
     }
 
     @Override
-    public boolean matches(Expression other, Map<String, Expression> map) {
+    public boolean matches(FormalArithmeticExpression other, Map<String, FormalArithmeticExpression> map) {
         if (map.containsKey(name)) {
             return other.equals(map.get(name));
         }
@@ -51,8 +49,8 @@ public final class PVariable extends AbstractFormalArithmeticExpression implemen
     }
 
     @Override
-    public StringBuilder asString() {
-        return new StringBuilder(name);
+    public void asString(StringBuilder sb) {
+        sb.append(name);
     }
 
     @Override
@@ -82,8 +80,8 @@ public final class PVariable extends AbstractFormalArithmeticExpression implemen
     }
 
     @Override
-    public Set<String> getFreeVars() {
-        return new HashSet<>();
+    public Set<String> getFreeVars(Set<String> set) {
+        return set;
     }
 
     @Override

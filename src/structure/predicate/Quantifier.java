@@ -22,20 +22,28 @@ public abstract class Quantifier extends AbstractFormalArithmeticExpression {
     }
 
     @Override
-    public Set<String> getFreeVars() {
-        Set<String> vars = exp.getFreeVars();
-        vars.remove(variable.getName());
-        return vars;
+    public Set<String> getFreeVars(Set<String> set) {
+        if (set.contains(variable.getName())) {
+            exp.getFreeVars(set);
+        } else {
+            exp.getFreeVars(set);
+            set.remove(variable.getName());
+        }
+        return set;
     }
 
     @Override
-    public StringBuilder asString() {
-        return new StringBuilder(quantifierName).append(variable.toString()).append("(").append(exp.toString()).append(")");
+    public void asString(StringBuilder sb) {
+        sb.append(quantifierName);
+        variable.asString(sb);
+        sb.append('(');
+        exp.asString(sb);
+        sb.append(')');
     }
 
     @Override
-    public Map<String, Variable<FormalArithmeticExpression>> getVariables() {
-        return exp.getVariables();
+    public void getVariables(Map<String, Variable<FormalArithmeticExpression>> map) {
+        exp.getVariables(map);
     }
 
     @Override
@@ -49,7 +57,7 @@ public abstract class Quantifier extends AbstractFormalArithmeticExpression {
     }
 
     @Override
-    public boolean matches(Expression other, Map<String, Expression> map) {
+    public boolean matches(FormalArithmeticExpression other, Map<String, FormalArithmeticExpression> map) {
         throw new IllegalStateException("cannot match expressions with quantifiers");
     }
 
@@ -60,7 +68,7 @@ public abstract class Quantifier extends AbstractFormalArithmeticExpression {
 
     @Override
     public Set<Pair<Term, Term>> getReplacedVariableOccurrences(Expression originalExpr) throws TreeMismatchException {
-        if (!hasSameType(originalExpr) || !variable.getName().equals(((Quantifier) originalExpr).getVariable().getName())) {
+        if (!(originalExpr.getClass() == getClass()) || !variable.getName().equals(((Quantifier) originalExpr).getVariable().getName())) {
             throw new TreeMismatchException(originalExpr, this);
         }
         return exp.getReplacedVariableOccurrences(((Quantifier) originalExpr).getExp());

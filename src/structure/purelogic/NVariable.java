@@ -6,7 +6,6 @@ import structure.LogicExpression;
 import structure.Variable;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -28,18 +27,16 @@ public final class NVariable extends AbstractLogicExpression implements Variable
 
     @Override
     public boolean treeMatch(Expression other) {
-        return hasSameType(other) && (name != null && ((NVariable) other).name.equals(name));
+        return other.getClass() == getClass() && (name != null && ((NVariable) other).name.equals(name));
     }
 
     @Override
-    public Map<String, Variable<LogicExpression>> getVariables() {
-        Map<String, Variable<LogicExpression>> map = new HashMap<>();
+    public void getVariables(Map<String, Variable<LogicExpression>> map) {
         map.put(name, this);
-        return map;
     }
 
     @Override
-    public boolean matches(Expression other, Map<String, Expression> map) {
+    public boolean matches(LogicExpression other, Map<String, LogicExpression> map) {
         if (map.containsKey(name)) {
             return other.equals(map.get(name));
         }
@@ -63,8 +60,8 @@ public final class NVariable extends AbstractLogicExpression implements Variable
     }
 
     @Override
-    public StringBuilder asString() {
-        return new StringBuilder(name);
+    public void asString(StringBuilder sb) {
+        sb.append(name);
     }
 
     @Override

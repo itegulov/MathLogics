@@ -25,7 +25,7 @@ public abstract class UnaryOperator extends AbstractLogicExpression {
     protected abstract boolean operation(boolean a);
 
     @Override
-    public boolean matches(Expression other, Map<String, Expression> map) {
+    public boolean matches(LogicExpression other, Map<String, LogicExpression> map) {
         if (getClass() == other.getClass()) {
             UnaryOperator otherBo = (UnaryOperator) other;
             return exp.matches(otherBo.exp, map);
@@ -34,13 +34,15 @@ public abstract class UnaryOperator extends AbstractLogicExpression {
     }
 
     @Override
-    public StringBuilder asString() {
-        StringBuilder s = exp.asString();
+    public void asString(StringBuilder sb) {
+        sb.append(operationName);
         if (exp instanceof BinaryOperator) {
-            s.insert(0, '(');
-            s.append(')');
+            sb.append('(');
+            exp.asString(sb);
+            sb.append(')');
+        } else {
+            exp.asString(sb);
         }
-        return s.insert(0, operationName);
     }
 
     @Override
@@ -53,13 +55,13 @@ public abstract class UnaryOperator extends AbstractLogicExpression {
 
     @Override
     public boolean treeMatch(Expression other) {
-        return hasSameType(other)
+        return other.getClass() == getClass()
                 && ((Not) other).exp.treeMatch(exp);
     }
 
     @Override
-    public Map<String, Variable<LogicExpression>> getVariables() {
-        return exp.getVariables();
+    public void getVariables(Map<String, Variable<LogicExpression>> map) {
+        exp.getVariables(map);
     }
 
     @Override

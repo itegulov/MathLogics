@@ -27,7 +27,7 @@ public abstract class BinaryOperator extends AbstractLogicExpression {
     protected abstract boolean operation(boolean a, boolean b);
 
     @Override
-    public boolean matches(Expression other, Map<String, Expression> map) {
+    public boolean matches(LogicExpression other, Map<String, LogicExpression> map) {
         if (getClass() == other.getClass()) {
             BinaryOperator otherBo = (BinaryOperator) other;
             return left.matches(otherBo.left, map) && right.matches(otherBo.right, map);
@@ -36,18 +36,22 @@ public abstract class BinaryOperator extends AbstractLogicExpression {
     }
 
     @Override
-    public StringBuilder asString() {
-        StringBuilder s1 = left.asString();
-        StringBuilder s2 = right.asString();
+    public void asString(StringBuilder sb) {
         if (left instanceof BinaryOperator) {
-            s1.insert(0, '(');
-            s1.append(')');
+            sb.append('(');
+            left.asString(sb);
+            sb.append(')');
+        } else {
+            left.asString(sb);
         }
+        sb.append(operationName);
         if (right instanceof BinaryOperator) {
-            s2.insert(0, '(');
-            s2.append(')');
+            sb.append('(');
+            right.asString(sb);
+            sb.append(')');
+        } else {
+            right.asString(sb);
         }
-        return s1.append(operationName).append(s2);
     }
 
     @Override
@@ -68,16 +72,15 @@ public abstract class BinaryOperator extends AbstractLogicExpression {
 
     @Override
     public boolean treeMatch(Expression other) {
-        return hasSameType(other)
+        return other.getClass() == getClass()
                 && ((BinaryOperator) other).left.treeMatch(left)
                 && ((BinaryOperator) other).right.treeMatch(right);
     }
 
     @Override
-    public Map<String, Variable<LogicExpression>> getVariables() {
-        Map<String, Variable<LogicExpression>> variables = left.getVariables();
-        variables.putAll(right.getVariables());
-        return variables;
+    public void getVariables(Map<String, Variable<LogicExpression>> map) {
+        left.getVariables(map);
+        right.getVariables(map);
     }
 
     @Override
@@ -86,38 +89,4 @@ public abstract class BinaryOperator extends AbstractLogicExpression {
         result.addAll(right.getParticularProof(hypothesis));
         return result;
     }
-
-    /*
-
-    @Override
-    public void setQuantifiers(Set<String> quantifiers) {
-        left.setQuantifiers(quantifiers);
-        right.setQuantifiers(quantifiers);
-    }
-
-    @Override
-    public Set<String> getFreeVars() {
-        Set<String> h = left.getFreeVars();
-        h.addAll(right.getFreeVars());
-        return h;
-    }
-
-    @Override
-    public int markFreeVariableOccurrences(String variableName) {
-        int result = left.markFreeVariableOccurrences(variableName);
-        result += right.markFreeVariableOccurrences(variableName);
-        return result;
-    }
-
-    @Override
-    public Set<Pair<Term, Term>> getReplacedVariableOccurrences(Expression originalExpr) throws TreeMismatchException {
-        if (!hasSameType(originalExpr)) {
-            throw new TreeMismatchException(originalExpr, this);
-        }
-        Set<Pair<Term, Term>> set = left.getReplacedVariableOccurrences(((BinaryOperator) originalExpr).left);
-        set.addAll(right.getReplacedVariableOccurrences(((BinaryOperator) originalExpr).right));
-        return set;
-    }
-
-    */
 }

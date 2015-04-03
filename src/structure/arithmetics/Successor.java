@@ -3,7 +3,6 @@ package structure.arithmetics;
 import structure.predicate.Term;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Set;
 
 public class Successor extends Term {
@@ -21,12 +20,11 @@ public class Successor extends Term {
     }
 
     @Override
-    public Set<String> getFreeVars() {
-        HashSet<String> vars = new HashSet<>();
+    public Set<String> getFreeVars(Set<String> set) {
         for (Term t : arguments) {
-            vars.addAll(t.getFreeVars());
+            t.getFreeVars(set);
         }
-        return vars;
+        return set;
     }
 
     public Term getOperand() {
@@ -34,10 +32,11 @@ public class Successor extends Term {
     }
 
     @Override
-    public StringBuilder asString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("(").append(operand.asString()).append(")").append(name);
-        return sb;
+    public void asString(StringBuilder sb) {
+        sb.append('(');
+        operand.asString(sb);
+        sb.append(')');
+        sb.append('\'');
     }
 
 }

@@ -23,7 +23,7 @@ public abstract class PUnaryOperator extends AbstractFormalArithmeticExpression 
     protected abstract boolean operation(boolean a);
 
     @Override
-    public boolean matches(Expression other, Map<String, Expression> map) {
+    public boolean matches(FormalArithmeticExpression other, Map<String, FormalArithmeticExpression> map) {
         if (getClass() == other.getClass()) {
             PUnaryOperator otherBo = (PUnaryOperator) other;
             return exp.matches(otherBo.exp, map);
@@ -32,13 +32,15 @@ public abstract class PUnaryOperator extends AbstractFormalArithmeticExpression 
     }
 
     @Override
-    public StringBuilder asString() {
-        StringBuilder s = exp.asString();
+    public void asString(StringBuilder sb) {
+        sb.append(operationName);
         if (exp instanceof PBinaryOperator) {
-            s.insert(0, '(');
-            s.append(')');
+            sb.append('(');
+            exp.asString(sb);
+            sb.append(')');
+        } else {
+            exp.asString(sb);
         }
-        return s.insert(0, operationName);
     }
 
     @Override
@@ -51,13 +53,13 @@ public abstract class PUnaryOperator extends AbstractFormalArithmeticExpression 
 
     @Override
     public boolean treeMatch(Expression other) {
-        return hasSameType(other)
+        return other.getClass() == getClass()
                 && ((PNot) other).exp.treeMatch(exp);
     }
 
     @Override
-    public Map<String, Variable<FormalArithmeticExpression>> getVariables() {
-        return exp.getVariables();
+    public void getVariables(Map<String, Variable<FormalArithmeticExpression>> map) {
+        exp.getVariables(map);
     }
 
 
@@ -67,8 +69,8 @@ public abstract class PUnaryOperator extends AbstractFormalArithmeticExpression 
     }
 
     @Override
-    public Set<String> getFreeVars() {
-        return exp.getFreeVars();
+    public Set<String> getFreeVars(Set<String> set) {
+        return exp.getFreeVars(set);
     }
 
     @Override
@@ -78,7 +80,7 @@ public abstract class PUnaryOperator extends AbstractFormalArithmeticExpression 
 
     @Override
     public Set<Pair<Term, Term>> getReplacedVariableOccurrences(Expression originalExpr) throws TreeMismatchException {
-        if (!hasSameType(originalExpr)) {
+        if (!(originalExpr.getClass() == getClass())) {
             throw new TreeMismatchException(originalExpr, this);
         }
         return exp.getReplacedVariableOccurrences(((PUnaryOperator) originalExpr).exp);
