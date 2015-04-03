@@ -1,6 +1,4 @@
 package structure;
-import structure.Expression;
-
 /**
  * Interface for generating random {@link Expression} with specified size of
  * terms.
@@ -8,12 +6,12 @@ import structure.Expression;
  * @since %I% %G%
  * @version 1.0
  */
-public interface ExpressionRandomGenerator {
+public interface ExpressionRandomGenerator<E extends Expression<E>> {
     /**
      * Generates random {@link structure.Expression} with specified size of
      * terms.
      * @param size      specifies count of terms in result structure.expression
      * @return          some random structure.expression with specified size of terms
      */
-    Expression generate(int size);
+    E generate(int size);
 }

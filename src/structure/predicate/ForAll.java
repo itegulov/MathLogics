@@ -1,16 +1,17 @@
 package structure.predicate;
 
-import com.sun.istack.internal.NotNull;
 import structure.Expression;
-import structure.logic.Variable;
+import structure.FormalArithmeticExpression;
+
+import java.util.Map;
 
 public final class ForAll extends Quantifier {
-    public ForAll(Term variable, Expression exp) {
+    public ForAll(Term variable, FormalArithmeticExpression exp) {
         super(variable, exp, "@");
     }
 
     @Override
-    public boolean treeMatch(@NotNull Expression other) {
+    public boolean treeMatch(Expression other) {
         return hasSameType(other)
                 && variable.treeMatch(((ForAll) other).variable)
                 && exp.treeMatch(((ForAll) other).exp);
@@ -19,5 +20,10 @@ public final class ForAll extends Quantifier {
     @Override
     public String toJavaCode() {
         return "new ForAll(" + variable.toJavaCode() + "," + exp.toJavaCode() + ")";
+    }
+
+    @Override
+    public FormalArithmeticExpression replaceAll(final Map<Integer, FormalArithmeticExpression> replacement) {
+        return new ForAll((Term) variable.replaceAll(replacement), exp.replaceAll(replacement));
     }
 }

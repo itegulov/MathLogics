@@ -1,22 +1,21 @@
 package structure.predicate;
 
-import com.sun.istack.internal.NotNull;
 import exceptions.TreeMismatchException;
 import javafx.util.Pair;
-import structure.AbstractExpression;
+import structure.AbstractFormalArithmeticExpression;
 import structure.Expression;
-import structure.logic.Variable;
+import structure.FormalArithmeticExpression;
+import structure.Variable;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public abstract class Quantifier extends AbstractExpression {
+public abstract class Quantifier extends AbstractFormalArithmeticExpression {
     protected Term variable;
-    protected Expression exp;
+    protected FormalArithmeticExpression exp;
     protected String quantifierName;
 
-    public Quantifier(Term variable, Expression exp, String quantifierName) {
+    public Quantifier(Term variable, FormalArithmeticExpression exp, String quantifierName) {
         this.variable = variable;
         this.exp = exp;
         this.quantifierName = quantifierName;
@@ -30,27 +29,12 @@ public abstract class Quantifier extends AbstractExpression {
     }
 
     @Override
-    public boolean evaluate() {
-        throw new IllegalStateException("cannot evaluate expressions with quantifiers");
-    }
-
-    @Override
-    public boolean evaluate(@NotNull Map<String, Boolean> args) {
-        throw new IllegalStateException("cannot evaluate expressions with quantifiers");
-    }
-
-    @Override
     public StringBuilder asString() {
         return new StringBuilder(quantifierName).append(variable.toString()).append("(").append(exp.toString()).append(")");
     }
 
     @Override
-    public List<Expression> getParticularProof(List<Expression> hypothesis) {
-        throw new IllegalStateException("cannot proof expressions with quantifiers");
-    }
-
-    @Override
-    public Map<String, Variable> getVariables() {
+    public Map<String, Variable<FormalArithmeticExpression>> getVariables() {
         return exp.getVariables();
     }
 
@@ -65,13 +49,8 @@ public abstract class Quantifier extends AbstractExpression {
     }
 
     @Override
-    public boolean matches(@NotNull Expression other, @NotNull Map<String, Expression> map) {
+    public boolean matches(Expression other, Map<String, Expression> map) {
         throw new IllegalStateException("cannot match expressions with quantifiers");
-    }
-
-    @Override
-    public Expression replaceAll(Map<Integer, Expression> replacement) {
-        throw new IllegalStateException("cannot replace expressions with quantifiers");
     }
 
     @Override
@@ -91,7 +70,7 @@ public abstract class Quantifier extends AbstractExpression {
         return variable;
     }
 
-    public Expression getExp() {
+    public FormalArithmeticExpression getExp() {
         return exp;
     }
 }

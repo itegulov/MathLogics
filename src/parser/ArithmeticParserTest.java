@@ -3,7 +3,6 @@ package parser;
 import org.junit.Test;
 import structure.Expression;
 import structure.arithmetics.*;
-import structure.logic.Variable;
 import structure.predicate.Exists;
 import structure.predicate.ForAll;
 import structure.predicate.Predicate;

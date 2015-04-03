@@ -1,15 +1,17 @@
 package interfaces;
 
 import exceptions.InvalidProofException;
-import parser.ParseException;
+import proof.LogicalProof;
 import proof.Proof;
 import proof.Statement;
+import structure.Expression;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.List;
 
 /**
- * Interface, providing way to deduct some {@link proof.Proof}.
+ * Interface, providing way to deductAll some {@link LogicalProof}.
  * It isn't bounded to some theory (propositional logic, formal
  * arithmetic or some other), so it's somehow general for all
  * math logic theories. But deduction theorem must be proofed
@@ -17,7 +19,7 @@ import java.io.FileNotFoundException;
  *
  * @author Daniyar Itegulov
  */
-public interface Deductor {
+public interface Deductor<E extends Expression<E>> {
     /**
      * Deducts {@code file}, containing proof, consisting
      * of statements line by line. Assumes, that {@code proofed}
@@ -28,7 +30,7 @@ public interface Deductor {
      * A,B,...,C|-D
      * <p>
      * Which means, that D can be proofed if A,B,...,C are trusted to be
-     * true. Creates formal {@link proof.Proof}, which lifts all assumptions:
+     * true. Creates formal {@link LogicalProof}, which lifts all assumptions:
      * <p>
      * |-A->B->...->C->D
      *
@@ -36,12 +38,11 @@ public interface Deductor {
      * @param proofed array of statements, which can be trusted to be true
      * @return formal proof, deducted from {@code file}
      * @throws FileNotFoundException if {@code file} wasn't found
-     * @throws ParseException if some of turnstile {@link structure.Expression}
-     * couldn't be parsed
      * @throws InvalidProofException if proof, provided in {@code file} is
      * invalid
      */
-    Proof deduct(final File file, final Statement[] proofed) throws FileNotFoundException, ParseException, InvalidProofException;
+    Proof<E> deductAll(final File file,
+                       final List<Statement<E>> proofed) throws FileNotFoundException, InvalidProofException;
 
     /**
      * Deducts {@code proof} with left-turnstile elements {@code assumptions}.
@@ -52,9 +53,50 @@ public interface Deductor {
      * @param assumptions array of statements, that describe left-turnstile statements
      * @param proofed array of statements, which can be trusted to be true
      * @return formal proof, deducted from {@code file}
-     * @throws ParseException
      * @throws InvalidProofException
-     * @see #deduct(File, Statement[])
+     * @see #deductAll(File, List)
      */
-    Proof deduct(final Proof proof, final Statement[] assumptions, final Statement[] proofed) throws ParseException, InvalidProofException;
+    Proof<E> deductAll(final Proof<E> proof,
+                       final List<Statement<E>> assumptions,
+                       final List<Statement<E>> proofed) throws InvalidProofException;
+
+    /**
+     * Deducts {@code file}, containing proof, consisting
+     * of statements line by line. Assumes, that {@code proofed}
+     * contains {@link proof.Statement}, that can be trusted to be true.
+     * <p>
+     * First line in {@code file} must be in this form:
+     * <p>
+     * A,B,...,C,D|-E
+     * <p>
+     * Which means, that D can be proofed if A,B,...,C,D are trusted to be
+     * true. Creates formal {@link LogicalProof}, which lifts last assumption:
+     * <p>
+     * A,B,...C|-D->E
+     *
+     * @param file file, containing proof
+     * @param proofed array of statements, which can be trusted to be true
+     * @return formal proof, deducted from {@code file}
+     * @throws FileNotFoundException if {@code file} wasn't found
+     * @throws InvalidProofException if proof, provided in {@code file} is
+     * invalid
+     */
+    Proof<E> deductLast(final File file,
+                       final List<Statement<E>> proofed) throws FileNotFoundException, InvalidProofException;
+
+    /**
+     * Deducts {@code proof} with left-turnstile elements {@code assumptions}.
+     * Lifts only last assumption in contrast of {@link #deductAll(Proof, List, List)}.
+     * Assumes, that {@code proofed} contains {@link proof.Statement}, that can
+     * be trusted to be true.
+     *
+     * @param proof file, containing proof
+     * @param assumptions array of statements, that describe left-turnstile statements
+     * @param proofed array of statements, which can be trusted to be true
+     * @return formal proof, deducted from {@code file}
+     * @throws InvalidProofException
+     */
+    Proof<E> deductLast(final Proof<E> proof,
+                        final List<Statement<E>> assumptions,
+                        final List<Statement<E>> proofed) throws InvalidProofException;
 }

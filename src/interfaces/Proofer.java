@@ -1,7 +1,10 @@
 package interfaces;
 
+import exceptions.FalseExpressionException;
 import parser.ParseException;
+import proof.LogicalProof;
 import proof.Proof;
+import structure.Expression;
 
 /**
  * Interface, providing way to proof some {@link structure.Expression}.
@@ -12,14 +15,16 @@ import proof.Proof;
  *
  * @author Daniyar Itegulov
  */
-public interface Proofer {
+public interface Proofer<E extends Expression<E>> {
     /**
-     * Generates {@link Proof}, that proofs {@code statement} without any
+     * Generates {@link LogicalProof}, that proofs {@code statement} without any
      * assumptions.
      *
      * @param statement string, describing expression to proof
      * @return generated proof
      * @throws ParseException if {@code statement} is invalid expression
+     * @throws FalseExpressionException if {@code statement} is false expression and
+     * can't be proofed
      */
-    Proof proof(String statement) throws ParseException;
+    Proof<E> proof(String statement) throws ParseException, FalseExpressionException;
 }

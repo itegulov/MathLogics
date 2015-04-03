@@ -1,14 +1,13 @@
 package parser;
 
-import com.sun.istack.internal.NotNull;
-import structure.Expression;
-import structure.logic.*;
+import structure.LogicExpression;
+import structure.purelogic.*;
 
 /**
  * Implementation of {@link Parser}, that
  * //TODO: javadoc it
  */
-public final class LogicParser implements Parser<Expression> {
+public final class LogicParser implements Parser<LogicExpression> {
     private String s;
     private int next;
 
@@ -24,18 +23,14 @@ public final class LogicParser implements Parser<Expression> {
         next--;
     }
 
-    private boolean isChar(char c) {
-        return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
-    }
-
-    private Variable getVariable(char c) {
+    private NVariable getVariable(char c) {
         StringBuilder sb = new StringBuilder();
         do {
             sb.append(c);
             c = getChar();
         } while (Character.isDigit(c));
         returnChar();
-        return new Variable(sb.toString());
+        return new NVariable(sb.toString());
     }
 
     private Gap getGap(char c) {
@@ -56,7 +51,7 @@ public final class LogicParser implements Parser<Expression> {
         returnChar();
     }
 
-    private Expression parseFactor() throws ParseException {
+    private LogicExpression parseFactor() throws ParseException {
         skipWhitespaces();
         char c = getChar();
 
@@ -68,7 +63,7 @@ public final class LogicParser implements Parser<Expression> {
             return getVariable(c);
         }
 
-        Expression result;
+        LogicExpression result;
         switch (c) {
             case '!':
                 return new Not(parseFactor());
@@ -84,7 +79,7 @@ public final class LogicParser implements Parser<Expression> {
         }
     }
 
-    private Expression parseAnd(@NotNull Expression left) throws ParseException {
+    private LogicExpression parseAnd(LogicExpression left) throws ParseException {
         skipWhitespaces();
         char c = getChar();
 
@@ -97,7 +92,7 @@ public final class LogicParser implements Parser<Expression> {
         }
     }
 
-    private Expression parseOr(@NotNull Expression left) throws ParseException {
+    private LogicExpression parseOr(LogicExpression left) throws ParseException {
         skipWhitespaces();
         char c = getChar();
 
@@ -112,7 +107,7 @@ public final class LogicParser implements Parser<Expression> {
 
 
 
-    private Expression parseEntailment(@NotNull Expression left) throws ParseException {
+    private LogicExpression parseEntailment(LogicExpression left) throws ParseException {
         skipWhitespaces();
         char c = getChar();
 
@@ -130,15 +125,15 @@ public final class LogicParser implements Parser<Expression> {
         }
     }
 
-    private Expression parseFormula() throws ParseException {
+    private LogicExpression parseFormula() throws ParseException {
         return parseEntailment(parseOr(parseAnd(parseFactor())));
     }
 
     @Override
-    public Expression parse(@NotNull String str) throws ParseException {
+    public LogicExpression parse(String str) throws ParseException {
         s = str;
         next = 0;
-        Expression expression = parseFormula();
+        LogicExpression expression = parseFormula();
         if (next < s.length()) {
             throw new ParseException("Unexpected symbol on " + next);
         }

@@ -1,28 +1,28 @@
 package parser;
 
-import structure.Expression;
+import structure.FormalArithmeticExpression;
 import structure.arithmetics.*;
-import structure.logic.*;
 import structure.predicate.Exists;
 import structure.predicate.ForAll;
 import structure.predicate.Predicate;
 import structure.predicate.Term;
+import structure.predicatelogic.*;
 
 import java.util.ArrayList;
 
-public final class ArithmeticParser implements Parser<Expression> {
-    private static String expression;
-    private static int index;
+public final class ArithmeticParser implements Parser<FormalArithmeticExpression> {
+    private String expression;
+    private int index;
 
-    private static char getChar() {
+    private char getChar() {
         return expression.charAt(index++);
     }
 
-    private static void returnChar() {
+    private void returnChar() {
         index--;
     }
 
-    private static Term variableOrNull() throws ParseException {
+    private Term variablePOrNull() throws ParseException {
         if (getChar() == '0') {
             return new Zero();
         } else {
@@ -31,11 +31,11 @@ public final class ArithmeticParser implements Parser<Expression> {
         }
     }
 
-    private static Term variable() throws ParseException {
+    private Term variable() throws ParseException {
         int start = index, end = index + 1;
         char nextChar = getChar();
         if (!Character.isLetter(nextChar) || !Character.isLowerCase(nextChar))
-            throw new ParseException("cannot parse: " + expression);
+            throw new ParseException("canPNot parse: " + expression);
         while (Character.isDigit(getChar()))
             end++;
         returnChar();
@@ -44,64 +44,64 @@ public final class ArithmeticParser implements Parser<Expression> {
     }
 
     @Override
-    public Expression parse(String expression) throws ParseException {
-        ArithmeticParser.expression = expression.replaceAll("\\s+", "") + ";";
+    public FormalArithmeticExpression parse(String expression) throws ParseException {
+        this.expression = expression.replaceAll("\\s+", "") + ";";
         index = 0;
-        Expression e = implication();
-        if (index != expression.length()) {
+        FormalArithmeticExpression e = implication();
+        if (index != this.expression.length() - 1) {
             throw new ParseException("Illegal character: " + expression.charAt(index));
         }
         return e;
     }
 
-    protected Expression implication() throws ParseException {
-        Expression s = Or();
+    protected FormalArithmeticExpression implication() throws ParseException {
+        FormalArithmeticExpression s = POr();
         char nextChar = getChar();
         if (nextChar == '-') {
             if (getChar() != '>')
-                throw new ParseException("cannot parse: " + expression);
-            s = new Entailment(s, implication());
+                throw new ParseException("canPNot parse: " + expression);
+            s = new PEntailment(s, implication());
         } else {
             returnChar();
         }
         return s;
     }
 
-    protected Expression Or() throws ParseException {
-        Expression l = And();
+    protected FormalArithmeticExpression POr() throws ParseException {
+        FormalArithmeticExpression l = PAnd();
         char nextChar = getChar();
         while (nextChar == '|') {
-            l = new Or(l, And());
+            l = new POr(l, PAnd());
             nextChar = getChar();
         }
         returnChar();
         return l;
     }
 
-    protected Expression And() throws ParseException {
-        Expression l = unary();
+    protected FormalArithmeticExpression PAnd() throws ParseException {
+        FormalArithmeticExpression l = unary();
         char nextChar = getChar();
         while (nextChar == '&') {
-            l = new And(l, unary());
+            l = new PAnd(l, unary());
             nextChar = getChar();
         }
         returnChar();
         return l;
     }
 
-    protected Expression unary() throws ParseException {
+    protected FormalArithmeticExpression unary() throws ParseException {
         char nextChar = getChar();
         if (Character.isLetter(nextChar) || Character.isDigit(nextChar)) {
             return predicate(Character.isUpperCase(nextChar));
         } else if (nextChar == '!') {
-            return new Not(unary());
+            return new PNot(unary());
         } else if (nextChar == '(') {
             int saveIndex = index;
-            Expression result;
+            FormalArithmeticExpression result;
             try {
                 result = implication();
                 if (getChar() != ')') {
-                    throw new ParseException("cannot parse: " + expression);
+                    throw new ParseException("canPNot parse: " + expression);
                 }
             } catch (ParseException pe) {
                 index = saveIndex;
@@ -116,11 +116,11 @@ public final class ArithmeticParser implements Parser<Expression> {
         } else if (nextChar == '?') {
             return new Exists(variable(), unary());
         } else {
-            throw new ParseException("cannot parse: " + expression);
+            throw new ParseException("canPNot parse: " + expression);
         }
     }
 
-    protected Expression predicate(boolean firstCharIsUpperCase) throws ParseException {
+    protected FormalArithmeticExpression predicate(boolean firstCharIsUpperCase) throws ParseException {
         if (firstCharIsUpperCase) {
             int start = index - 1, end = index;
             char nextChar;
@@ -131,11 +131,11 @@ public final class ArithmeticParser implements Parser<Expression> {
             if (nextChar == '(') {
                 list = terms();
                 if (getChar() != ')')
-                    throw new ParseException("cannot parse: " + expression);
+                    throw new ParseException("canPNot parse: " + expression);
             } else
                 returnChar();
             if (list.size() == 0) {
-                return new Variable(name);
+                return new PVariable(name);
             }
             return new Predicate(name, list);
         } else {
@@ -143,19 +143,19 @@ public final class ArithmeticParser implements Parser<Expression> {
             ArrayList<Term> list = new ArrayList<>();
             list.add(term());
             if (getChar() != '=')
-                throw new ParseException("cannot parse: " + expression);
+                throw new ParseException("canPNot parse: " + expression);
             list.add(term());
             return new Equals(list);
         }
     }
 
     protected Term term() throws ParseException {
-        Term t = summand();
+        Term t = summPAnd();
         char nextChar = getChar();
         while (nextChar == '+') {
             ArrayList<Term> list = new ArrayList<>();
             list.add(t);
-            list.add(summand());
+            list.add(summPAnd());
             t = new Plus(list);
             nextChar = getChar();
         }
@@ -163,7 +163,7 @@ public final class ArithmeticParser implements Parser<Expression> {
         return t;
     }
 
-    protected Term summand() throws ParseException {
+    protected Term summPAnd() throws ParseException {
         Term t = multiplied();
         char nextChar = getChar();
         while (nextChar == '*') {
@@ -183,16 +183,16 @@ public final class ArithmeticParser implements Parser<Expression> {
         if (nextChar == '(') {
             t = term();
             if (getChar() != ')')
-                throw new ParseException("cannot parse: " + expression);
+                throw new ParseException("canPNot parse: " + expression);
         } else {
             returnChar();
-            t = variableOrNull();
+            t = variablePOrNull();
             if (!"0".equals(t.getName())) {
                 nextChar = getChar();
                 if (nextChar == '(') {
                     ArrayList<Term> list = terms();
                     if (getChar() != ')')
-                        throw new ParseException("cannot parse: " + expression);
+                        throw new ParseException("canPNot parse: " + expression);
 
                     switch (t.getName()) {
                         case "+": {

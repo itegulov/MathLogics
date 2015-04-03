@@ -3,13 +3,17 @@ package structure.predicate;
 import com.sun.istack.internal.NotNull;
 import exceptions.TreeMismatchException;
 import javafx.util.Pair;
-import structure.AbstractExpression;
+import structure.AbstractFormalArithmeticExpression;
 import structure.Expression;
-import structure.logic.Variable;
+import structure.FormalArithmeticExpression;
+import structure.Variable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
-public class Predicate extends AbstractExpression {
+public class Predicate extends AbstractFormalArithmeticExpression {
     protected String name;
     protected Term[] arguments;
 
@@ -33,16 +37,6 @@ public class Predicate extends AbstractExpression {
     }
 
     @Override
-    public boolean evaluate(@NotNull Map<String, Boolean> args) {
-        throw new IllegalStateException("cannot evaluate predicates");
-    }
-
-    @Override
-    public boolean evaluate() {
-        throw new IllegalStateException("cannot evaluate predicates");
-    }
-
-    @Override
     public boolean treeMatch(@NotNull Expression other) {
         if (hasSameType(other)) {
             Predicate predicate = (Predicate) other;
@@ -61,7 +55,7 @@ public class Predicate extends AbstractExpression {
     }
 
     @Override
-    public Map<String, Variable> getVariables() {
+    public Map<String, Variable<FormalArithmeticExpression>> getVariables() {
         throw new IllegalStateException("cannot get variables in predicates");
     }
 
@@ -102,7 +96,7 @@ public class Predicate extends AbstractExpression {
     }
 
     @Override
-    public Expression replaceAll(Map<Integer, Expression> replacement) {
+    public FormalArithmeticExpression replaceAll(Map<Integer, FormalArithmeticExpression> replacement) {
         Predicate predicate = new Predicate(this.name);
         Term[] args = new Term[arguments.length];
         for (int i = 0; i < arguments.length; i++) {
@@ -110,11 +104,6 @@ public class Predicate extends AbstractExpression {
         }
         predicate.setArguments(args);
         return predicate;
-    }
-
-    @Override
-    public List<Expression> getParticularProof(List<Expression> hypothesis) {
-        throw new IllegalStateException("cannot proof predicate");
     }
 
     @Override

@@ -6,106 +6,117 @@ import interfaces.Validator;
 import parser.LogicParser;
 import parser.ParseException;
 import parser.Parser;
-import proof.*;
-import propositionallogic.validator.HashValidator;
+import proof.Assumption;
+import proof.LogicalProof;
+import proof.Proof;
+import proof.Statement;
+import propositionallogic.validator.BasicValidator;
 import scanner.FastLineScanner;
-import structure.Expression;
-import structure.logic.Entailment;
+import structure.LogicExpression;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
 
-public final class HashDeductor implements Deductor {
+public final class HashDeductor implements Deductor<LogicExpression> {
     //TODO: javadoc
 
-    private boolean containsStatement(final Statement[] proofed, final Statement statement) {
-        if (proofed == null) {
-            return false;
-        }
-        for (Statement allow : proofed) {
-            if (allow.equals(statement)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     @Override
-    public Proof deduct(final File f, final Statement[] proofed) throws FileNotFoundException, ParseException, InvalidProofException {
+    public Proof<LogicExpression> deductAll(final File f,
+                                            final List<Statement<LogicExpression>> proofed)
+            throws FileNotFoundException, InvalidProofException {
         FastLineScanner scanner = new FastLineScanner(f);
-        Parser<Expression> parser = new LogicParser();
+        Parser<LogicExpression> parser = new LogicParser();
 
         String assumptionsStatement = scanner.next();
         String[] parts = assumptionsStatement.split("\\|\\-", 2);
         String[] assumptionStrings = parts[0].split(",");
-        final Statement[] assumptions = new Statement[assumptionStrings.length];
-        for (int i = 0; i < assumptionStrings.length; i++) {
-            assumptions[i] = new Statement(parser.parse(assumptionStrings[i]), new Assumption(), 0);
+        final List<Statement<LogicExpression>> assumptions = new ArrayList<>(assumptionStrings.length);
+        for (String assumptionString : assumptionStrings) {
+            try {
+                assumptions.add(new Statement<>(parser.parse(assumptionString), new Assumption(), 0));
+            } catch (ParseException e) {
+                throw new InvalidProofException("Couldn't parse assumption");
+            }
         }
-        Validator validator = new HashValidator();
-        Proof proof = validator.validate(scanner, assumptions);
-        return deduct(proof, assumptions, proofed);
+        Validator<LogicExpression> validator = new BasicValidator();
+        Proof<LogicExpression> proof = validator.validate(scanner, assumptions);
+        return deductAll(proof, assumptions, proofed);
     }
 
     @Override
-    public Proof deduct(Proof proof, final Statement[] assumptions, final Statement[] proofed) throws ParseException, InvalidProofException {
-        Validator validator = new HashValidator();
-        Statement[] all;
+    public Proof<LogicExpression> deductAll(Proof<LogicExpression> proof,
+                                            final List<Statement<LogicExpression>> assumptions,
+                                            final List<Statement<LogicExpression>> proofed) throws InvalidProofException {
+        Validator<LogicExpression> validator = new BasicValidator();
+        List<Statement<LogicExpression>> all;
         if (proofed != null) {
-            all = new Statement[assumptions.length + proofed.length];
-            System.arraycopy(assumptions, 0, all, 0, assumptions.length);
-            System.arraycopy(proofed, 0, all, assumptions.length, proofed.length);
+            all = new ArrayList<>(assumptions.size() + proofed.size());
+            all.addAll(assumptions);
+            all.addAll(proofed);
         } else {
-            all = new Statement[assumptions.length];
-            System.arraycopy(assumptions, 0, all, 0, assumptions.length);
+            all = new ArrayList<>(assumptions.size());
+            all.addAll(assumptions);
             proof = validator.validate(proof, assumptions);
         }
         proof = validator.validate(proof, all);
-        Parser<Expression> parser = new LogicParser();
-        for (Statement assumption : assumptions) {
-            Expression currentAssumption = assumption.getExp();
-            Proof newProof = new Proof();
-            for (Statement statement : proof.getStatements()) {
-                Proof tempProof = validator.validate(newProof, all);
-                if (!tempProof.check(proofed)) {
-                    System.out.println("WUT");
-                }
-                Expression currentExp = statement.getExp();
-                StatementType statementType = statement.getType();
-                if (statement.getExp().equals(currentAssumption)) {
-                    newProof.addExpression(parser.parse("(1)->(1)->(1)".replaceAll("1", currentExp.toString())), null);
-                    newProof.addExpression(parser.parse("((1)->((1)->(1)))->((1)->(((1)->(1))->(1)))->((1)->(1))".replaceAll("1", currentExp.toString())), null);
-                    newProof.addExpression(parser.parse("((1)->(((1)->(1))->1))->((1)->(1))".replaceAll("1", currentExp.toString())), null);
-                    newProof.addExpression(parser.parse("((1)->(((1)->(1))->(1)))".replaceAll("1", currentExp.toString())), null);
-                    newProof.addExpression(parser.parse("(1)->(1)".replaceAll("1", currentExp.toString())), null);
-                } else if (statementType.getClass() == Axiom.class
-                        || containsStatement(assumptions, statement)
-                        || containsStatement(proofed, statement)) {
-                    newProof.addExpression(currentExp, null);
-                    newProof.addExpression(new Entailment(currentExp, new Entailment(currentAssumption, currentExp)), null);
-                    Expression expression = new Entailment(currentAssumption, currentExp);
-                    newProof.addExpression(expression, null);
-                } else if (statementType.getClass() == ModusPonens.class) {
-                    Statement antecedent = ((ModusPonens) statementType).getFirst();
-                    Expression expression = parser.parse("((1)->(2))->(((1)->((2)->(3)))->((1)->(3)))"
-                            .replaceAll("1", currentAssumption.toString())
-                            .replaceAll("2", antecedent.getExp().toString())
-                            .replaceAll("3", currentExp.toString()));
-                    newProof.addExpression(expression, null);
-                    expression = parser.parse("(((1)->((2)->(3)))->((1)->(3)))"
-                            .replaceAll("1", currentAssumption.toString())
-                            .replaceAll("2", antecedent.getExp().toString())
-                            .replaceAll("3", currentExp.toString()));
-                    newProof.addExpression(expression, null);
-                    expression = parser.parse("(1)->(3)"
-                            .replaceAll("1", currentAssumption.toString())
-                            .replaceAll("3", currentExp.toString()));
-                    newProof.addExpression(expression, null);
-                }
+        for (Statement<LogicExpression> assumption : assumptions) {
+            LogicExpression currentAssumption = assumption.getExp();
+            LogicalProof newProof = new LogicalProof(all);
+            for (Statement<LogicExpression> statement : proof.getStatements()) {
+                proof.deduct(statement, newProof, currentAssumption, proofed);
             }
             proof = validator.validate(newProof, all);
             proof.check(proofed);
         }
+        return proof;
+    }
+
+    @Override
+    public Proof<LogicExpression> deductLast(final File file, final List<Statement<LogicExpression>> proofed) throws FileNotFoundException, InvalidProofException {
+        FastLineScanner scanner = new FastLineScanner(file);
+        Parser<LogicExpression> parser = new LogicParser();
+
+        String assumptionsStatement = scanner.next();
+        String[] parts = assumptionsStatement.split("\\|\\-", 2);
+        String[] assumptionStrings = parts[0].split(",");
+        final List<Statement<LogicExpression>> assumptions = new ArrayList<>(assumptionStrings.length);
+        for (String assumptionString : assumptionStrings) {
+            try {
+                assumptions.add(new Statement<>(parser.parse(assumptionString), new Assumption(), 0));
+            } catch (ParseException e) {
+                throw new InvalidProofException("Couldn't parse assumption");
+            }
+        }
+        Validator<LogicExpression> validator = new BasicValidator();
+        Proof<LogicExpression> proof = validator.validate(scanner, assumptions);
+        return deductAll(proof, assumptions, proofed);
+    }
+
+    @Override
+    public Proof<LogicExpression> deductLast(Proof<LogicExpression> proof,
+                                             final List<Statement<LogicExpression>> assumptions,
+                                             final List<Statement<LogicExpression>> proofed) throws InvalidProofException {
+        Validator<LogicExpression> validator = new BasicValidator();
+        List<Statement<LogicExpression>> all;
+        if (proofed != null) {
+            all = new ArrayList<>(assumptions.size() + proofed.size());
+            all.addAll(assumptions);
+            all.addAll(proofed);
+        } else {
+            all = new ArrayList<>(assumptions.size());
+            all.addAll(assumptions);
+            proof = validator.validate(proof, assumptions);
+        }
+        proof = validator.validate(proof, all);
+        LogicExpression currentAssumption = assumptions.get(assumptions.size() - 1).getExp();
+        LogicalProof newProof = new LogicalProof(assumptions);
+        for (Statement<LogicExpression> statement : proof.getStatements()) {
+            proof.deduct(statement, newProof, currentAssumption, proofed);
+        }
+        proof = validator.validate(newProof, all);
+        proof.check(proofed);
         return proof;
     }
 }

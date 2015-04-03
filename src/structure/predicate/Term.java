@@ -3,13 +3,14 @@ package structure.predicate;
 import com.sun.istack.internal.NotNull;
 import exceptions.TreeMismatchException;
 import javafx.util.Pair;
-import structure.AbstractExpression;
+import structure.AbstractFormalArithmeticExpression;
 import structure.Expression;
-import structure.logic.Variable;
+import structure.FormalArithmeticExpression;
+import structure.Variable;
 
 import java.util.*;
 
-public class Term extends AbstractExpression {
+public class Term extends AbstractFormalArithmeticExpression {
     public Set<String> quantifiers;
     public boolean isFree = false;
     public String name;
@@ -37,10 +38,6 @@ public class Term extends AbstractExpression {
         return name;
     }
 
-    public Term[] getArguments() {
-        return arguments;
-    }
-
     public List<String> getTermNames() {
         List<String> result;
         if (arguments.length == 0) {
@@ -64,16 +61,6 @@ public class Term extends AbstractExpression {
     }
 
     @Override
-    public boolean evaluate(@NotNull Map<String, Boolean> args) {
-        throw new IllegalStateException("cannot evaluate predicates");
-    }
-
-    @Override
-    public boolean evaluate() {
-        throw new IllegalStateException("cannot evaluate predicates");
-    }
-
-    @Override
     public boolean treeMatch(@NotNull Expression other) {
         if (hasSameType(other)) {
             Term otherTerm = (Term) other;
@@ -90,7 +77,7 @@ public class Term extends AbstractExpression {
     }
 
     @Override
-    public Map<String, Variable> getVariables() {
+    public Map<String, Variable<FormalArithmeticExpression>> getVariables() {
         throw new IllegalStateException("predicates don't contain variables");
     }
 
@@ -124,16 +111,6 @@ public class Term extends AbstractExpression {
     }
 
     @Override
-    public Expression replaceAll(Map<Integer, Expression> replacement) {
-        throw new IllegalStateException("predicates can't be replaced");
-    }
-
-    @Override
-    public List<Expression> getParticularProof(List<Expression> hypothesis) {
-        throw new IllegalStateException("can't proof predicates");
-    }
-
-    @Override
     public Set<String> getFreeVars() {
         HashSet<String> vars = new HashSet<>();
         for (Term t : arguments) {
@@ -164,6 +141,15 @@ public class Term extends AbstractExpression {
             }
         }
         return result;
+    }
+
+    @Override
+    public FormalArithmeticExpression replaceAll(final Map<Integer, FormalArithmeticExpression> replacement) {
+        Term[] newTerms = new Term[arguments.length];
+        for (int i = 0; i < arguments.length; i++) {
+            newTerms[i] = (Term) arguments[i].replaceAll(replacement);
+        }
+        return new Term(name, newTerms);
     }
 
     @Override

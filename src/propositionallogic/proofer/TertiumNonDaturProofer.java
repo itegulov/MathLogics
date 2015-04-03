@@ -1,5 +1,6 @@
 package propositionallogic.proofer;
 
+import exceptions.FalseExpressionException;
 import exceptions.InvalidProofException;
 import interfaces.Deductor;
 import interfaces.Proofer;
@@ -7,86 +8,99 @@ import parser.LogicParser;
 import parser.ParseException;
 import parser.Parser;
 import proof.Assumption;
+import proof.LogicalProof;
 import proof.Proof;
 import proof.Statement;
 import propositionallogic.deductor.HashDeductor;
-import propositionallogic.validator.HashValidator;
+import propositionallogic.validator.BasicValidator;
 import rules.LogicRules;
-import structure.Expression;
-import structure.logic.Entailment;
-import structure.logic.Not;
-import structure.logic.Or;
-import structure.logic.Variable;
+import structure.LogicExpression;
+import structure.Variable;
+import structure.purelogic.Entailment;
+import structure.purelogic.Not;
+import structure.purelogic.Or;
 
 import java.util.*;
 
-public final class TertiumNonDaturProofer implements Proofer {
-    private Deductor deductor = new HashDeductor();
-    private Parser<Expression> parser = new LogicParser();
-    private Statement[] proofed;
+public final class TertiumNonDaturProofer implements Proofer<LogicExpression> {
+    private Deductor<LogicExpression> deductor = new HashDeductor();
+    private Parser<LogicExpression> parser = new LogicParser();
+    private List<Statement<LogicExpression>> proofed;
 
-    private Proof getProof(Expression toProve, List<Statement> hypothesis, int pos) throws ParseException {
-        Proof proof = new Proof();
-        Statement var = new Statement(hypothesis.get(pos).getExp(), new Assumption(), -1);
-        Statement notVar = new Statement(new Not(hypothesis.get(pos).getExp()), new Assumption(), -1);
-
-        Proof proof1;
-        Proof proof2;
-
-        Statement[] all = new Statement[proofed.length + pos];
-        for (int i = 0; i < pos; i++) {
-            all[i] = hypothesis.get(i);
+    private <E> List<E> combineLists(List... lists) {
+        List<E> list = new ArrayList<>();
+        for (List l : lists) {
+            list.addAll(l);
         }
-        System.arraycopy(proofed, 0, all, pos, proofed.length);
+        return list;
+    }
+
+    private Proof<LogicExpression> getProof(LogicExpression toProve, List<Statement<LogicExpression>> hypothesis, int pos) throws ParseException {
+        LogicalProof proof = new LogicalProof(null);
+        Statement<LogicExpression> var = new Statement<>(hypothesis.get(pos).getExp(), new Assumption(), -1);
+        Statement<LogicExpression> notVar = new Statement<>(new Not(hypothesis.get(pos).getExp()), new Assumption(), -1);
+
+        Proof<LogicExpression> proof1;
+        Proof<LogicExpression> proof2;
+
+        List<Statement<LogicExpression>> all = new ArrayList<>(proofed.size() + pos);
+        for (int i = 0; i < pos; i++) {
+            all.add(hypothesis.get(i));
+        }
+        all.addAll(proofed);
 
         if (pos == hypothesis.size() - 1) {
-            proof1 = new Proof();
-            for (Statement st : proofed) {
+            proof1 = new LogicalProof(combineLists(Collections.singletonList(hypothesis.get(pos)), all));
+            for (Statement<LogicExpression> st : proofed) {
                 proof1.addStatement(st);
             }
-            List<Expression> hypothesisExp = new ArrayList<>();
-            for (Statement st : hypothesis) {
+            List<LogicExpression> hypothesisExp = new ArrayList<>();
+            for (Statement<LogicExpression> st : hypothesis) {
                 hypothesisExp.add(st.getExp());
             }
-            List<Expression> list = toProve.getParticularProof(hypothesisExp);
-            for (Expression expression : list) {
+            List<LogicExpression> list = toProve.getParticularProof(hypothesisExp);
+            for (LogicExpression expression : list) {
                 proof1.addExpression(expression, null);
             }
             try {
-                proof1 = deductor.deduct(proof1, new Statement[]{hypothesis.get(pos)}, all);
+                proof1 = deductor.deductAll(proof1, Collections.singletonList(hypothesis.get(pos)), all);
             } catch (InvalidProofException e) {
                 throw new IllegalStateException("Generated proof is invalid");
             }
             hypothesis.set(pos, notVar);
-            proof2 = new Proof();
-            for (Statement st : proofed) {
+            proof2 = new LogicalProof(combineLists(Collections.singletonList(hypothesis.get(pos)), all));
+            for (Statement<LogicExpression> st : proofed) {
                 proof2.addStatement(st);
             }
             hypothesisExp = new ArrayList<>();
-            for (Statement st : hypothesis) {
+            for (Statement<LogicExpression> st : hypothesis) {
                 hypothesisExp.add(st.getExp());
             }
             list = toProve.getParticularProof(hypothesisExp);
-            for (Expression expression : list) {
+            for (LogicExpression expression : list) {
                 proof2.addExpression(expression, null);
             }
             try {
-                proof2 = deductor.deduct(proof2, new Statement[]{hypothesis.get(pos)}, all);
+                proof2 = deductor.deductAll(proof2, Collections.singletonList(hypothesis.get(pos)), all);
             } catch (InvalidProofException e) {
                 throw new IllegalStateException("Generated proof is invalid");
             }
         } else {
             proof1 = getProof(toProve, hypothesis, pos + 1);
-            proof1 = new HashValidator().validate(proof1, proofed);
             try {
-                proof1 = deductor.deduct(proof1, new Statement[]{hypothesis.get(pos)}, all);
+                proof1 = new BasicValidator().validate(proof1, proofed);
+            } catch (InvalidProofException e) {
+                throw new IllegalStateException("Generated proof is invalid");
+            }
+            try {
+                proof1 = deductor.deductAll(proof1, Collections.singletonList(hypothesis.get(pos)), all);
             } catch (InvalidProofException e) {
                 throw new IllegalStateException("Generated proof is invalid");
             }
             hypothesis.set(pos, notVar);
             proof2 = getProof(toProve, hypothesis, pos + 1);
             try {
-                proof2 = deductor.deduct(proof2, new Statement[]{hypothesis.get(pos)}, all);
+                proof2 = deductor.deductAll(proof2, Collections.singletonList(hypothesis.get(pos)), all);
             } catch (InvalidProofException e) {
                 throw new IllegalStateException("Generated proof is invalid");
             }
@@ -105,11 +119,11 @@ public final class TertiumNonDaturProofer implements Proofer {
     }
 
     @Override
-    public Proof proof(String statement) throws ParseException {
-        Parser<Expression> parser = new LogicParser();
-        Expression expression = parser.parse(statement);
-        Map<String, Variable> variables = expression.getVariables();
-        Collection<Variable> variableValues = variables.values();
+    public Proof<LogicExpression> proof(String statement) throws ParseException, FalseExpressionException {
+        Parser<LogicExpression> parser = new LogicParser();
+        LogicExpression expression = parser.parse(statement);
+        Map<String, Variable<LogicExpression>> variables = expression.getVariables();
+        Collection<Variable<LogicExpression>> variableValues = variables.values();
         int variablesCount = variables.size();
         for (int mask = 0; mask < (1 << variablesCount); mask++) {
             Map<String, Boolean> values = new HashMap<>();
@@ -136,32 +150,22 @@ public final class TertiumNonDaturProofer implements Proofer {
                         sb.append(",");
                     }
                 }
-                throw new IllegalStateException(sb.toString());
+                throw new FalseExpressionException(sb.toString());
             }
         }
-        Proof proof = new Proof();
-        List<Statement> proofedList = new ArrayList<>();
-        List<Statement> hypothesis = new ArrayList<>();
-        for (Variable var : variableValues) {
-            Map<Integer, Expression> expressionMap = new HashMap<>();
-            expressionMap.put(1, var);
-            Proof newProof = LogicRules.TERTIUM_NON_DATUR_PROOF.replace(expressionMap);
+        Proof<LogicExpression> proof = new LogicalProof(null);
+        List<Statement<LogicExpression>> proofedList = new ArrayList<>();
+        List<Statement<LogicExpression>> hypothesis = new ArrayList<>();
+        for (Variable<LogicExpression> var : variableValues) {
+            Map<Integer, LogicExpression> expressionMap = new HashMap<>();
+            expressionMap.put(1, (LogicExpression) var);
+            Proof<LogicExpression> newProof = LogicRules.TERTIUM_NON_DATUR_PROOF.replaceAll(expressionMap);
             proof.addProof(newProof);
             proofedList.add(newProof.getStatements().get(newProof.getStatements().size() - 1));
-            hypothesis.add(new Statement(var, new Assumption(), -1));
+            hypothesis.add(new Statement<>((LogicExpression) var, new Assumption(), -1));
         }
-        proofed = proofedList.toArray(new Statement[proofedList.size()]);
+        proofed = proofedList;
         proof.addProof(getProof(expression, hypothesis, 0));
         return proof;
-    }
-
-    public static void main(String[] args) {
-        try {
-            Proof proof = new TertiumNonDaturProofer().proof("!!(!!P->P)");
-            proof = new HashValidator().validate(proof, null);
-            System.out.println(proof);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
     }
 }

@@ -1,57 +1,122 @@
 package propositionallogic.proofer;
 
+import exceptions.FalseExpressionException;
+import exceptions.InvalidProofException;
 import interfaces.Proofer;
-import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import parser.ParseException;
 import proof.Proof;
+import structure.LogicExpression;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
 
 import static org.junit.Assert.assertTrue;
 
 public class TertiumNonDaturProoferTest {
-    private Proofer proofer;
+    private Proofer<LogicExpression> proofer;
 
     @Before
     public void setUp() throws Exception {
         proofer = new TertiumNonDaturProofer();
     }
 
-    @After
-    public void tearDown() throws Exception {
-
+    @Test
+    public void test1_correct1() throws Exception {
+        testCorrect("correct1.in");
     }
 
     @Test
-    public void testSimpleProof() throws Exception {
-        Proof proof = proofer.proof("A->A");
-        assertTrue(proof.check(null));
+    public void test2_correct2() throws Exception {
+        testCorrect("correct2.in");
     }
 
     @Test
-    public void testAxiomProof() throws Exception {
-        Proof proof = proofer.proof("A->A|B");
-        assertTrue(proof.check(null));
-
-        proof = proofer.proof("A&B->A");
-        assertTrue(proof.check(null));
-
-        proof = proofer.proof("A->B->A");
-        assertTrue(proof.check(null));
+    public void test3_correct3() throws Exception {
+        testCorrect("correct3.in");
     }
 
     @Test
-    public void testMediumProof() throws Exception {
-        Proof proof = proofer.proof("!(A&B)->!B|!A");
-        assertTrue(proof.check(null));
+    public void test4_correct4() throws Exception {
+        testCorrect("correct4.in");
     }
 
     @Test
-    public void testHardProof() throws Exception {
-        Proof proof = proofer.proof("(A->B->C)->(B&A->C)");
-        assertTrue(proof.check(null));
+    public void test5_correct5() throws Exception {
+        testCorrect("correct5.in");
+    }
 
+    @Test
+    public void test6_correct6() throws Exception {
+        testCorrect("correct6.in");
+    }
 
-        proof = proofer.proof("(A->B)->(!B->!A)");
-        assertTrue(proof.check(null));
+    @Test
+    public void test7_correct7() throws Exception {
+        testCorrect("correct7.in");
+    }
+
+    @Test
+    public void test8_correct8() throws Exception {
+        testCorrect("correct8.in");
+    }
+
+    @Test
+    public void test9_correct9() throws Exception {
+        testCorrect("correct9.in");
+    }
+
+    @Test
+    public void test10_axioms() throws Exception {
+        testCorrect("correct_axioms.in");
+    }
+
+    @Test
+    public void test11_incorrect1() throws Exception {
+        testIncorrect("incorrect1.in");
+    }
+
+    public void testCorrect(String testName) throws InvalidProofException {
+        Scanner scanner;
+        try {
+            scanner = new Scanner(new File("res/tests/propositional_logic_proofer/correct/" + testName));
+        } catch (FileNotFoundException e) {
+            System.err.println("Test file wasn't found");
+            throw new IllegalStateException();
+        }
+        while (scanner.hasNext()) {
+            try {
+                Proof<LogicExpression> proof = proofer.proof(scanner.next());
+                assertTrue(proof.check(null));
+            } catch (ParseException e) {
+                System.err.println("Test file contains invalid expression");
+                throw new IllegalStateException();
+            } catch (FalseExpressionException e) {
+                assertTrue(false);
+            }
+        }
+    }
+
+    public void testIncorrect(String testName) throws InvalidProofException {
+        Scanner scanner;
+        try {
+            scanner = new Scanner(new File("res/tests/propositional_logic_proofer/incorrect/" + testName));
+        } catch (FileNotFoundException e) {
+            System.err.println("Test file wasn't found");
+            throw new IllegalStateException();
+        }
+        while (scanner.hasNext()) {
+            try {
+                proofer.proof(scanner.next());
+                Assert.assertTrue(false);
+            } catch (ParseException e) {
+                System.err.println("Test file contains invalid expression");
+            } catch (FalseExpressionException ignored) {
+
+            }
+        }
     }
 }

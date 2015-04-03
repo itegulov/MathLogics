@@ -3,7 +3,8 @@ package parser;
 import structure.Expression;
 import structure.ExpressionRandomGenerator;
 import structure.ExpressionRandomGeneratorPseudo;
-import structure.logic.*;
+import structure.LogicExpression;
+import structure.purelogic.*;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -13,7 +14,7 @@ import static org.junit.Assert.*;
 
 public class LogicParserTest {
     ExpressionRandomGenerator generator;
-    Parser<Expression> expressionParser;
+    Parser<LogicExpression> expressionParser;
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
@@ -27,25 +28,25 @@ public class LogicParserTest {
     @org.junit.Test
     public void testEasyParse() throws Exception {
 
-        Expression e = new And(new Variable("A"), new Variable("B"));
+        Expression e = new And(new NVariable("A"), new NVariable("B"));
         assertEquals(e, expressionParser.parse("A&B"));
         assertEquals(e, expressionParser.parse("A& B"));
         assertEquals(e, expressionParser.parse("A &B"));
         assertEquals(e, expressionParser.parse("A & B"));
         assertEquals(e, expressionParser.parse("      A            &               B      "));
-        e = new Or(new Variable("A"), new Variable("B"));
+        e = new Or(new NVariable("A"), new NVariable("B"));
         assertEquals(e, expressionParser.parse("A|B"));
         assertEquals(e, expressionParser.parse("A| B"));
         assertEquals(e, expressionParser.parse("A |B"));
         assertEquals(e, expressionParser.parse("A | B"));
         assertEquals(e, expressionParser.parse("      A            |               B      "));
-        e = new Entailment(new Variable("A"), new Variable("B"));
+        e = new Entailment(new NVariable("A"), new NVariable("B"));
         assertEquals(e, expressionParser.parse("A->B"));
         assertEquals(e, expressionParser.parse("A-> B"));
         assertEquals(e, expressionParser.parse("A ->B"));
         assertEquals(e, expressionParser.parse("A -> B"));
         assertEquals(e, expressionParser.parse("      A            ->               B      "));
-        e = new Not(new Variable("A"));
+        e = new Not(new NVariable("A"));
         assertEquals(e, expressionParser.parse("!A"));
         assertEquals(e, expressionParser.parse("! A"));
         assertEquals(e, expressionParser.parse("             ! A"));
@@ -53,35 +54,35 @@ public class LogicParserTest {
 
     @Test
     public void testMiddleParse() throws Exception {
-        Expression e = new Entailment(new Not(new Not(new Entailment(new Not(new Variable("A")), new Not(new Variable("B"))))), new Not(new Variable("A")));
+        Expression e = new Entailment(new Not(new Not(new Entailment(new Not(new NVariable("A")), new Not(new NVariable("B"))))), new Not(new NVariable("A")));
         assertEquals(e, expressionParser.parse("!!(!A->!B)->!A"));
 
-        e = new Or(new Not(new Variable("A")), new Not(new Entailment(new Not(new Variable("A")), new And(new Variable("B"), new Variable("A")))));
+        e = new Or(new Not(new NVariable("A")), new Not(new Entailment(new Not(new NVariable("A")), new And(new NVariable("B"), new NVariable("A")))));
         assertEquals(e, expressionParser.parse("!A|!(!A->B&A)"));
 
-        e = new Or(new Entailment(new Not(new Variable("Q")), new Not(new Variable("S"))), new Or(new Variable("S"), new Not(new Variable("Q"))));
+        e = new Or(new Entailment(new Not(new NVariable("Q")), new Not(new NVariable("S"))), new Or(new NVariable("S"), new Not(new NVariable("Q"))));
         assertEquals(e, expressionParser.parse("(!Q->!S)|(S|!Q)"));
 
-        e = new Not(new Or(new Entailment(new Variable("A"), new Not(new Variable("B"))), new Entailment(new Variable("B"), new Not(new Variable("A")))));
+        e = new Not(new Or(new Entailment(new NVariable("A"), new Not(new NVariable("B"))), new Entailment(new NVariable("B"), new Not(new NVariable("A")))));
         assertEquals(e, expressionParser.parse("!((A->!B)|(B->!A))"));
     }
 
     @Test
     public void testHardParse() throws Exception {
-        Expression e = new Or(new Not(new Or(new Variable("A"), new Variable("B"))), new And(new And(new Variable("A"), new Not(new Not(new Variable("B")))),
-                new Or(new Variable("C"), new And(new Variable("A"), new Entailment(new Variable("B"), new And(new Variable("A"), new Variable("C")))))));
+        Expression e = new Or(new Not(new Or(new NVariable("A"), new NVariable("B"))), new And(new And(new NVariable("A"), new Not(new Not(new NVariable("B")))),
+                new Or(new NVariable("C"), new And(new NVariable("A"), new Entailment(new NVariable("B"), new And(new NVariable("A"), new NVariable("C")))))));
         assertEquals(e, expressionParser.parse("!(A|B)|((A&!!B)&(C|A&(B->A&C)))"));
 
-        e = new Not(new Not(new Or(new And(new Or(new Variable("A"), new Not(new Variable("B"))), new Or(new Variable("C"), new Variable("D"))),
-                new Or(new And(new And(new Variable("A"), new Variable("C")), new Not(new Variable("D"))), new Not(new Variable("B"))))));
+        e = new Not(new Not(new Or(new And(new Or(new NVariable("A"), new Not(new NVariable("B"))), new Or(new NVariable("C"), new NVariable("D"))),
+                new Or(new And(new And(new NVariable("A"), new NVariable("C")), new Not(new NVariable("D"))), new Not(new NVariable("B"))))));
         assertEquals(e, expressionParser.parse("!!(((A|!B)&(C|D))|(((A&C)&!D)|!B))"));
 
-        e = new Not(new Entailment(new Or(new Variable("A"), new Entailment(new Not(new Entailment(new Variable("B"), new Variable("A"))), new Or(new Variable("C"),
-                new Not(new Variable("B"))))), new And(new Not(new Entailment(new Variable("A"), new Variable("C"))), new Not(new Variable("B")))));
+        e = new Not(new Entailment(new Or(new NVariable("A"), new Entailment(new Not(new Entailment(new NVariable("B"), new NVariable("A"))), new Or(new NVariable("C"),
+                new Not(new NVariable("B"))))), new And(new Not(new Entailment(new NVariable("A"), new NVariable("C"))), new Not(new NVariable("B")))));
         assertEquals(e, expressionParser.parse("!((A|(!(B->A)->(C|!B)))->(!(A->C)&!B))"));
 
-        e = new And(new And(new Entailment(new Entailment(new Variable("C"), new Variable("A")), new Not(new Variable("B"))), new Entailment(new Not(new Variable("C")),
-                new And(new Or(new Variable("B"), new Variable("A")), new Not(new Variable("A"))))), new Or(new Variable("B"), new Variable("C")));
+        e = new And(new And(new Entailment(new Entailment(new NVariable("C"), new NVariable("A")), new Not(new NVariable("B"))), new Entailment(new Not(new NVariable("C")),
+                new And(new Or(new NVariable("B"), new NVariable("A")), new Not(new NVariable("A"))))), new Or(new NVariable("B"), new NVariable("C")));
         assertEquals(e, expressionParser.parse("((C->A)->!B)&(!C->(B|A)&!A)&(B|C)"));
     }
 
