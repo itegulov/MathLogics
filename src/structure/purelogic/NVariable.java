@@ -56,6 +56,13 @@ public final class NVariable extends AbstractLogicExpression implements Variable
     }
 
     @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        return result;
+    }
+
+    @Override
     public StringBuilder asString() {
         return new StringBuilder(name);
     }

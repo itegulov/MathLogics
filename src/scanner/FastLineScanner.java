@@ -1,6 +1,7 @@
 package scanner;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Scanner for fast line reading. Can only read lines (till <code>'\n'</code>,
@@ -22,7 +23,7 @@ public final class FastLineScanner {
         if (file == null) {
             throw new FileNotFoundException();
         }
-        br = new BufferedReader(new FileReader(file));
+        br = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8));
 
         try {
             nextLine = br.readLine();

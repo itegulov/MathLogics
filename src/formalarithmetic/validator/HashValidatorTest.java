@@ -4,17 +4,17 @@ import interfaces.Validator;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import parser.ArithmeticParser;
-import parser.Parser;
 import structure.FormalArithmeticExpression;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 
 public class HashValidatorTest {
     private File file;
     private Validator<FormalArithmeticExpression> validator;
-    private Parser<FormalArithmeticExpression> parser = new ArithmeticParser();
 
     @Before
     public void setUp() throws Exception {
@@ -29,7 +29,7 @@ public class HashValidatorTest {
 
     @Test
     public void testPropositional() throws Exception {
-        PrintWriter pw = new PrintWriter(file);
+        PrintWriter pw = new PrintWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8));
         pw.println("A->B->A");
         pw.println("(A->B)->(A->B->C)->(A->C)");
         pw.println("A->B->A&B");
@@ -49,7 +49,7 @@ public class HashValidatorTest {
          * TEST 1
          */
 
-        PrintWriter pw = new PrintWriter(file);
+        PrintWriter pw = new PrintWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8));
         pw.println(
                 "Q(a)->?aQ(a)\n" +
                 "@aQ(a)->Q(a)\n" +
@@ -64,7 +64,7 @@ public class HashValidatorTest {
          * TEST 2
          */
 
-        pw = new PrintWriter(file);
+        pw = new PrintWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8));
         pw.println(
                 "@x(Q(x))->Q(x)\n" +
                 "@x(P(x)&Q(x))->P(x)&Q(x)\n" +
@@ -79,7 +79,7 @@ public class HashValidatorTest {
 
     @Test
     public void testNewDerivationRules() throws Exception {
-        PrintWriter pw = new PrintWriter(file);
+        PrintWriter pw = new PrintWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8));
         pw.println("Q(b)->P(a)->Q(b)\n" + "Q(b)->@a(P(a)->Q(b))");
         pw.close();
 
@@ -88,7 +88,7 @@ public class HashValidatorTest {
 
     @Test
     public void testInduction() throws Exception {
-        PrintWriter pw = new PrintWriter(file);
+        PrintWriter pw = new PrintWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8));
         pw.println(
                 "(x'+0=(x+0)')&@y(((x)'+y=(x+y)')->((x)'+(y)'=(x+(y)')'))->((x)'+y=(x+y)')\n" +
                 "P(0)&@x123 (P(x123) -> P(x123')) -> P(x123)"

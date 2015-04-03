@@ -34,7 +34,7 @@ public final class And extends BinaryOperator {
 
     @Override
     public boolean evaluate() {
-        return left.evaluate() & right.evaluate();
+        return left.evaluate() && right.evaluate();
     }
 
     @Override

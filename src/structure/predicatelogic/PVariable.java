@@ -44,6 +44,13 @@ public final class PVariable extends AbstractFormalArithmeticExpression implemen
     }
 
     @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + name.hashCode();
+        return result;
+    }
+
+    @Override
     public StringBuilder asString() {
         return new StringBuilder(name);
     }

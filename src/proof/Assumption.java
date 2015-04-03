@@ -10,6 +10,11 @@ public final class Assumption implements StatementType {
     }
 
     @Override
+    public int hashCode() {
+        return 42; //Any arbitrary constant is good
+    }
+
+    @Override
     public String toString() {
         return "Допущение";
     }

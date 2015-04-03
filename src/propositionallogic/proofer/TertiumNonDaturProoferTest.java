@@ -11,7 +11,10 @@ import proof.Proof;
 import structure.LogicExpression;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
 import static org.junit.Assert.assertTrue;
@@ -82,7 +85,9 @@ public class TertiumNonDaturProoferTest {
     public void testCorrect(String testName) throws InvalidProofException {
         Scanner scanner;
         try {
-            scanner = new Scanner(new File("res/tests/propositional_logic_proofer/correct/" + testName));
+            scanner = new Scanner(new InputStreamReader(
+                    new FileInputStream(new File("res/tests/propositional_logic_proofer/correct/" + testName)),
+                    StandardCharsets.UTF_8));
         } catch (FileNotFoundException e) {
             System.err.println("Test file wasn't found");
             throw new IllegalStateException();
@@ -103,7 +108,9 @@ public class TertiumNonDaturProoferTest {
     public void testIncorrect(String testName) throws InvalidProofException {
         Scanner scanner;
         try {
-            scanner = new Scanner(new File("res/tests/propositional_logic_proofer/incorrect/" + testName));
+            scanner = new Scanner(new InputStreamReader(
+                    new FileInputStream(new File("res/tests/propositional_logic_proofer/incorrect/" + testName)),
+                    StandardCharsets.UTF_8));
         } catch (FileNotFoundException e) {
             System.err.println("Test file wasn't found");
             throw new IllegalStateException();

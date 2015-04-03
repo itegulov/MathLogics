@@ -33,7 +33,7 @@ public class Predicate extends AbstractFormalArithmeticExpression {
     }
 
     public void setArguments(Term[] arguments) {
-        this.arguments = arguments;
+        this.arguments = arguments.clone();
     }
 
     @Override
