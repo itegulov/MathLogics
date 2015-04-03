@@ -1,5 +1,7 @@
 package proof;
 
-public interface StatementType {
+import structure.Expression;
+
+public interface StatementType<E extends Expression<E>> {
     //TODO: javadoc
 }

@@ -1,7 +1,5 @@
 package proof;
 
-import structure.logic.BinaryOperator;
-
 public class ForAllDerivationRule implements StatementType {
     private final Statement previous;
 

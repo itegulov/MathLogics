@@ -4,7 +4,7 @@ import structure.Expression;
 
 import java.util.Map;
 
-public final class Statement<E extends Expression> {
+public final class Statement<E extends Expression<E>> {
     //TODO: javadoc
     private E exp;
     private StatementType type;
@@ -63,7 +63,7 @@ public final class Statement<E extends Expression> {
         return exp.toString() + " (" + type.toString() + ")";
     }
 
-    public Statement<Expression> replaceAll(Map<Integer, Expression> replacement) {
+    public Statement<E> replaceAll(Map<Integer, E> replacement) {
         return new Statement<>(exp.replaceAll(replacement), type, line);
     }
 

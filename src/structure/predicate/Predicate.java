@@ -6,9 +6,12 @@ import javafx.util.Pair;
 import structure.AbstractFormalArithmeticExpression;
 import structure.Expression;
 import structure.FormalArithmeticExpression;
-import structure.logic.Variable;
+import structure.Variable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public class Predicate extends AbstractFormalArithmeticExpression {
     protected String name;
@@ -52,7 +55,7 @@ public class Predicate extends AbstractFormalArithmeticExpression {
     }
 
     @Override
-    public Map<String, Variable> getVariables() {
+    public Map<String, Variable<FormalArithmeticExpression>> getVariables() {
         throw new IllegalStateException("cannot get variables in predicates");
     }
 
@@ -93,7 +96,7 @@ public class Predicate extends AbstractFormalArithmeticExpression {
     }
 
     @Override
-    public Expression replaceAll(Map<Integer, Expression> replacement) {
+    public FormalArithmeticExpression replaceAll(Map<Integer, FormalArithmeticExpression> replacement) {
         Predicate predicate = new Predicate(this.name);
         Term[] args = new Term[arguments.length];
         for (int i = 0; i < arguments.length; i++) {

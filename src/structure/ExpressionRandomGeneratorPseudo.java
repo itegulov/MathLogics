@@ -1,10 +1,10 @@
 package structure;
 
-import structure.logic.*;
+import structure.purelogic.*;
 
 import java.util.Random;
 
-public final class ExpressionRandomGeneratorPseudo implements ExpressionRandomGenerator {
+public final class ExpressionRandomGeneratorPseudo implements ExpressionRandomGenerator<LogicExpression> {
     //TODO: javadoc
     private Random rnd;
 
@@ -23,9 +23,9 @@ public final class ExpressionRandomGeneratorPseudo implements ExpressionRandomGe
     }
 
     @Override
-    public Expression generate(int size) {
+    public LogicExpression generate(int size) {
         if (size == 1) {
-            return new Variable(generateName());
+            return new NVariable(generateName());
         }
 
         if (size == 2) {
@@ -33,7 +33,6 @@ public final class ExpressionRandomGeneratorPseudo implements ExpressionRandomGe
         }
 
         int t = rnd.nextInt(4);
-        ExpressionType type = ExpressionType.values()[t];
         size -= 3;
         int c;
         if (size == 0) {
@@ -41,14 +40,14 @@ public final class ExpressionRandomGeneratorPseudo implements ExpressionRandomGe
         } else {
             c = rnd.nextInt(size) + 1;
         }
-        switch (type) {
-            case And:
+        switch (t) {
+            case 0:
                 return new And(generate(c), generate(size - c + 2));
-            case Or:
+            case 1:
                 return new Or(generate(c), generate(size - c + 2));
-            case Entailment:
+            case 2:
                 return new Entailment(generate(c), generate(size - c + 2));
-            case Not:
+            case 3:
                 return new Not(generate(size + 2));
         }
         return null;

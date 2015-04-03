@@ -1,7 +1,5 @@
 package structure;
 
-import structure.logic.Variable;
-
 import java.util.Map;
 
 /**
@@ -10,7 +8,7 @@ import java.util.Map;
  *
  * @author  Daniyar Itegulov
  */
-public interface Expression extends Cloneable {
+public interface Expression<E extends Expression> extends Cloneable {
     /**
      * Checks if other expression and this expression represent expressions, which coincide
      * character by character in string representation
@@ -39,7 +37,7 @@ public interface Expression extends Cloneable {
      * Returns all variables names and some one node of all variable nodes, which have this name
      * @return map, consisting of variable names and appropriate variable nodes
      */
-    Map<String, Variable> getVariables();
+    Map<String, Variable<E>> getVariables();
 
     /**
      * Generates Java code of the expression, which can be used for testing
@@ -66,19 +64,20 @@ public interface Expression extends Cloneable {
     boolean matches(Expression other, Map<String, Expression> map);
 
     /**
+     * Finds all gaps in expression tree, which are contained in map, and replaces them
+     * with appropriate expression
+     *
+     * @param replacement   map, which contains what gaps you need to replace and what
+     *                      expression you want it is to be replaced with
+     * @return              expression, with replaced nodes
+     */
+    E replaceAll(Map<Integer, E> replacement);
+
+    /**
      * Converts expression to human-readable string
      * @return          human-readable string interpretation of expression
      */
     StringBuilder asString();
-
-    /**
-     * Finds all nodes in expression tree, which contained in map and replaces them with
-     * appropriate new expression
-     * @param replacement   map, which contains what expression you need to replace and what
-     *                      expression you want it is to be replaced with
-     * @return              expression, with replaced nodes
-     */
-    Expression replaceAll(Map<Integer, Expression> replacement);
 
     Object clone() throws CloneNotSupportedException;
 }

@@ -1,15 +1,17 @@
 package proof;
 
+import exceptions.InvalidProofException;
 import structure.Expression;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Interface for all type of proofs in math logic theories.
  *
  * @author Daniyar Itegulov
  */
-public interface Proof<E extends Expression> {
+public interface Proof<E extends Expression<E>> {
     /**
      * Adds statement to proof, consisting of expression
      * with specified {@link StatementType}.
@@ -50,14 +52,36 @@ public interface Proof<E extends Expression> {
      * @return {@code true} if every statement in this proof has legal basis,
      * {@code false} otherwise
      */
-    boolean check(Statement<E>[] assumptions);
+    boolean check(List<Statement<E>> assumptions);
 
     /**
      * Finds basis (statement type) for specified statement.
      *
      * @param statement statement, which basis to find
+     * @param proofed map, with keys, containing string representation of
+     * expressions, contained in appropriate values
      * @return Statement type, describing basis of specified
      * statement. {@link Error} if couldn't found any.
      */
-    StatementType findBasis(Statement<E> statement);
+    StatementType findBasis(Statement<E> statement, Map<String, Statement<E>> proofed) throws InvalidProofException;
+
+    /**
+     * Deducts {@code statement} and writes it to {@code newProof}.
+     *
+     * @param statement statement to deductAll
+     * @param newProof proof, where deducted statements are to be written
+     * @param currentAssumption expression, which needs to removed from left-turnstile side
+     * @param proofed statements, which are proofed and can be believed to be true
+     * @throws InvalidProofException
+     */
+    void deduct(Statement<E> statement, Proof<E> newProof, final E currentAssumption, final List<Statement<E>> proofed) throws InvalidProofException;
+
+    /**
+     * Replaces specified {@link structure.purelogic.Gap} (as keys in {@code map}
+     * with specified expressions (as values in {@code Map}).
+     * @param map contains what gaps are to be replaced with what expressions
+     * @return proof with replaced gaps
+     * @see Expression#replaceAll(Map)
+     */
+    Proof<E> replaceAll(Map<Integer, E> map);
 }

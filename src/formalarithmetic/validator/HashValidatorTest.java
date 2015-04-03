@@ -5,7 +5,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import parser.ArithmeticParser;
+import parser.Parser;
 import proof.*;
+import structure.FormalArithmeticExpression;
 
 import java.io.File;
 import java.io.PrintWriter;
@@ -16,8 +18,8 @@ import static org.junit.Assert.assertEquals;
 
 public class HashValidatorTest {
     private File file;
-    private Validator validator;
-    private ArithmeticParser parser = new ArithmeticParser();
+    private Validator<FormalArithmeticExpression> validator;
+    private Parser<FormalArithmeticExpression> parser = new ArithmeticParser();
 
     @Before
     public void setUp() throws Exception {
@@ -45,7 +47,7 @@ public class HashValidatorTest {
         pw.println("!!A->A");
         pw.close();
 
-        LogicalProof proof = new LogicalProof("A->B->A (сх. акс. 1)\n" +
+        Proof<FormalArithmeticExpression> proof = new FormalArithmeticProof("A->B->A (сх. акс. 1)\n" +
                 "(A->B)->(A->B->C)->(A->C) (сх. акс. 2)\n" +
                 "A->B->A&B (сх. акс. 3)\n" +
                 "A&B->A (сх. акс. 4)\n" +
@@ -54,7 +56,7 @@ public class HashValidatorTest {
                 "B->A|B (сх. акс. 7)\n" +
                 "(A->Q)->(B->Q)->(A|B->Q) (сх. акс. 8)\n" +
                 "(A->B)->(A->!B)->!A (сх. акс. 9)\n" +
-                "!!A->A (сх. акс. 10)");
+                "!!A->A (сх. акс. 10)", null);
 
         assertEquals(validator.validate(file), proof);
     }
@@ -74,13 +76,13 @@ public class HashValidatorTest {
         );
         pw.close();
 
-        LogicalProof proof = validator.validate(file);
+        Proof<FormalArithmeticExpression> proof = validator.validate(file);
 
-        List<Statement> statementList = new ArrayList<>();
-        statementList.add(new Statement(parser.parse("Q(a)->?aQ(a)"), PredicateAxiom.AXIOM_EXISTS, 0));
-        statementList.add(new Statement(parser.parse("@aQ(a)->Q(a)"), PredicateAxiom.AXIOM_FOR_ALL, 1));
-        statementList.add(new Statement(parser.parse("@x(@xP(x)&Q(x))->@xP(x)&Q(x)"), PredicateAxiom.AXIOM_FOR_ALL, 2));
-        statementList.add(new Statement(parser.parse("@xP(x)->P(y)"), PredicateAxiom.AXIOM_FOR_ALL, 3));
+        List<Statement<FormalArithmeticExpression>> statementList = new ArrayList<>();
+        statementList.add(new Statement<>(parser.parse("Q(a)->?aQ(a)"), PredicateAxiom.AXIOM_EXISTS, 0));
+        statementList.add(new Statement<>(parser.parse("@aQ(a)->Q(a)"), PredicateAxiom.AXIOM_FOR_ALL, 1));
+        statementList.add(new Statement<>(parser.parse("@x(@xP(x)&Q(x))->@xP(x)&Q(x)"), PredicateAxiom.AXIOM_FOR_ALL, 2));
+        statementList.add(new Statement<>(parser.parse("@xP(x)->P(y)"), PredicateAxiom.AXIOM_FOR_ALL, 3));
         assertEquals(proof.getStatements(), statementList);
 
         /**
@@ -100,11 +102,11 @@ public class HashValidatorTest {
         proof = validator.validate(file);
 
         statementList = new ArrayList<>();
-        statementList.add(new Statement(parser.parse("@x(Q(x))->Q(x)"), PredicateAxiom.AXIOM_FOR_ALL, 0));
-        statementList.add(new Statement(parser.parse("@x(P(x)&Q(x))->P(x)&Q(x)"), PredicateAxiom.AXIOM_FOR_ALL, 1));
-        statementList.add(new Statement(parser.parse("@x(@yP(y)&Q(x))->@yP(y)&Q(x)"), PredicateAxiom.AXIOM_FOR_ALL, 2));
-        statementList.add(new Statement(parser.parse("@x((@yP(y))&Q(x))->(@yP(y))&Q(x)"), PredicateAxiom.AXIOM_FOR_ALL, 3));
-        statementList.add(new Statement(parser.parse("@x((@xP(x))&Q(x))->(@xP(x))&Q(x)"), PredicateAxiom.AXIOM_FOR_ALL, 4));
+        statementList.add(new Statement<>(parser.parse("@x(Q(x))->Q(x)"), PredicateAxiom.AXIOM_FOR_ALL, 0));
+        statementList.add(new Statement<>(parser.parse("@x(P(x)&Q(x))->P(x)&Q(x)"), PredicateAxiom.AXIOM_FOR_ALL, 1));
+        statementList.add(new Statement<>(parser.parse("@x(@yP(y)&Q(x))->@yP(y)&Q(x)"), PredicateAxiom.AXIOM_FOR_ALL, 2));
+        statementList.add(new Statement<>(parser.parse("@x((@yP(y))&Q(x))->(@yP(y))&Q(x)"), PredicateAxiom.AXIOM_FOR_ALL, 3));
+        statementList.add(new Statement<>(parser.parse("@x((@xP(x))&Q(x))->(@xP(x))&Q(x)"), PredicateAxiom.AXIOM_FOR_ALL, 4));
         assertEquals(proof.getStatements(), statementList);
     }
 
@@ -117,11 +119,11 @@ public class HashValidatorTest {
         );
         pw.close();
 
-        LogicalProof proof = validator.validate(file);
+        Proof<FormalArithmeticExpression> proof = validator.validate(file);
 
-        List<Statement> statementList = new ArrayList<>();
-        statementList.add(new Statement(parser.parse("Q(b)->P(a)->Q(b)"), Axiom.AxiomOne, 0));
-        statementList.add(new Statement(parser.parse("Q(b)->@a(P(a)->Q(b))"), new ForAllDerivationRule(statementList.get(0)), 1));
+        List<Statement<FormalArithmeticExpression>> statementList = new ArrayList<>();
+        statementList.add(new Statement<>(parser.parse("Q(b)->P(a)->Q(b)"), Axiom.AxiomOne, 0));
+        statementList.add(new Statement<>(parser.parse("Q(b)->@a(P(a)->Q(b))"), new ForAllDerivationRule(statementList.get(0)), 1));
         assertEquals(proof.getStatements(), statementList);
     }
 
@@ -134,10 +136,10 @@ public class HashValidatorTest {
         );
         pw.close();
 
-        LogicalProof proof = validator.validate(file);
-        List<Statement> statementList = new ArrayList<>();
-        statementList.add(new Statement(parser.parse("(x'+0=(x+0)')&@y(((x)'+y=(x+y)')->((x)'+(y)'=(x+(y)')'))->((x)'+y=(x+y)')"), InductionRule.INDUCTION_RULE, 0));
-        statementList.add(new Statement(parser.parse("P(0)&@x123 (P(x123) -> P(x123')) -> P(x123)"), InductionRule.INDUCTION_RULE, 1));
+        Proof<FormalArithmeticExpression> proof = validator.validate(file);
+        List<Statement<FormalArithmeticExpression>> statementList = new ArrayList<>();
+        statementList.add(new Statement<>(parser.parse("(x'+0=(x+0)')&@y(((x)'+y=(x+y)')->((x)'+(y)'=(x+(y)')'))->((x)'+y=(x+y)')"), InductionRule.INDUCTION_RULE, 0));
+        statementList.add(new Statement<>(parser.parse("P(0)&@x123 (P(x123) -> P(x123')) -> P(x123)"), InductionRule.INDUCTION_RULE, 1));
         assertEquals(proof.getStatements(), statementList);
     }
 }

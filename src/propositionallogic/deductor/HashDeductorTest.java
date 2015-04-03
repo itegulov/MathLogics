@@ -1,60 +1,68 @@
 package propositionallogic.deductor;
 
+import exceptions.InvalidProofException;
 import interfaces.Deductor;
-import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import proof.Assumption;
-import proof.LogicalProof;
 import proof.Proof;
-import proof.Statement;
 import structure.LogicExpression;
-import structure.logic.Variable;
 
 import java.io.File;
-import java.io.PrintWriter;
+import java.io.FileNotFoundException;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class HashDeductorTest {
-    private File file;
     private Deductor<LogicExpression> deductor;
 
     @Before
     public void setUp() throws Exception {
-        file = new File("test.in");
         deductor = new HashDeductor();
     }
 
-    @After
-    public void tearDown() throws Exception {
-
+    @Test
+    public void test1_correct1() throws Exception {
+        testCorrect("correct1.in");
     }
 
     @Test
-    public void testDeductSimple() throws Exception {
-        PrintWriter pw = new PrintWriter(file);
-        pw.println("A|-A");
-        pw.println("A");
-        pw.close();
-        Proof<LogicExpression> proof = new LogicalProof("A->(A->A) (сх. акс. 1)\n" +
-                "(A->(A->A))->((A->((A->A)->A))->(A->A)) (сх. акс. 2)\n" +
-                "(A->((A->A)->A))->(A->A) (M.P. 2, 1)\n" +
-                "A->((A->A)->A) (сх. акс. 1)\n" +
-                "A->A (M.P. 4, 3)");
-        assertEquals(deductor.deduct(file, null), proof);
+    public void test2_correct2() throws Exception {
+        testCorrect("correct2.in");
     }
 
     @Test
-    public void testDeductSmall() throws Exception {
-        Proof<LogicExpression> proof = new LogicalProof(new File("res/tests/deductor_small.out"));
-        assertEquals(deductor.deduct(new File("res/tests/deductor_small.in"), null), proof);
+    public void test3_correct3() throws Exception {
+        testCorrect("correct3.in");
     }
 
     @Test
-    public void testDeductWithProofed() throws Exception {
-        Statement<LogicExpression>[] statements = new Statement[]{new Statement(new Variable("A"), new Assumption(), 1)};
-        Proof<LogicExpression> proof = new LogicalProof(new File("res/tests/deductor_assumption.out"));
-        assertEquals(deductor.deduct(new File("res/tests/deductor_assumption.in"), statements), proof);
+    public void test4_correct4() throws Exception {
+        testCorrect("correct4.in");
+    }
+
+    @Test
+    public void test5_correct5() throws Exception {
+        testCorrect("correct5.in");
+    }
+
+    public void testCorrect(String testName) throws InvalidProofException {
+        try {
+            Proof<LogicExpression> proof = deductor.deductAll(new File("res/tests/propositional_logic_deductor/correct/" + testName), null);
+            assertTrue(proof.check(null));
+        } catch (FileNotFoundException e) {
+            System.err.println("Test file wasn't found");
+        }
+    }
+
+    public void testIncorrect(String testName) throws InvalidProofException {
+        try {
+            deductor.deductAll(new File("res/tests/propositional_logic_deductor/incorrect/" + testName), null);
+            Assert.assertTrue(false);
+        } catch (FileNotFoundException e) {
+            System.err.println("Test file wasn't found");
+        } catch (InvalidProofException ignored) {
+
+        }
     }
 }

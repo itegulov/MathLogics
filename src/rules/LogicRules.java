@@ -1,41 +1,46 @@
 package rules;
 
-import proof.LogicalProof;
-import propositionallogic.validator.HashValidator;
+import exceptions.InvalidProofException;
+import interfaces.Validator;
+import proof.Proof;
+import propositionallogic.validator.BasicValidator;
+import structure.LogicExpression;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 
 public final class LogicRules {
-    public static final LogicalProof CONTRAPOSITION_RULE_PROOF;
+    public static final Proof<LogicExpression> CONTRAPOSITION_RULE_PROOF;
 
     static {
-        LogicalProof proof;
-        HashValidator hashValidator = new HashValidator();
+        Proof<LogicExpression> proof;
+        Validator<LogicExpression> hashValidator = new BasicValidator();
         try {
             proof = hashValidator.validate(new File("res/rules/contraposition_rule.proof"));
         } catch (FileNotFoundException e) {
-            proof = null;
-            e.printStackTrace();
+            System.err.println("Const proof wasn't found");
+            throw new IllegalStateException();
+        } catch (InvalidProofException e) {
+            System.err.println("Const proof is invalid");
+            throw new IllegalStateException();
         }
         CONTRAPOSITION_RULE_PROOF = proof;
     }
 
-    public static final LogicalProof TERTIUM_NON_DATUR_PROOF;
+    public static final Proof<LogicExpression> TERTIUM_NON_DATUR_PROOF;
 
     static {
-        LogicalProof proof;
-        HashValidator hashValidator = new HashValidator();
+        Proof<LogicExpression> proof;
+        Validator<LogicExpression> hashValidator = new BasicValidator();
         try {
             proof = hashValidator.validate(new File("res/rules/tertium_non_datur.proof"));
         } catch (FileNotFoundException e) {
-            proof = null;
-            e.printStackTrace();
+            System.err.println("Const proof wasn't found");
+            throw new IllegalStateException();
+        } catch (InvalidProofException e) {
+            System.err.println("Const proof is invalid");
+            throw new IllegalStateException();
         }
         TERTIUM_NON_DATUR_PROOF = proof;
-    }
-
-    public static void main(String[] args) {
-        System.out.println(TERTIUM_NON_DATUR_PROOF.asSimpleString());
     }
 }

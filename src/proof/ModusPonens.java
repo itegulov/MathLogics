@@ -1,12 +1,13 @@
 package proof;
 
-import structure.logic.BinaryOperator;
+import structure.Expression;
+import structure.purelogic.BinaryOperator;
 
-public final class ModusPonens implements StatementType {
+public final class ModusPonens<E extends Expression<E>> implements StatementType<E> {
     //TODO: javadoc
-    private final Statement first, second;
+    private final Statement<E> first, second;
 
-    public ModusPonens(Statement first, Statement second) {
+    public ModusPonens(Statement<E> first, Statement<E> second) {
         this.first = first;
         this.second = second;
     }
@@ -21,11 +22,11 @@ public final class ModusPonens implements StatementType {
         return binaryOperator.getRight().equals(myBinaryOperator.getRight());
     }
 
-    public Statement getFirst() {
+    public Statement<E> getFirst() {
         return first;
     }
 
-    public Statement getSecond() {
+    public Statement<E> getSecond() {
         return second;
     }
 

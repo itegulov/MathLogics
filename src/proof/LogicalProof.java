@@ -6,11 +6,11 @@ import interfaces.Validator;
 import parser.LogicParser;
 import parser.ParseException;
 import parser.Parser;
-import propositionallogic.validator.HashValidator;
+import propositionallogic.validator.BasicValidator;
 import scanner.FastLineScanner;
-import structure.Expression;
 import structure.LogicExpression;
-import structure.logic.BinaryOperator;
+import structure.purelogic.BinaryOperator;
+import structure.purelogic.Entailment;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -20,8 +20,9 @@ public final class LogicalProof implements Proof<LogicExpression> {
     //TODO: javadoc
     //All statements in proof
     private final List<Statement<LogicExpression>> statements;
+    private final List<Statement<LogicExpression>> assumptions;
     //All contains all expressions
-    private final Map<Expression, Statement<LogicExpression>> all = new HashMap<>();
+    private final Map<LogicExpression, Statement<LogicExpression>> all = new HashMap<>();
     /**
      * All contains all expressions, suitable for next rule:
      * If expression has the next form: a -> b, then b
@@ -31,11 +32,13 @@ public final class LogicalProof implements Proof<LogicExpression> {
     //Current line number
     private int line = 0;
 
-    public LogicalProof() {
+    public LogicalProof(final List<Statement<LogicExpression>> assumptions) {
+        this.assumptions = assumptions;
         statements = new ArrayList<>();
     }
 
-    public LogicalProof(String proof) throws ParseException {
+    public LogicalProof(String proof, final List<Statement<LogicExpression>> assumptions) throws ParseException {
+        this.assumptions = assumptions;
         Parser<LogicExpression> expressionParser = new LogicParser();
         String[] lines = proof.split("\n");
         statements = new ArrayList<>();
@@ -66,7 +69,7 @@ public final class LogicalProof implements Proof<LogicExpression> {
         }
     }
 
-    public LogicalProof(File file) throws ParseException, FileNotFoundException {
+    public LogicalProof(File file, final List<Statement<LogicExpression>> assumptions) throws ParseException, FileNotFoundException {
         this(((SupplierThatThrows<String, FileNotFoundException>) () -> {
             FastLineScanner scanner = null;
             scanner = new FastLineScanner(file);
@@ -75,7 +78,7 @@ public final class LogicalProof implements Proof<LogicExpression> {
                 sb.append(scanner.next()).append("\n");
             }
             return sb.toString();
-        }).get());
+        }).get(), assumptions);
     }
 
     @Override
@@ -84,7 +87,7 @@ public final class LogicalProof implements Proof<LogicExpression> {
         if (!(o instanceof LogicalProof)) return false;
 
         LogicalProof proof = (LogicalProof) o;
-        Validator<LogicExpression> validator = new HashValidator();
+        Validator<LogicExpression> validator = new BasicValidator();
         //TODO: do something with it!
         Proof<LogicExpression> otherValidated;
         Proof<LogicExpression> myValidated;
@@ -136,16 +139,6 @@ public final class LogicalProof implements Proof<LogicExpression> {
         return sb.toString();
     }
 
-    public String asSimpleString() {
-        StringBuilder sb = new StringBuilder();
-
-        for (Statement s : statements) {
-            sb.append(s.asSimpleString()).append("\n");
-        }
-
-        return sb.toString();
-    }
-
     @Override
     public void addExpression(final LogicExpression expression, final StatementType type) {
         addStatement(new Statement<>(expression, type, -1));
@@ -181,23 +174,23 @@ public final class LogicalProof implements Proof<LogicExpression> {
         return right.get(exp);
     }
 
-    public boolean allExists(Expression exp) {
+    public boolean allExists(LogicExpression exp) {
         return all.containsKey(exp);
     }
 
-    public Statement getAll(Expression exp) {
+    public Statement getAll(LogicExpression exp) {
         return all.get(exp);
     }
 
     public ModusPonens findModusPonens(Statement<LogicExpression> statement) {
         if (rightExists(statement.getExp())) {
             Set<Statement<LogicExpression>> set = getRights(statement.getExp());
-            for (Statement target : set) {
+            for (Statement<LogicExpression> target : set) {
                 if (target.getLine() >= statement.getLine()) {
                     continue;
                 }
                 BinaryOperator bo = (BinaryOperator) target.getExp();
-                Expression left = bo.getLeft();
+                LogicExpression left = bo.getLeft();
                 if (allExists(left)) {
                     Statement st = all.get(left);
                     if (st.getLine() >= statement.getLine()) {
@@ -216,8 +209,9 @@ public final class LogicalProof implements Proof<LogicExpression> {
         proof.getStatements().forEach(this::addStatement);
     }
 
-    public Proof<LogicExpression> replace(Map<Integer, Expression> map) {
-        Proof<LogicExpression> newProof = new LogicalProof();
+    @Override
+    public Proof<LogicExpression> replaceAll(Map<Integer, LogicExpression> map) {
+        Proof<LogicExpression> newProof = new LogicalProof(assumptions);
         for (Statement<LogicExpression> statement : statements) {
             newProof.addStatement(new Statement<>(statement.getExp().replaceAll(map), statement.getType(), -1));
         }
@@ -230,29 +224,83 @@ public final class LogicalProof implements Proof<LogicExpression> {
     }
 
     @Override
-    public boolean check(Statement<LogicExpression>[] assumptions) {
-        HashValidator validator = new HashValidator();
-        validator.validate(this, assumptions);
-        for (Statement st : statements) {
-            if (st.getType().getClass().getSimpleName().equals(Error.class.getSimpleName())) {
-                return false;
-            }
+    public boolean check(List<Statement<LogicExpression>> assumptions) {
+        Validator<LogicExpression> validator = new BasicValidator();
+        try {
+            validator.validate(this, assumptions);
+            return true;
+        } catch (InvalidProofException  e) {
+            return false;
         }
-        return true;
     }
 
     @Override
-    public StatementType findBasis(final Statement<LogicExpression> statement) {
+    public StatementType findBasis(final Statement<LogicExpression> statement, Map<String, Statement<LogicExpression>> map) {
         ModusPonens proofModusPonens = findModusPonens(statement);
         if (proofModusPonens != null) {
             return proofModusPonens;
         }
+
         for (Axiom axiom : Axiom.values()) {
             if (axiom.matches(statement.getExp())) {
                 return axiom;
             }
         }
 
+        if (assumptions != null) {
+            for (Statement assumption : assumptions) {
+                if (assumption.getExp().equals(statement.getExp())) {
+                    return new Assumption();
+                }
+            }
+        }
+
         return new Error();
+    }
+
+    private boolean containsStatement(final List<Statement<LogicExpression>> proofed, final Statement statement) {
+        if (proofed == null) {
+            return false;
+        }
+        for (Statement allow : proofed) {
+            if (allow.equals(statement)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public void deduct(final Statement<LogicExpression> statement,
+                       final Proof<LogicExpression> newProof,
+                       final LogicExpression currentAssumption,
+                       final List<Statement<LogicExpression>> proofed) throws InvalidProofException {
+        try {
+            Parser<LogicExpression> parser = new LogicParser();
+            LogicExpression currentExp = statement.getExp();
+            StatementType statementType = statement.getType();
+            if (statement.getExp().equals(currentAssumption)) {
+                newProof.addExpression(parser.parse("(1)->(1)->(1)".replaceAll("1", currentExp.toString())), null);
+                newProof.addExpression(parser.parse("((1)->((1)->(1)))->((1)->(((1)->(1))->(1)))->((1)->(1))".replaceAll("1", currentExp.toString())), null);
+                newProof.addExpression(parser.parse("((1)->(((1)->(1))->1))->((1)->(1))".replaceAll("1", currentExp.toString())), null);
+                newProof.addExpression(parser.parse("((1)->(((1)->(1))->(1)))".replaceAll("1", currentExp.toString())), null);
+                newProof.addExpression(parser.parse("(1)->(1)".replaceAll("1", currentExp.toString())), null);
+            } else if (statementType.getClass() == Axiom.class || containsStatement(assumptions, statement) || containsStatement(proofed, statement)) {
+                newProof.addExpression(currentExp, null);
+                newProof.addExpression(new Entailment(currentExp, new Entailment(currentAssumption, currentExp)), null);
+                LogicExpression expression = new Entailment(currentAssumption, currentExp);
+                newProof.addExpression(expression, null);
+            } else if (statementType.getClass() == ModusPonens.class) {
+                Statement antecedent = ((ModusPonens) statementType).getFirst();
+                LogicExpression expression = parser.parse("((1)->(2))->(((1)->((2)->(3)))->((1)->(3)))".replaceAll("1", currentAssumption.toString()).replaceAll("2", antecedent.getExp().toString()).replaceAll("3", currentExp.toString()));
+                newProof.addExpression(expression, null);
+                expression = parser.parse("(((1)->((2)->(3)))->((1)->(3)))".replaceAll("1", currentAssumption.toString()).replaceAll("2", antecedent.getExp().toString()).replaceAll("3", currentExp.toString()));
+                newProof.addExpression(expression, null);
+                expression = parser.parse("(1)->(3)".replaceAll("1", currentAssumption.toString()).replaceAll("3", currentExp.toString()));
+                newProof.addExpression(expression, null);
+            }
+        } catch (ParseException e) {
+            throw new IllegalStateException("Const expression is invalid");
+        }
     }
 }

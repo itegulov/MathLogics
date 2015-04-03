@@ -6,7 +6,7 @@ import java.util.Map;
 /**
  * @author Daniyar Itegulov
  */
-public interface LogicExpression extends FormalArithmeticExpression {
+public interface LogicExpression extends Expression<LogicExpression> {
     /**
      * Returns the result of evaluating the expression. Variable values must be
      * specified in {@link java.util.Map}. Throws {@link java.lang.IllegalArgumentException}
@@ -24,15 +24,14 @@ public interface LogicExpression extends FormalArithmeticExpression {
     boolean evaluate();
 
     /**
-     * Finds all nodes in expression tree, which contained in map and replaces them with
-     * appropriate new expression
+     * Finds all gaps in expression tree, which are contained in map, and replaces them
+     * with appropriate expression
      *
-     * @param replacement   map, which contains what expression you need to replace and what
+     * @param replacement   map, which contains what gaps you need to replace and what
      *                      expression you want it is to be replaced with
      * @return              expression, with replaced nodes
      */
-    @Override
-    Expression replaceAll(Map<Integer, Expression> replacement);
+    LogicExpression replaceAll(Map<Integer, LogicExpression> replacement);
 
     /**
      * Proofs this expression in assumption with hypothesis

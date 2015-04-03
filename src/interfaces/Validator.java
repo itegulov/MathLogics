@@ -9,6 +9,7 @@ import structure.Expression;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.List;
 
 /**
  * Interface, providing way to validate some {@link LogicalProof}.
@@ -18,7 +19,7 @@ import java.io.FileNotFoundException;
  *
  * @author Daniyar Itegulov
  */
-public interface Validator<E extends Expression> {
+public interface Validator<E extends Expression<E>> {
     /**
      * Validates {@code file}, containing proof, consisting
      * of statements line by line. Creates formal {@link LogicalProof},
@@ -46,7 +47,7 @@ public interface Validator<E extends Expression> {
      * @throws InvalidProofException if {@code proof} contains invalid
      * proof: at least one statement has no suitable basis
      */
-    Proof<E> validate(final File file, final Statement<E>[] assumptions) throws FileNotFoundException, InvalidProofException;
+    Proof<E> validate(final File file, final List<Statement<E>> assumptions) throws FileNotFoundException, InvalidProofException;
 
     /**
      * Validates left data from {@code in}, containing proof, consisting
@@ -61,7 +62,7 @@ public interface Validator<E extends Expression> {
      * @throws InvalidProofException if {@code proof} contains invalid
      * proof: at least one statement has no suitable basis
      */
-    Proof<E> validate(final FastLineScanner in, final Statement<E>[] assumptions) throws InvalidProofException;
+    Proof<E> validate(final FastLineScanner in, final List<Statement<E>> assumptions) throws InvalidProofException;
 
     /**
      * Validates {@code proof}. If some {@link proof.Statement} from {@code proof} has
@@ -74,5 +75,5 @@ public interface Validator<E extends Expression> {
      * @throws InvalidProofException if {@code proof} contains invalid
      * proof: at least one statement has no suitable basis
      */
-    Proof<E> validate(final Proof<E> proof, final Statement<E>[] assumptions) throws InvalidProofException;
+    Proof<E> validate(final Proof<E> proof, final List<Statement<E>> assumptions) throws InvalidProofException;
 }

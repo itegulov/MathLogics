@@ -3,6 +3,8 @@ package structure.predicate;
 import structure.Expression;
 import structure.FormalArithmeticExpression;
 
+import java.util.Map;
+
 public final class Exists extends Quantifier {
     public Exists(Term variable, FormalArithmeticExpression exp) {
         super(variable, exp, "?");
@@ -18,5 +20,10 @@ public final class Exists extends Quantifier {
     @Override
     public String toJavaCode() {
         return "new Exists(" + variable.toJavaCode() + "," + exp.toJavaCode() + ")";
+    }
+
+    @Override
+    public FormalArithmeticExpression replaceAll(final Map<Integer, FormalArithmeticExpression> replacement) {
+        return new Exists((Term) variable.replaceAll(replacement), exp.replaceAll(replacement));
     }
 }

@@ -1,7 +1,7 @@
 package parser;
 
 import structure.LogicExpression;
-import structure.logic.*;
+import structure.purelogic.*;
 
 /**
  * Implementation of {@link Parser}, that
@@ -23,14 +23,14 @@ public final class LogicParser implements Parser<LogicExpression> {
         next--;
     }
 
-    private Variable getVariable(char c) {
+    private NVariable getVariable(char c) {
         StringBuilder sb = new StringBuilder();
         do {
             sb.append(c);
             c = getChar();
         } while (Character.isDigit(c));
         returnChar();
-        return new Variable(sb.toString());
+        return new NVariable(sb.toString());
     }
 
     private Gap getGap(char c) {
