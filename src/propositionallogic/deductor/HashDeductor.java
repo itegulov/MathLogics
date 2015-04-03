@@ -21,13 +21,22 @@ import java.util.List;
 
 public final class HashDeductor implements Deductor<LogicExpression> {
     //TODO: javadoc
+    private static HashDeductor ourInstance = new HashDeductor();
+
+    //No instances for you
+    private HashDeductor() {
+    }
+
+    public static HashDeductor getInstance() {
+        return ourInstance;
+    }
 
     @Override
     public Proof<LogicExpression> deductAll(final File f,
                                             final List<Statement<LogicExpression>> proofed)
             throws FileNotFoundException, InvalidProofException {
         FastLineScanner scanner = new FastLineScanner(f);
-        Parser<LogicExpression> parser = new LogicParser();
+        Parser<LogicExpression> parser = LogicParser.getInstance();
 
         String assumptionsStatement = scanner.next();
         String[] parts = assumptionsStatement.split("\\|\\-", 2);
@@ -40,7 +49,7 @@ public final class HashDeductor implements Deductor<LogicExpression> {
                 throw new InvalidProofException("Couldn't parse assumption");
             }
         }
-        Validator<LogicExpression> validator = new BasicValidator();
+        Validator<LogicExpression> validator = BasicValidator.getInstance();
         Proof<LogicExpression> proof = validator.validate(scanner, assumptions);
         return deductAll(proof, assumptions, proofed);
     }
@@ -49,7 +58,7 @@ public final class HashDeductor implements Deductor<LogicExpression> {
     public Proof<LogicExpression> deductAll(Proof<LogicExpression> proof,
                                             final List<Statement<LogicExpression>> assumptions,
                                             final List<Statement<LogicExpression>> proofed) throws InvalidProofException {
-        Validator<LogicExpression> validator = new BasicValidator();
+        Validator<LogicExpression> validator = BasicValidator.getInstance();
         List<Statement<LogicExpression>> all;
         if (proofed != null) {
             all = new ArrayList<>(assumptions.size() + proofed.size());
@@ -76,7 +85,7 @@ public final class HashDeductor implements Deductor<LogicExpression> {
     @Override
     public Proof<LogicExpression> deductLast(final File file, final List<Statement<LogicExpression>> proofed) throws FileNotFoundException, InvalidProofException {
         FastLineScanner scanner = new FastLineScanner(file);
-        Parser<LogicExpression> parser = new LogicParser();
+        Parser<LogicExpression> parser = LogicParser.getInstance();
 
         String assumptionsStatement = scanner.next();
         String[] parts = assumptionsStatement.split("\\|\\-", 2);
@@ -89,7 +98,7 @@ public final class HashDeductor implements Deductor<LogicExpression> {
                 throw new InvalidProofException("Couldn't parse assumption");
             }
         }
-        Validator<LogicExpression> validator = new BasicValidator();
+        Validator<LogicExpression> validator = BasicValidator.getInstance();
         Proof<LogicExpression> proof = validator.validate(scanner, assumptions);
         return deductAll(proof, assumptions, proofed);
     }
@@ -98,7 +107,7 @@ public final class HashDeductor implements Deductor<LogicExpression> {
     public Proof<LogicExpression> deductLast(Proof<LogicExpression> proof,
                                              final List<Statement<LogicExpression>> assumptions,
                                              final List<Statement<LogicExpression>> proofed) throws InvalidProofException {
-        Validator<LogicExpression> validator = new BasicValidator();
+        Validator<LogicExpression> validator = BasicValidator.getInstance();
         List<Statement<LogicExpression>> all;
         if (proofed != null) {
             all = new ArrayList<>(assumptions.size() + proofed.size());

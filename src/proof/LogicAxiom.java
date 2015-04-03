@@ -18,7 +18,7 @@ public enum LogicAxiom implements StatementType<LogicExpression> {
     private int number;
 
     LogicAxiom(String s, int number) {
-        Parser<LogicExpression> expressionParser = new LogicParser();
+        Parser<LogicExpression> expressionParser = LogicParser.getInstance();
         try {
             exp = expressionParser.parse(s);
             this.number = number;

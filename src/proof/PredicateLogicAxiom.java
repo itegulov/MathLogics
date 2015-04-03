@@ -18,7 +18,7 @@ public enum PredicateLogicAxiom implements StatementType<FormalArithmeticExpress
     private int number;
 
     PredicateLogicAxiom(String s, int number) {
-        Parser<FormalArithmeticExpression> expressionParser = new ArithmeticParser();
+        Parser<FormalArithmeticExpression> expressionParser = ArithmeticParser.getInstance();
         try {
             exp = expressionParser.parse(s);
             this.number = number;

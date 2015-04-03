@@ -8,8 +8,17 @@ import structure.purelogic.*;
  * //TODO: javadoc it
  */
 public final class LogicParser implements Parser<LogicExpression> {
+    private static LogicParser ourInstance = new LogicParser();
     private String s;
     private int next;
+
+    //No instances for you
+    private LogicParser() {
+    }
+
+    public static LogicParser getInstance() {
+        return ourInstance;
+    }
 
     private char getChar() {
         if (next < 0 || next >= s.length()) {

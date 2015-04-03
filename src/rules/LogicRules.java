@@ -14,7 +14,7 @@ public final class LogicRules {
 
     static {
         Proof<LogicExpression> proof;
-        Validator<LogicExpression> hashValidator = new BasicValidator();
+        Validator<LogicExpression> hashValidator = BasicValidator.getInstance();
         try {
             proof = hashValidator.validate(new File("res/rules/contraposition_rule.proof"));
         } catch (FileNotFoundException e) {
@@ -31,7 +31,7 @@ public final class LogicRules {
 
     static {
         Proof<LogicExpression> proof;
-        Validator<LogicExpression> hashValidator = new BasicValidator();
+        Validator<LogicExpression> hashValidator = BasicValidator.getInstance();
         try {
             proof = hashValidator.validate(new File("res/rules/tertium_non_datur.proof"));
         } catch (FileNotFoundException e) {

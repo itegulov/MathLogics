@@ -18,7 +18,7 @@ public class HashDeductorTest {
 
     @Before
     public void setUp() throws Exception {
-        deductor = new HashDeductor();
+        deductor = HashDeductor.getInstance();
     }
 
     @Test

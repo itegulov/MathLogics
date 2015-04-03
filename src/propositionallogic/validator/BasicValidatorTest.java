@@ -10,7 +10,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 
 public class BasicValidatorTest {
-    private Validator<LogicExpression> validator = new BasicValidator();
+    private Validator<LogicExpression> validator = BasicValidator.getInstance();
 
     @Test
     public void test1_correct1() throws Exception {

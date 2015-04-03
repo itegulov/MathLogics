@@ -23,8 +23,18 @@ import structure.purelogic.Or;
 import java.util.*;
 
 public final class TertiumNonDaturProofer implements Proofer<LogicExpression> {
-    private Deductor<LogicExpression> deductor = new HashDeductor();
-    private Parser<LogicExpression> parser = new LogicParser();
+    private static TertiumNonDaturProofer ourInstance = new TertiumNonDaturProofer();
+
+    //No instances for you
+    private TertiumNonDaturProofer() {
+    }
+
+    public static TertiumNonDaturProofer getInstance() {
+        return ourInstance;
+    }
+
+    private Deductor<LogicExpression> deductor = HashDeductor.getInstance();
+    private Parser<LogicExpression> parser = LogicParser.getInstance();
     private List<Statement<LogicExpression>> proofed;
 
     private <E> List<E> combineLists(List... lists) {
@@ -88,7 +98,7 @@ public final class TertiumNonDaturProofer implements Proofer<LogicExpression> {
         } else {
             proof1 = getProof(toProve, hypothesis, pos + 1);
             try {
-                proof1 = new BasicValidator().validate(proof1, proofed);
+                proof1 = BasicValidator.getInstance().validate(proof1, proofed);
             } catch (InvalidProofException e) {
                 throw new IllegalStateException("Generated proof is invalid");
             }
@@ -120,7 +130,7 @@ public final class TertiumNonDaturProofer implements Proofer<LogicExpression> {
 
     @Override
     public Proof<LogicExpression> proof(String statement) throws ParseException, FalseExpressionException {
-        Parser<LogicExpression> parser = new LogicParser();
+        Parser<LogicExpression> parser = LogicParser.getInstance();
         LogicExpression expression = parser.parse(statement);
         Map<String, Variable<LogicExpression>> variables = expression.getVariables();
         Collection<Variable<LogicExpression>> variableValues = variables.values();

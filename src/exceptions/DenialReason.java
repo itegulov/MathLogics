@@ -14,7 +14,7 @@ public enum DenialReason {
     public String create(int row, String... params) {
         StringBuilder sb = new StringBuilder();
         sb.append("Вывод некорректен, начиная с формулы номер ").append(row).append(": ");
-        String s = String.format(reason, params);
+        String s = String.format(reason, (Object[]) params);
         sb.append(s);
         return sb.toString();
     }

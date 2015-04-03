@@ -20,6 +20,16 @@ import java.util.Map;
  * Works using provided @{link Proof} method {@link Proof#findBasis(Statement, Map)}.
  */
 public final class BasicValidator implements Validator<LogicExpression> {
+    private static BasicValidator ourInstance = new BasicValidator();
+
+    //No instances for you
+    private BasicValidator() {
+    }
+
+    public static BasicValidator getInstance() {
+        return ourInstance;
+    }
+
     @Override
     public Proof<LogicExpression> validate(final File f) throws FileNotFoundException, InvalidProofException {
         return validate(f, null);
@@ -37,7 +47,7 @@ public final class BasicValidator implements Validator<LogicExpression> {
     public Proof<LogicExpression> validate(final FastLineScanner in,
                                            final List<Statement<LogicExpression>> assumptions) throws InvalidProofException {
         final LogicalProof proof = new LogicalProof(assumptions);
-        final Parser<LogicExpression> expressionParser = new LogicParser();
+        final Parser<LogicExpression> expressionParser = LogicParser.getInstance();
         while (in.hasMore()) {
             final String s;
             s = in.next();

@@ -22,7 +22,7 @@ public class LogicParserTest {
     @Before
     public void setUp() throws Exception {
         generator = new ExpressionRandomGeneratorPseudo();
-        expressionParser = new LogicParser();
+        expressionParser = LogicParser.getInstance();
     }
 
     @org.junit.Test

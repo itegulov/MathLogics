@@ -11,7 +11,7 @@ import structure.predicate.Term;
 import static org.junit.Assert.*;
 
 public class ArithmeticParserTest {
-    ArithmeticParser parser = new ArithmeticParser();
+    ArithmeticParser parser = ArithmeticParser.getInstance();
 
     @Test
     public void testEasy() throws Exception {

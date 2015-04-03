@@ -50,7 +50,7 @@ public class FormalArithmeticProof implements Proof<FormalArithmeticExpression> 
 
     public FormalArithmeticProof(String proof, final List<Statement<FormalArithmeticExpression>> assumptions) throws ParseException {
         this.assumptions = assumptions;
-        Parser<FormalArithmeticExpression> expressionParser = new ArithmeticParser();
+        Parser<FormalArithmeticExpression> expressionParser = ArithmeticParser.getInstance();
         String[] lines = proof.split("\n");
         statements = new ArrayList<>();
         for (String s: lines) {
@@ -119,7 +119,7 @@ public class FormalArithmeticProof implements Proof<FormalArithmeticExpression> 
 
     @Override
     public boolean check(final List<Statement<FormalArithmeticExpression>> assumptions) {
-        Validator<FormalArithmeticExpression> validator = new HashValidator();
+        Validator<FormalArithmeticExpression> validator = HashValidator.getInstance();
         try {
             validator.validate(this, assumptions);
             return true;

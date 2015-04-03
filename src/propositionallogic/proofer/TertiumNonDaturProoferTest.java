@@ -24,7 +24,7 @@ public class TertiumNonDaturProoferTest {
 
     @Before
     public void setUp() throws Exception {
-        proofer = new TertiumNonDaturProofer();
+        proofer = TertiumNonDaturProofer.getInstance();
     }
 
     @Test

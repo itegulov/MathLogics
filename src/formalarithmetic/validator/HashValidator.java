@@ -17,6 +17,16 @@ import java.util.List;
 import java.util.Map;
 
 public class HashValidator implements Validator<FormalArithmeticExpression> {
+    //TODO: javadoc
+    private static HashValidator ourInstance = new HashValidator();
+
+    //No instances for you
+    private HashValidator() {
+    }
+
+    public static HashValidator getInstance() {
+        return ourInstance;
+    }
 
     @Override
     public Proof<FormalArithmeticExpression> validate(final File f) throws FileNotFoundException, InvalidProofException {
@@ -36,7 +46,7 @@ public class HashValidator implements Validator<FormalArithmeticExpression> {
                                                       final List<Statement<FormalArithmeticExpression>> assumptions)
             throws InvalidProofException {
         final Proof<FormalArithmeticExpression> proof = new FormalArithmeticProof(assumptions);
-        final Parser<FormalArithmeticExpression> expressionParser = new ArithmeticParser();
+        final Parser<FormalArithmeticExpression> expressionParser = ArithmeticParser.getInstance();
         int line = 0;
         while (in.hasMore()) {
             line++;

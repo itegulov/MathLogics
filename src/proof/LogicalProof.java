@@ -39,7 +39,7 @@ public final class LogicalProof implements Proof<LogicExpression> {
 
     public LogicalProof(String proof, final List<Statement<LogicExpression>> assumptions) throws ParseException {
         this.assumptions = assumptions;
-        Parser<LogicExpression> expressionParser = new LogicParser();
+        Parser<LogicExpression> expressionParser = LogicParser.getInstance();
         String[] lines = proof.split("\n");
         statements = new ArrayList<>();
         for (String s: lines) {
@@ -87,7 +87,7 @@ public final class LogicalProof implements Proof<LogicExpression> {
         if (!(o instanceof LogicalProof)) return false;
 
         LogicalProof proof = (LogicalProof) o;
-        Validator<LogicExpression> validator = new BasicValidator();
+        Validator<LogicExpression> validator = BasicValidator.getInstance();
         //TODO: do something with it!
         Proof<LogicExpression> otherValidated;
         Proof<LogicExpression> myValidated;
@@ -225,7 +225,7 @@ public final class LogicalProof implements Proof<LogicExpression> {
 
     @Override
     public boolean check(List<Statement<LogicExpression>> assumptions) {
-        Validator<LogicExpression> validator = new BasicValidator();
+        Validator<LogicExpression> validator = BasicValidator.getInstance();
         try {
             validator.validate(this, assumptions);
             return true;
@@ -276,7 +276,7 @@ public final class LogicalProof implements Proof<LogicExpression> {
                        final LogicExpression currentAssumption,
                        final List<Statement<LogicExpression>> proofed) throws InvalidProofException {
         try {
-            Parser<LogicExpression> parser = new LogicParser();
+            Parser<LogicExpression> parser = LogicParser.getInstance();
             LogicExpression currentExp = statement.getExp();
             StatementType statementType = statement.getType();
             if (statement.getExp().equals(currentAssumption)) {

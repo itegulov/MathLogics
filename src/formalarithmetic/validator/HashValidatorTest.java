@@ -19,7 +19,7 @@ public class HashValidatorTest {
     @Before
     public void setUp() throws Exception {
         file = new File("test.in");
-        validator = new HashValidator();
+        validator = HashValidator.getInstance();
     }
 
     @After

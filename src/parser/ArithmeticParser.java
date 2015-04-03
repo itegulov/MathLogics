@@ -11,8 +11,17 @@ import structure.predicatelogic.*;
 import java.util.ArrayList;
 
 public final class ArithmeticParser implements Parser<FormalArithmeticExpression> {
+    private static ArithmeticParser ourInstance = new ArithmeticParser();
     private String expression;
     private int index;
+
+    //No instances for you
+    private ArithmeticParser() {
+    }
+
+    public static ArithmeticParser getInstance() {
+        return ourInstance;
+    }
 
     private char getChar() {
         return expression.charAt(index++);

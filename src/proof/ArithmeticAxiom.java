@@ -1,12 +1,8 @@
 package proof;
 
 import parser.ArithmeticParser;
-import parser.LogicParser;
 import parser.ParseException;
-import parser.Parser;
 import structure.Expression;
-
-import java.util.HashMap;
 
 public enum ArithmeticAxiom implements StatementType {
     ArithmeticAxiomOne("a=b->a'=b'", 1), ArithmeticAxiomTwo("a=b->a=c->b=c", 2), ArithmeticAxiomThree("a'=b'->a=b", 3), ArithmeticAxiomFour("!a'=0", 4),
@@ -17,7 +13,7 @@ public enum ArithmeticAxiom implements StatementType {
     private int number;
 
     ArithmeticAxiom(String s, int number) {
-        ArithmeticParser expressionParser = new ArithmeticParser();
+        ArithmeticParser expressionParser = ArithmeticParser.getInstance();
         try {
             exp = expressionParser.parse(s);
             this.number = number;

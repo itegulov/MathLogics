@@ -19,13 +19,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class HashDeductor implements Deductor<FormalArithmeticExpression> {
+    //TODO: javadoc
+    private static HashDeductor ourInstance = new HashDeductor();
+
+    //No instances for you
+    private HashDeductor() {
+    }
+
+    public static HashDeductor getInstance() {
+        return ourInstance;
+    }
+
     //TODO: optimize
 
     @Override
     public Proof<FormalArithmeticExpression> deductAll(final File f, final List<Statement<FormalArithmeticExpression>> proofed)
             throws FileNotFoundException, InvalidProofException {
         FastLineScanner scanner = new FastLineScanner(f);
-        ArithmeticParser parser = new ArithmeticParser();
+        ArithmeticParser parser = ArithmeticParser.getInstance();
 
         String assumptionsStatement = scanner.next();
         String[] parts = assumptionsStatement.split("\\|\\-", 2);
@@ -38,7 +49,7 @@ public class HashDeductor implements Deductor<FormalArithmeticExpression> {
                 throw new InvalidProofException("Couldn't parse assumption");
             }
         }
-        Validator<FormalArithmeticExpression> validator = new HashValidator();
+        Validator<FormalArithmeticExpression> validator = HashValidator.getInstance();
         Proof<FormalArithmeticExpression> proof;
         proof = validator.validate(scanner, assumptions);
         return deductAll(proof, assumptions, proofed);
@@ -49,7 +60,7 @@ public class HashDeductor implements Deductor<FormalArithmeticExpression> {
                                                        List<Statement<FormalArithmeticExpression>> assumptions,
                                                        List<Statement<FormalArithmeticExpression>> proofed)
             throws InvalidProofException {
-        Validator<FormalArithmeticExpression> validator = new HashValidator();
+        Validator<FormalArithmeticExpression> validator = HashValidator.getInstance();
         List<Statement<FormalArithmeticExpression>> all;
         if (proofed != null) {
             all = new ArrayList<>();
@@ -81,7 +92,7 @@ public class HashDeductor implements Deductor<FormalArithmeticExpression> {
     @Override
     public Proof<FormalArithmeticExpression> deductLast(final File file, final List<Statement<FormalArithmeticExpression>> proofed) throws FileNotFoundException, InvalidProofException {
         FastLineScanner scanner = new FastLineScanner(file);
-        ArithmeticParser parser = new ArithmeticParser();
+        ArithmeticParser parser = ArithmeticParser.getInstance();
 
         String assumptionsStatement = scanner.next();
         String[] parts = assumptionsStatement.split("\\|\\-", 2);
@@ -94,7 +105,7 @@ public class HashDeductor implements Deductor<FormalArithmeticExpression> {
                 throw new InvalidProofException("Couldn't parse assumption");
             }
         }
-        Validator<FormalArithmeticExpression> validator = new HashValidator();
+        Validator<FormalArithmeticExpression> validator = HashValidator.getInstance();
         Proof<FormalArithmeticExpression> proof;
         proof = validator.validate(scanner, assumptions);
         return deductLast(proof, assumptions, proofed);
@@ -105,7 +116,7 @@ public class HashDeductor implements Deductor<FormalArithmeticExpression> {
                                                         final List<Statement<FormalArithmeticExpression>> assumptions,
                                                         final List<Statement<FormalArithmeticExpression>> proofed)
             throws InvalidProofException {
-        Validator<FormalArithmeticExpression> validator = new HashValidator();
+        Validator<FormalArithmeticExpression> validator = HashValidator.getInstance();
         List<Statement<FormalArithmeticExpression>> all;
         if (proofed != null) {
             all = new ArrayList<>();
