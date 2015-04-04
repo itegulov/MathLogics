@@ -12,7 +12,7 @@ public final class ForAll extends Quantifier {
 
     @Override
     public boolean treeMatch(Expression other) {
-        return hasSameType(other)
+        return other.getClass() == getClass()
                 && variable.treeMatch(((ForAll) other).variable)
                 && exp.treeMatch(((ForAll) other).exp);
     }

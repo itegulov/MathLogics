@@ -1,6 +1,5 @@
 package proof;
 
-import structure.Expression;
 import parser.LogicParser;
 import parser.ParseException;
 import parser.Parser;
@@ -14,7 +13,7 @@ public enum LogicAxiom implements StatementType<LogicExpression> {
     AxiomSix("A->A|B", 6), AxiomSeven("B->A|B", 7), AxiomEight("(A->C)->(B->C)->(A|B->C)", 8), AxiomNine("(A->B)->(A->!B)->!A", 9), AxiomTen("!!A->A", 10);
 
 
-    private Expression exp;
+    private LogicExpression exp;
     private int number;
 
     LogicAxiom(String s, int number) {
@@ -27,7 +26,7 @@ public enum LogicAxiom implements StatementType<LogicExpression> {
         }
     }
 
-    public boolean matches(Expression other) {
+    public boolean matches(LogicExpression other) {
         return exp.matches(other, new HashMap<>());
     }
 

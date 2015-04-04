@@ -12,7 +12,7 @@ public final class Exists extends Quantifier {
 
     @Override
     public boolean treeMatch(Expression other) {
-        return hasSameType(other)
+        return other.getClass() == getClass()
                 && variable.treeMatch(((Exists) other).variable)
                 && exp.treeMatch(((Exists) other).exp);
     }

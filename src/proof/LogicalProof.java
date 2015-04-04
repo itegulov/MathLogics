@@ -280,11 +280,11 @@ public final class LogicalProof implements Proof<LogicExpression> {
             LogicExpression currentExp = statement.getExp();
             StatementType statementType = statement.getType();
             if (statement.getExp().equals(currentAssumption)) {
-                newProof.addExpression(parser.parse("(1)->(1)->(1)".replaceAll("1", currentExp.toString())), null);
-                newProof.addExpression(parser.parse("((1)->((1)->(1)))->((1)->(((1)->(1))->(1)))->((1)->(1))".replaceAll("1", currentExp.toString())), null);
-                newProof.addExpression(parser.parse("((1)->(((1)->(1))->1))->((1)->(1))".replaceAll("1", currentExp.toString())), null);
-                newProof.addExpression(parser.parse("((1)->(((1)->(1))->(1)))".replaceAll("1", currentExp.toString())), null);
-                newProof.addExpression(parser.parse("(1)->(1)".replaceAll("1", currentExp.toString())), null);
+                newProof.addExpression(parser.parse("(1)->(1)->(1)".replace("1", currentExp.toString())), null);
+                newProof.addExpression(parser.parse("((1)->((1)->(1)))->((1)->(((1)->(1))->(1)))->((1)->(1))".replace("1", currentExp.toString())), null);
+                newProof.addExpression(parser.parse("((1)->(((1)->(1))->1))->((1)->(1))".replace("1", currentExp.toString())), null);
+                newProof.addExpression(parser.parse("((1)->(((1)->(1))->(1)))".replace("1", currentExp.toString())), null);
+                newProof.addExpression(parser.parse("(1)->(1)".replace("1", currentExp.toString())), null);
             } else if (statementType.getClass() == LogicAxiom.class || containsStatement(assumptions, statement) || containsStatement(proofed, statement)) {
                 newProof.addExpression(currentExp, null);
                 newProof.addExpression(new Entailment(currentExp, new Entailment(currentAssumption, currentExp)), null);
@@ -292,11 +292,11 @@ public final class LogicalProof implements Proof<LogicExpression> {
                 newProof.addExpression(expression, null);
             } else if (statementType.getClass() == ModusPonens.class) {
                 Statement antecedent = ((ModusPonens) statementType).getFirst();
-                LogicExpression expression = parser.parse("((1)->(2))->(((1)->((2)->(3)))->((1)->(3)))".replaceAll("1", currentAssumption.toString()).replaceAll("2", antecedent.getExp().toString()).replaceAll("3", currentExp.toString()));
+                LogicExpression expression = parser.parse("((1)->(2))->(((1)->((2)->(3)))->((1)->(3)))".replace("1", currentAssumption.toString()).replace("2", antecedent.getExp().toString()).replace("3", currentExp.toString()));
                 newProof.addExpression(expression, null);
-                expression = parser.parse("(((1)->((2)->(3)))->((1)->(3)))".replaceAll("1", currentAssumption.toString()).replaceAll("2", antecedent.getExp().toString()).replaceAll("3", currentExp.toString()));
+                expression = parser.parse("(((1)->((2)->(3)))->((1)->(3)))".replace("1", currentAssumption.toString()).replace("2", antecedent.getExp().toString()).replace("3", currentExp.toString()));
                 newProof.addExpression(expression, null);
-                expression = parser.parse("(1)->(3)".replaceAll("1", currentAssumption.toString()).replaceAll("3", currentExp.toString()));
+                expression = parser.parse("(1)->(3)".replace("1", currentAssumption.toString()).replace("3", currentExp.toString()));
                 newProof.addExpression(expression, null);
             }
         } catch (ParseException e) {

@@ -7,6 +7,7 @@ import java.util.Map;
  * @author Daniyar Itegulov
  */
 public interface LogicExpression extends Expression<LogicExpression> {
+
     /**
      * Returns the result of evaluating the expression. Variable values must be
      * specified in {@link java.util.Map}. Throws {@link java.lang.IllegalArgumentException}

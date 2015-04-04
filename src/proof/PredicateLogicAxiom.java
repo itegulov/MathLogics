@@ -3,7 +3,6 @@ package proof;
 import parser.ArithmeticParser;
 import parser.ParseException;
 import parser.Parser;
-import structure.Expression;
 import structure.FormalArithmeticExpression;
 
 import java.util.HashMap;
@@ -14,7 +13,7 @@ public enum PredicateLogicAxiom implements StatementType<FormalArithmeticExpress
     AxiomSix("A->A|B", 6), AxiomSeven("B->A|B", 7), AxiomEight("(A->C)->(B->C)->(A|B->C)", 8), AxiomNine("(A->B)->(A->!B)->!A", 9), AxiomTen("!!A->A", 10);
 
 
-    private Expression exp;
+    private FormalArithmeticExpression exp;
     private int number;
 
     PredicateLogicAxiom(String s, int number) {
@@ -27,7 +26,7 @@ public enum PredicateLogicAxiom implements StatementType<FormalArithmeticExpress
         }
     }
 
-    public boolean matches(Expression other) {
+    public boolean matches(FormalArithmeticExpression other) {
         return exp.matches(other, new HashMap<>());
     }
 
