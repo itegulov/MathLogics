@@ -3,7 +3,7 @@ package ru.ifmo.ctddev.itegulov.rules;
 import ru.ifmo.ctddev.itegulov.exceptions.InvalidProofException;
 import ru.ifmo.ctddev.itegulov.interfaces.Validator;
 import ru.ifmo.ctddev.itegulov.proof.Proof;
-import ru.ifmo.ctddev.itegulov.propositionallogic.validator.BasicValidator;
+import ru.ifmo.ctddev.itegulov.propositionallogic.validator.LogicValidator;
 import ru.ifmo.ctddev.itegulov.structure.LogicExpression;
 
 import java.io.File;
@@ -14,7 +14,7 @@ public final class LogicRules {
 
     static {
         Proof<LogicExpression> proof;
-        Validator<LogicExpression> hashValidator = BasicValidator.getInstance();
+        Validator<LogicExpression> hashValidator = LogicValidator.getInstance();
         try {
             proof = hashValidator.validate(new File("res/rules/contraposition_rule.proof"));
         } catch (FileNotFoundException e) {
@@ -31,7 +31,7 @@ public final class LogicRules {
 
     static {
         Proof<LogicExpression> proof;
-        Validator<LogicExpression> hashValidator = BasicValidator.getInstance();
+        Validator<LogicExpression> hashValidator = LogicValidator.getInstance();
         try {
             proof = hashValidator.validate(new File("res/rules/tertium_non_datur.proof"));
         } catch (FileNotFoundException e) {

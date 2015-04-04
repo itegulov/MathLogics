@@ -11,8 +11,8 @@ import ru.ifmo.ctddev.itegulov.proof.Assumption;
 import ru.ifmo.ctddev.itegulov.proof.LogicalProof;
 import ru.ifmo.ctddev.itegulov.proof.Proof;
 import ru.ifmo.ctddev.itegulov.proof.Statement;
-import ru.ifmo.ctddev.itegulov.propositionallogic.deductor.BasicDeductor;
-import ru.ifmo.ctddev.itegulov.propositionallogic.validator.BasicValidator;
+import ru.ifmo.ctddev.itegulov.propositionallogic.deductor.LogicDeductor;
+import ru.ifmo.ctddev.itegulov.propositionallogic.validator.LogicValidator;
 import ru.ifmo.ctddev.itegulov.rules.LogicRules;
 import ru.ifmo.ctddev.itegulov.structure.LogicExpression;
 import ru.ifmo.ctddev.itegulov.structure.Variable;
@@ -33,7 +33,7 @@ public final class TertiumNonDaturProofer implements Proofer<LogicExpression> {
         return ourInstance;
     }
 
-    private Deductor<LogicExpression> deductor = BasicDeductor.getInstance();
+    private Deductor<LogicExpression> deductor = LogicDeductor.getInstance();
     private Parser<LogicExpression> parser = LogicParser.getInstance();
     private List<Statement<LogicExpression>> proofed;
 
@@ -98,7 +98,7 @@ public final class TertiumNonDaturProofer implements Proofer<LogicExpression> {
         } else {
             proof1 = getProof(toProve, hypothesis, pos + 1);
             try {
-                proof1 = BasicValidator.getInstance().validate(proof1, proofed);
+                proof1 = LogicValidator.getInstance().validate(proof1, proofed);
             } catch (InvalidProofException e) {
                 throw new IllegalStateException("Generated proof is invalid");
             }

@@ -13,12 +13,12 @@ import java.io.FileNotFoundException;
 
 import static org.junit.Assert.assertTrue;
 
-public class BasicDeductorTest {
+public class LogicDeductorTest {
     private Deductor<LogicExpression> deductor;
 
     @Before
     public void setUp() throws Exception {
-        deductor = BasicDeductor.getInstance();
+        deductor = LogicDeductor.getInstance();
     }
 
     @Test

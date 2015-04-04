@@ -3,7 +3,7 @@ package ru.ifmo.ctddev.itegulov.proof;
 import ru.ifmo.ctddev.itegulov.exceptions.DenialReason;
 import ru.ifmo.ctddev.itegulov.exceptions.InvalidProofException;
 import ru.ifmo.ctddev.itegulov.exceptions.TreeMismatchException;
-import ru.ifmo.ctddev.itegulov.formalarithmetic.validator.BasicValidator;
+import ru.ifmo.ctddev.itegulov.formalarithmetic.validator.FormalArithmeticValidator;
 import ru.ifmo.ctddev.itegulov.interfaces.Validator;
 import javafx.util.Pair;
 import ru.ifmo.ctddev.itegulov.formalarithmetic.parser.FormalArithmeticParser;
@@ -119,7 +119,7 @@ public class FormalArithmeticProof implements Proof<FormalArithmeticExpression> 
 
     @Override
     public boolean check(final List<Statement<FormalArithmeticExpression>> assumptions) {
-        Validator<FormalArithmeticExpression> validator = BasicValidator.getInstance();
+        Validator<FormalArithmeticExpression> validator = FormalArithmeticValidator.getInstance();
         try {
             validator.validate(this, assumptions);
             return true;

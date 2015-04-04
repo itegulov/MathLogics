@@ -6,7 +6,7 @@ import ru.ifmo.ctddev.itegulov.interfaces.Validator;
 import ru.ifmo.ctddev.itegulov.propositionallogic.parser.LogicParser;
 import ru.ifmo.ctddev.itegulov.exceptions.ParseException;
 import ru.ifmo.ctddev.itegulov.interfaces.Parser;
-import ru.ifmo.ctddev.itegulov.propositionallogic.validator.BasicValidator;
+import ru.ifmo.ctddev.itegulov.propositionallogic.validator.LogicValidator;
 import ru.ifmo.ctddev.itegulov.scanner.FastLineScanner;
 import ru.ifmo.ctddev.itegulov.structure.LogicExpression;
 import ru.ifmo.ctddev.itegulov.structure.purelogic.BinaryOperator;
@@ -87,7 +87,7 @@ public final class LogicalProof implements Proof<LogicExpression> {
         if (!(o instanceof LogicalProof)) return false;
 
         LogicalProof proof = (LogicalProof) o;
-        Validator<LogicExpression> validator = BasicValidator.getInstance();
+        Validator<LogicExpression> validator = LogicValidator.getInstance();
         //TODO: do something with it!
         Proof<LogicExpression> otherValidated;
         Proof<LogicExpression> myValidated;
@@ -225,7 +225,7 @@ public final class LogicalProof implements Proof<LogicExpression> {
 
     @Override
     public boolean check(List<Statement<LogicExpression>> assumptions) {
-        Validator<LogicExpression> validator = BasicValidator.getInstance();
+        Validator<LogicExpression> validator = LogicValidator.getInstance();
         try {
             validator.validate(this, assumptions);
             return true;

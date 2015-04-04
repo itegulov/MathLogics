@@ -9,8 +9,8 @@ import ru.ifmo.ctddev.itegulov.structure.LogicExpression;
 import java.io.File;
 import java.io.FileNotFoundException;
 
-public class BasicValidatorTest {
-    private Validator<LogicExpression> validator = BasicValidator.getInstance();
+public class LogicValidatorTest {
+    private Validator<LogicExpression> validator = LogicValidator.getInstance();
 
     @Test
     public void test1_correct1() throws Exception {

@@ -12,14 +12,14 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 
-public class BasicValidatorTest {
+public class FormalArithmeticValidatorTest {
     private File file;
     private Validator<FormalArithmeticExpression> validator;
 
     @Before
     public void setUp() throws Exception {
         file = new File("test.in");
-        validator = BasicValidator.getInstance();
+        validator = FormalArithmeticValidator.getInstance();
     }
 
     @After

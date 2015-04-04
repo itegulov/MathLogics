@@ -13,12 +13,12 @@ import ru.ifmo.ctddev.itegulov.structure.FormalArithmeticExpression;
 import java.io.File;
 import java.io.FileNotFoundException;
 
-public class BasicDeductorTest {
+public class FormalArithmeticDeductorTest {
     private Deductor<FormalArithmeticExpression> deductor;
 
     @Before
     public void setUp() throws Exception {
-        deductor = BasicDeductor.getInstance();
+        deductor = FormalArithmeticDeductor.getInstance();
     }
 
     @After
