@@ -13,7 +13,7 @@ import ru.ifmo.ctddev.itegulov.mathlogic.proof.Proof;
 import ru.ifmo.ctddev.itegulov.mathlogic.proof.Statement;
 import ru.ifmo.ctddev.itegulov.mathlogic.propositionallogic.deductor.LogicDeductor;
 import ru.ifmo.ctddev.itegulov.mathlogic.propositionallogic.validator.LogicValidator;
-import ru.ifmo.ctddev.itegulov.mathlogic.rules.LogicRules;
+import ru.ifmo.ctddev.itegulov.mathlogic.propositionallogic.LogicRules;
 import ru.ifmo.ctddev.itegulov.mathlogic.structure.LogicExpression;
 import ru.ifmo.ctddev.itegulov.mathlogic.structure.Variable;
 import ru.ifmo.ctddev.itegulov.mathlogic.structure.purelogic.Entailment;

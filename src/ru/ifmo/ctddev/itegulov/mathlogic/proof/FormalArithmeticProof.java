@@ -1,13 +1,12 @@
 package ru.ifmo.ctddev.itegulov.mathlogic.proof;
 
+import javafx.util.Pair;
 import ru.ifmo.ctddev.itegulov.mathlogic.exceptions.DenialReason;
 import ru.ifmo.ctddev.itegulov.mathlogic.exceptions.InvalidProofException;
 import ru.ifmo.ctddev.itegulov.mathlogic.exceptions.TreeMismatchException;
 import ru.ifmo.ctddev.itegulov.mathlogic.formalarithmetic.validator.FormalArithmeticValidator;
 import ru.ifmo.ctddev.itegulov.mathlogic.interfaces.Validator;
-import javafx.util.Pair;
-import ru.ifmo.ctddev.itegulov.mathlogic.rules.ExistsRule;
-import ru.ifmo.ctddev.itegulov.mathlogic.rules.ForAllRule;
+import ru.ifmo.ctddev.itegulov.mathlogic.formalarithmetic.PredicateRules;
 import ru.ifmo.ctddev.itegulov.mathlogic.structure.Expression;
 import ru.ifmo.ctddev.itegulov.mathlogic.structure.FormalArithmeticExpression;
 import ru.ifmo.ctddev.itegulov.mathlogic.structure.arithmetics.Successor;
@@ -35,6 +34,16 @@ public class FormalArithmeticProof implements Proof<FormalArithmeticExpression> 
     public FormalArithmeticProof(final List<Statement<FormalArithmeticExpression>> assumptions) {
         this.assumptions = assumptions;
         statements = new ArrayList<>();
+    }
+
+    public String toSimpleString() {
+        StringBuilder sb = new StringBuilder();
+
+        for (Statement<FormalArithmeticExpression> s : statements) {
+            sb.append(s.toSimpleString()).append("\n");
+        }
+
+        return sb.toString();
     }
 
     @Override
@@ -83,6 +92,17 @@ public class FormalArithmeticProof implements Proof<FormalArithmeticExpression> 
         } catch (InvalidProofException e) {
             return false;
         }
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+
+        for (Statement s : statements) {
+            sb.append(s.toString()).append("\n");
+        }
+
+        return sb.toString();
     }
 
     @Override
@@ -558,13 +578,7 @@ public class FormalArithmeticProof implements Proof<FormalArithmeticExpression> 
                                     DenialReason.ERROR_3.create(statement.getLine(), "правило", var.getName(), getHypoExp(var, assumptions).toString())
                             );
                         }
-                        ExistsRule.addExistsProof1(currentAssumption, exists.getExp(), PEntailment.getRight(), var, newProof);
-                        ExistsRule.addExistsProof2(currentAssumption,
-                                exists.getExp(),
-                                PEntailment.getRight(), var, newProof);
-                        ExistsRule.addExistsProof3(currentAssumption,
-                                exists.getExp(),
-                                PEntailment.getRight(), var, newProof);
+                        PredicateRules.addExistsProof(currentAssumption, exists.getExp(), PEntailment.getRight(), var, newProof);
                     }
                 } else {
                     throw new IllegalStateException("Illegal exists derivation rule");
@@ -592,7 +606,7 @@ public class FormalArithmeticProof implements Proof<FormalArithmeticExpression> 
                                     DenialReason.ERROR_3.create(statement.getLine(), "правило", var.getName(), getHypoExp(var, assumptions).toString())
                             );
                         }
-                        ForAllRule.addForAllProof(currentAssumption, ((PEntailment) currentExp).getLeft(), ((ForAll) ((PEntailment) currentExp).getRight()).getExp(), var, newProof);
+                        PredicateRules.addForAllProof(currentAssumption, ((PEntailment) currentExp).getLeft(), ((ForAll) ((PEntailment) currentExp).getRight()).getExp(), var, newProof);
                     }
                 } else {
                     throw new IllegalStateException("Illegal for all derivation rule");
@@ -605,7 +619,11 @@ public class FormalArithmeticProof implements Proof<FormalArithmeticExpression> 
 
     @Override
     public Proof<FormalArithmeticExpression> replaceAll(final Map<Integer, FormalArithmeticExpression> map) {
-        return null;
+        Proof<FormalArithmeticExpression> newProof = new FormalArithmeticProof(assumptions);
+        for (Statement<FormalArithmeticExpression> statement : statements) {
+            newProof.addStatement(new Statement<>(statement.getExp().replaceAll(map), statement.getType(), -1));
+        }
+        return newProof;
     }
 
     public boolean rightExists(FormalArithmeticExpression exp) {

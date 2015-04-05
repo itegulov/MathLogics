@@ -42,13 +42,37 @@ public final class FormalArithmeticParser implements Parser<FormalArithmeticExpr
         }
     }
 
+    private PGap gap() throws ParseException {
+        int start = index, end = index + 1;
+        char nextChar = getChar();
+        if (Character.isDigit(nextChar)) {
+            while (Character.isDigit(getChar())) {
+                end++;
+            }
+            returnChar();
+            return new PGap(Integer.parseInt(expression.substring(start, end)));
+        }
+        returnChar();
+        throw new ParseException("cannot parse: " + expression);
+    }
+
     private Term variable() throws ParseException {
         int start = index, end = index + 1;
         char nextChar = getChar();
-        if (!Character.isLetter(nextChar) || !Character.isLowerCase(nextChar))
-            throw new ParseException("canPNot parse: " + expression);
-        while (Character.isDigit(getChar()))
+        if (!Character.isLetter(nextChar) || !Character.isLowerCase(nextChar)) {
+            if (Character.isDigit(nextChar)) {
+                while (Character.isDigit(getChar())) {
+                    end++;
+                }
+                returnChar();
+                return new PGap(Integer.parseInt(expression.substring(start, end)));
+            }
+            returnChar();
+            throw new ParseException("cannot parse: " + expression);
+        }
+        while (Character.isDigit(getChar())) {
             end++;
+        }
         returnChar();
         String value = expression.substring(start, end);
         return new Term(value);
@@ -103,7 +127,11 @@ public final class FormalArithmeticParser implements Parser<FormalArithmeticExpr
     protected FormalArithmeticExpression unary() throws ParseException {
         char nextChar = getChar();
         if (Character.isLetter(nextChar) || Character.isDigit(nextChar)) {
-            return predicate(Character.isUpperCase(nextChar));
+            try {
+                return predicate(Character.isUpperCase(nextChar));
+            } catch (ParseException e) {
+                return gap();
+            }
         } else if (nextChar == '!') {
             return new PNot(unary());
         } else if (nextChar == '(') {
@@ -152,9 +180,12 @@ public final class FormalArithmeticParser implements Parser<FormalArithmeticExpr
         } else {
             returnChar();
             ArrayList<Term> list = new ArrayList<>();
+            int prev = index;
             list.add(term());
-            if (getChar() != '=')
+            if (getChar() != '=') {
+                index = prev;
                 throw new ParseException("canPNot parse: " + expression);
+            }
             list.add(term());
             return new Equals(list);
         }
@@ -198,7 +229,7 @@ public final class FormalArithmeticParser implements Parser<FormalArithmeticExpr
         } else {
             returnChar();
             t = variablePOrNull();
-            if (!"0".equals(t.getName())) {
+            if (!t.getName().equals("0")) {
                 nextChar = getChar();
                 if (nextChar == '(') {
                     ArrayList<Term> list = terms();

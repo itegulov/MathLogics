@@ -1,4 +1,4 @@
-package ru.ifmo.ctddev.itegulov.mathlogic.rules;
+package ru.ifmo.ctddev.itegulov.mathlogic.propositionallogic;
 
 import ru.ifmo.ctddev.itegulov.mathlogic.exceptions.InvalidProofException;
 import ru.ifmo.ctddev.itegulov.mathlogic.interfaces.Validator;

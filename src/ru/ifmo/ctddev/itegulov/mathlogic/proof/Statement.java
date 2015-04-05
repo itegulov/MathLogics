@@ -91,6 +91,10 @@ public final class Statement<E extends Expression<E>> {
         return "(" + line + ") " + exp.toString() + " (" + type.toString() + ")";
     }
 
+    public String toSimpleString() {
+        return exp.toString();
+    }
+
     /**
      * Finds all {@link ru.ifmo.ctddev.itegulov.mathlogic.structure.purelogic.Gap}
      * in expression tree of contained expression, which are contained in map, and
