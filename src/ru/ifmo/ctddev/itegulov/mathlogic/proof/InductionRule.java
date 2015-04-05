@@ -1,6 +1,8 @@
 package ru.ifmo.ctddev.itegulov.mathlogic.proof;
 
-public enum InductionRule implements StatementType {
+import ru.ifmo.ctddev.itegulov.mathlogic.structure.FormalArithmeticExpression;
+
+public enum InductionRule implements StatementType<FormalArithmeticExpression> {
     INDUCTION_RULE;
 
     @Override

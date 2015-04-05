@@ -1,6 +1,8 @@
 package ru.ifmo.ctddev.itegulov.mathlogic.proof;
 
-public class ExistsDerivationRule implements StatementType {
+import ru.ifmo.ctddev.itegulov.mathlogic.structure.FormalArithmeticExpression;
+
+public class ExistsDerivationRule implements StatementType<FormalArithmeticExpression> {
     private final Statement previous;
 
     public ExistsDerivationRule(Statement previous) {

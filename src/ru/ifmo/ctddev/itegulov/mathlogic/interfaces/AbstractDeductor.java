@@ -14,14 +14,40 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Provides basic implementation for {@link Deductor}. Uses
+ * {@link Proof#deduct(Statement, Proof, Expression, List)} to
+ * do all the work.
+ *
  * @author Daniyar Itegulov
  */
 public abstract class AbstractDeductor<E extends Expression<E>> implements Deductor<E> {
 
+    /**
+     * Get any correct parser, that can parse expressions
+     * with type {@code E}.
+     *
+     * @return parser, that can correctly parse {@code E}
+     * type expressions
+     */
     abstract protected Parser<E> getParser();
 
+    /**
+     * Get any correct validator, that can validate expressions
+     * with type {@code E}.
+     *
+     * @return validator, that can correctly validate {@code E}
+     * type expressions
+     */
     abstract protected Validator<E> getValidator();
 
+    /**
+     * Get any correct proof with specified assumptions, that represent
+     * expressions of type {@code E}.
+     *
+     * @param assumptions list of {@link Statement}, which represent
+     *                    assumptions in proof
+     * @return proof, containing specified assumptions
+     */
     abstract protected Proof<E> createProof(List<Statement<E>> assumptions);
 
     private static <E extends Expression<E>> Proof<E> prepare(final File file,

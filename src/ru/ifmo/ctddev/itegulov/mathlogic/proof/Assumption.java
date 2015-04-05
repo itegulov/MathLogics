@@ -1,6 +1,8 @@
 package ru.ifmo.ctddev.itegulov.mathlogic.proof;
 
-public final class Assumption implements StatementType {
+import ru.ifmo.ctddev.itegulov.mathlogic.structure.Expression;
+
+public final class Assumption<E extends Expression<E>> implements StatementType<E> {
     //TODO: javadoc
     //TODO: realize assumption
 

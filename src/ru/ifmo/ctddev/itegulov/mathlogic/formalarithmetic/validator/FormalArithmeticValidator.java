@@ -10,7 +10,7 @@ import ru.ifmo.ctddev.itegulov.mathlogic.structure.FormalArithmeticExpression;
 
 import java.util.List;
 
-public class FormalArithmeticValidator extends AbstractValidator<FormalArithmeticExpression> {
+public final class FormalArithmeticValidator extends AbstractValidator<FormalArithmeticExpression> {
     //TODO: javadoc
     private static FormalArithmeticValidator ourInstance = new FormalArithmeticValidator();
 

@@ -73,12 +73,13 @@ public interface Expression<E extends Expression> extends Cloneable {
     String toJavaCode();
 
     /**
-     * Finds all gaps in expression tree, which are contained in map, and replaces them
-     * with appropriate expression.
+     * Finds all {@link ru.ifmo.ctddev.itegulov.mathlogic.structure.purelogic.Gap} in
+     * expression tree, which are contained in map, and replaces them with appropriate
+     * expression.
      *
      * @param replacement  map, which contains what gaps you need to replace as keys
      *                     and what expression you want it is to be replaced with as value
-     * @return expression, with replaced nodes
+     * @return expression, with replaced gaps
      */
     E replaceAll(Map<Integer, E> replacement);
 

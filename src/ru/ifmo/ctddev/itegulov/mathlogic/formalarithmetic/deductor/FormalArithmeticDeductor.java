@@ -12,7 +12,7 @@ import ru.ifmo.ctddev.itegulov.mathlogic.structure.FormalArithmeticExpression;
 
 import java.util.List;
 
-public class FormalArithmeticDeductor extends AbstractDeductor<FormalArithmeticExpression> {
+public final class FormalArithmeticDeductor extends AbstractDeductor<FormalArithmeticExpression> {
     //TODO: javadoc
     private static FormalArithmeticDeductor ourInstance = new FormalArithmeticDeductor();
 

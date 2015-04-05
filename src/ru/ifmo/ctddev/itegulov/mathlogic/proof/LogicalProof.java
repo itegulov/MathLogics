@@ -14,70 +14,15 @@ import java.util.*;
 
 public final class LogicalProof implements Proof<LogicExpression> {
     //TODO: javadoc
-    //All statements in proof
     private final List<Statement<LogicExpression>> statements;
     private final List<Statement<LogicExpression>> assumptions;
-    //All contains all expressions
     private final Map<LogicExpression, Statement<LogicExpression>> all = new HashMap<>();
-    /**
-     * All contains all expressions, suitable for next rule:
-     * If expression has the next form: a -> b, then b
-     * is contained in right map
-     */
     private final Map<LogicExpression, Set<Statement<LogicExpression>>> right = new HashMap<>();
-    //Current line number
     private int line = 0;
 
     public LogicalProof(final List<Statement<LogicExpression>> assumptions) {
         this.assumptions = assumptions;
         statements = new ArrayList<>();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof LogicalProof)) return false;
-
-        LogicalProof proof = (LogicalProof) o;
-        Validator<LogicExpression> validator = LogicValidator.getInstance();
-        //TODO: do something with it!
-        Proof<LogicExpression> otherValidated;
-        Proof<LogicExpression> myValidated;
-        try {
-            otherValidated = validator.validate(proof, null);
-        } catch (InvalidProofException e1) {
-            try {
-                validator.validate(this ,null);
-            } catch (InvalidProofException e2) {
-                return true;
-            }
-            return false;
-        }
-        try {
-            myValidated = validator.validate(this, null);
-        } catch (InvalidProofException e) {
-            return false;
-        }
-        int errorCount = 0;
-        for (int i = 0; i < myValidated.getStatements().size(); i++) {
-            if (myValidated.getStatements().get(i).getType().getClass() == Error.class) {
-                errorCount++;
-            }
-        }
-
-        for (int i = 0; i < otherValidated.getStatements().size(); i++) {
-            if (otherValidated.getStatements().get(i).getType().getClass() == Error.class) {
-                errorCount--;
-            }
-        }
-
-        return errorCount == 0 && myValidated.getStatements().get(myValidated.getStatements().size() - 1).equals(
-                otherValidated.getStatements().get(otherValidated.getStatements().size() - 1));
-    }
-
-    @Override
-    public int hashCode() {
-        return statements.hashCode();
     }
 
     @Override
@@ -92,7 +37,7 @@ public final class LogicalProof implements Proof<LogicExpression> {
     }
 
     @Override
-    public void addExpression(final LogicExpression expression, final StatementType type) {
+    public void addExpression(final LogicExpression expression, final StatementType<LogicExpression> type) {
         addStatement(new Statement<>(expression, type, -1));
     }
 
@@ -134,7 +79,7 @@ public final class LogicalProof implements Proof<LogicExpression> {
         return all.get(exp);
     }
 
-    public ModusPonens findModusPonens(Statement<LogicExpression> statement) {
+    public ModusPonens<LogicExpression> findModusPonens(Statement<LogicExpression> statement) {
         if (rightExists(statement.getExp())) {
             Set<Statement<LogicExpression>> set = getRights(statement.getExp());
             for (Statement<LogicExpression> target : set) {
@@ -187,8 +132,8 @@ public final class LogicalProof implements Proof<LogicExpression> {
     }
 
     @Override
-    public StatementType findBasis(final Statement<LogicExpression> statement, Map<String, Statement<LogicExpression>> map) {
-        ModusPonens proofModusPonens = findModusPonens(statement);
+    public StatementType<LogicExpression> findBasis(final Statement<LogicExpression> statement, Map<String, Statement<LogicExpression>> map) {
+        ModusPonens<LogicExpression> proofModusPonens = findModusPonens(statement);
         if (proofModusPonens != null) {
             return proofModusPonens;
         }
@@ -202,12 +147,12 @@ public final class LogicalProof implements Proof<LogicExpression> {
         if (assumptions != null) {
             for (Statement assumption : assumptions) {
                 if (assumption.getExp().equals(statement.getExp())) {
-                    return new Assumption();
+                    return new Assumption<>();
                 }
             }
         }
 
-        return new Error();
+        return new Error<>();
     }
 
     private boolean containsStatement(final List<Statement<LogicExpression>> proofed, final Statement statement) {

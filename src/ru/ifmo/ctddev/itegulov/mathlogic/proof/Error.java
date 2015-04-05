@@ -1,6 +1,8 @@
 package ru.ifmo.ctddev.itegulov.mathlogic.proof;
 
-public final class Error implements StatementType {
+import ru.ifmo.ctddev.itegulov.mathlogic.structure.Expression;
+
+public final class Error<E extends Expression<E>> implements StatementType<E> {
     //TODO: javadoc
 
     @Override

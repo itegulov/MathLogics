@@ -1,6 +1,8 @@
 package ru.ifmo.ctddev.itegulov.mathlogic.proof;
 
-public enum PredicateAxiom implements StatementType {
+import ru.ifmo.ctddev.itegulov.mathlogic.structure.FormalArithmeticExpression;
+
+public enum PredicateAxiom implements StatementType<FormalArithmeticExpression> {
     AXIOM_FOR_ALL("Сх. акс. всеобщности"), AXIOM_EXISTS("Сх. акс. существования");
 
     private String text;

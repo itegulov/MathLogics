@@ -16,12 +16,30 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * Provides basic implementation for {@link Validator}. Uses
+ * {@link Proof#findBasis(Statement, Map)} to do all the work.
+ *
  * @author Daniyar Itegulov
  */
 public abstract class AbstractValidator<E extends Expression<E>> implements Validator<E> {
 
+    /**
+     * Get any correct parser, that can parse expressions
+     * with type {@code E}.
+     *
+     * @return parser, that can correctly parse {@code E}
+     * type expressions
+     */
     abstract protected Parser<E> getParser();
 
+    /**
+     * Get any correct proof with specified assumptions, that represent
+     * expressions of type {@code E}.
+     *
+     * @param assumptions list of {@link Statement}, which represent
+     *                    assumptions in proof
+     * @return proof, containing specified assumptions
+     */
     abstract protected Proof<E> createProof(List<Statement<E>> assumptions);
 
     @Override
@@ -62,7 +80,7 @@ public abstract class AbstractValidator<E extends Expression<E>> implements Vali
         for (Statement<E> statement : proof.getStatements()) {
             row++;
             if (statement.getType() == null) {
-                StatementType statementType = proof.findBasis(statement, proofed);
+                StatementType<E> statementType = proof.findBasis(statement, proofed);
 
                 if (!(statementType instanceof Error)) {
                     statement.setType(statementType);

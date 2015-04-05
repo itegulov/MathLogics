@@ -19,7 +19,7 @@ public interface Proof<E extends Expression<E>> {
      * @param expression expression to add
      * @param type type of added statement
      */
-    void addExpression(final E expression, final StatementType type);
+    void addExpression(final E expression, final StatementType<E> type);
 
     /**
      * Adds specified statement to proof.
@@ -63,7 +63,7 @@ public interface Proof<E extends Expression<E>> {
      * @return Statement type, describing basis of specified
      * statement. {@link Error} if couldn't found any.
      */
-    StatementType findBasis(Statement<E> statement, Map<String, Statement<E>> proofed) throws InvalidProofException;
+    StatementType<E> findBasis(Statement<E> statement, Map<String, Statement<E>> proofed) throws InvalidProofException;
 
     /**
      * Deducts {@code statement} and writes it to {@code newProof}.
@@ -79,6 +79,7 @@ public interface Proof<E extends Expression<E>> {
     /**
      * Replaces specified {@link ru.ifmo.ctddev.itegulov.mathlogic.structure.purelogic.Gap} (as keys in {@code map}
      * with specified expressions (as values in {@code Map}).
+     *
      * @param map contains what gaps are to be replaced with what expressions
      * @return proof with replaced gaps
      * @see Expression#replaceAll(Map)

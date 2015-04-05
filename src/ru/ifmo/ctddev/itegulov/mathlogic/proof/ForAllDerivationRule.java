@@ -1,6 +1,8 @@
 package ru.ifmo.ctddev.itegulov.mathlogic.proof;
 
-public class ForAllDerivationRule implements StatementType {
+import ru.ifmo.ctddev.itegulov.mathlogic.structure.FormalArithmeticExpression;
+
+public class ForAllDerivationRule implements StatementType<FormalArithmeticExpression> {
     private final Statement previous;
 
     public ForAllDerivationRule(Statement previous) {

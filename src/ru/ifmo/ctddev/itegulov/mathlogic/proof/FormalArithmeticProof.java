@@ -6,9 +6,6 @@ import ru.ifmo.ctddev.itegulov.mathlogic.exceptions.TreeMismatchException;
 import ru.ifmo.ctddev.itegulov.mathlogic.formalarithmetic.validator.FormalArithmeticValidator;
 import ru.ifmo.ctddev.itegulov.mathlogic.interfaces.Validator;
 import javafx.util.Pair;
-import ru.ifmo.ctddev.itegulov.mathlogic.formalarithmetic.parser.FormalArithmeticParser;
-import ru.ifmo.ctddev.itegulov.mathlogic.exceptions.ParseException;
-import ru.ifmo.ctddev.itegulov.mathlogic.interfaces.Parser;
 import ru.ifmo.ctddev.itegulov.mathlogic.rules.ExistsRule;
 import ru.ifmo.ctddev.itegulov.mathlogic.rules.ForAllRule;
 import ru.ifmo.ctddev.itegulov.mathlogic.structure.Expression;
@@ -29,18 +26,10 @@ import java.util.*;
  */
 public class FormalArithmeticProof implements Proof<FormalArithmeticExpression> {
     //TODO: javadoc
-    //All statements in proof
     private final List<Statement<FormalArithmeticExpression>> statements;
-    //All contains all expressions
     private final Map<FormalArithmeticExpression, Statement<FormalArithmeticExpression>> all = new HashMap<>();
     private final List<Statement<FormalArithmeticExpression>> assumptions;
-    /**
-     * All contains all expressions, suitable for next rule:
-     * If expression has the next form: a -> b, then b
-     * is contained in right map
-     */
     private final Map<FormalArithmeticExpression, Set<Statement<FormalArithmeticExpression>>> right = new HashMap<>();
-    //Current line number
     private int line = 0;
 
     public FormalArithmeticProof(final List<Statement<FormalArithmeticExpression>> assumptions) {
@@ -48,40 +37,8 @@ public class FormalArithmeticProof implements Proof<FormalArithmeticExpression> 
         statements = new ArrayList<>();
     }
 
-    public FormalArithmeticProof(String proof, final List<Statement<FormalArithmeticExpression>> assumptions) throws ParseException {
-        this.assumptions = assumptions;
-        Parser<FormalArithmeticExpression> expressionParser = FormalArithmeticParser.getInstance();
-        String[] lines = proof.split("\n");
-        statements = new ArrayList<>();
-        for (String s: lines) {
-            line++;
-            String[] tokens = s.split(" ", 2);
-            if (tokens[1].matches("\\(сх\\. акс\\.(.*)")) {
-                statements.add(new Statement<>(expressionParser.parse(tokens[0]), LogicAxiom.values()[Integer.parseInt(tokens[1].substring(10, tokens[1].length() - 1)) - 1], line));
-            } else {
-                if (tokens[1].matches("\\(M\\.P\\.(.*)")) {
-                    String lineNumbers = tokens[1].substring(6, tokens[1].length() - 1);
-                    String[] numbers = lineNumbers.split(", ");
-                    int firstLine = Integer.parseInt(numbers[0]);
-                    int secondLine = Integer.parseInt(numbers[1]);
-                    statements.add(new Statement<>(expressionParser.parse(tokens[0]), new ModusPonens(statements.get(firstLine - 1), statements.get(secondLine - 1)), line));
-                } else {
-                    if (tokens[1].matches("\\(Не доказано\\)")) {
-                        statements.add(new Statement<>(expressionParser.parse(tokens[0]),
-                                new Error(), line));
-                    } else if (tokens[1].matches("\\(Допущение\\)")) {
-                        statements.add(new Statement<>(expressionParser.parse(tokens[0]),
-                                new Assumption(), line));
-                    } else {
-                        throw new ParseException("Undefined type of statement");
-                    }
-                }
-            }
-        }
-    }
-
     @Override
-    public void addExpression(final FormalArithmeticExpression expression, final StatementType type) {
+    public void addExpression(final FormalArithmeticExpression expression, final StatementType<FormalArithmeticExpression> type) {
         addStatement(new Statement<>(expression, type, -1));
     }
 
@@ -109,7 +66,7 @@ public class FormalArithmeticProof implements Proof<FormalArithmeticExpression> 
 
     @Override
     public void addProof(final Proof<FormalArithmeticExpression> proof) {
-
+        proof.getStatements().forEach(this::addStatement);
     }
 
     @Override
@@ -129,14 +86,14 @@ public class FormalArithmeticProof implements Proof<FormalArithmeticExpression> 
     }
 
     @Override
-    public StatementType findBasis(final Statement<FormalArithmeticExpression> statement,
+    public StatementType<FormalArithmeticExpression> findBasis(final Statement<FormalArithmeticExpression> statement,
                                    final Map<String, Statement<FormalArithmeticExpression>> proofed) throws InvalidProofException {
         final FormalArithmeticExpression expression = statement.getExp();
         int row = statement.getLine();
         /**
          * Modus Ponens checking
          */
-        ModusPonens proofModusPonens = findModusPonens(statement);
+        ModusPonens<FormalArithmeticExpression> proofModusPonens = findModusPonens(statement);
         if (proofModusPonens != null) {
             return proofModusPonens;
         }
@@ -166,7 +123,7 @@ public class FormalArithmeticProof implements Proof<FormalArithmeticExpression> 
         if (assumptions != null) {
             for (Statement assumption : assumptions) {
                 if (assumption.getExp().equals(expression)) {
-                    return new Assumption();
+                    return new Assumption<>();
                 }
             }
         }
@@ -448,7 +405,7 @@ public class FormalArithmeticProof implements Proof<FormalArithmeticExpression> 
             throw e2;
         }
 
-        return new Error();
+        return new Error<>();
     }
 
     private boolean containsStatement(final List<Statement<FormalArithmeticExpression>> proofed,
@@ -470,7 +427,7 @@ public class FormalArithmeticProof implements Proof<FormalArithmeticExpression> 
                 return assumption.getExp();
             }
         }
-        return null;
+        throw new IllegalStateException("Couldn't find hypothesis");
     }
 
     @Override
@@ -481,9 +438,9 @@ public class FormalArithmeticProof implements Proof<FormalArithmeticExpression> 
         Set<String> hyposVars = new HashSet<>();
         hyposVars.addAll(currentAssumption.getFreeVars(new HashSet<>()));
         FormalArithmeticExpression currentExp = statement.getExp();
-        StatementType statementType = statement.getType();
+        StatementType<FormalArithmeticExpression> statementType = statement.getType();
         if (statement.getExp().equals(currentAssumption)) {
-            newProof.addExpression(new PEntailment(currentExp, new PEntailment(currentExp, currentExp)), LogicAxiom.AxiomOne);
+            newProof.addExpression(new PEntailment(currentExp, new PEntailment(currentExp, currentExp)), PredicateLogicAxiom.AxiomOne);
             newProof.addExpression(new PEntailment(
                     new PEntailment(
                             currentExp,
@@ -499,7 +456,7 @@ public class FormalArithmeticProof implements Proof<FormalArithmeticExpression> 
                             ),
                             new PEntailment(currentExp, currentExp)
                     )
-            ), LogicAxiom.AxiomTwo);
+            ), PredicateLogicAxiom.AxiomTwo);
             newProof.addExpression(new PEntailment(
                     new PEntailment(
                             currentExp,
@@ -516,7 +473,7 @@ public class FormalArithmeticProof implements Proof<FormalArithmeticExpression> 
                             new PEntailment(currentExp, currentExp),
                             currentExp
                     )
-            ), LogicAxiom.AxiomOne);
+            ), PredicateLogicAxiom.AxiomOne);
             newProof.addExpression(new PEntailment(currentExp, currentExp), null);
         } else if (statementType.getClass() == PredicateLogicAxiom.class
                 || containsStatement(assumptions, statement)
@@ -526,7 +483,7 @@ public class FormalArithmeticProof implements Proof<FormalArithmeticExpression> 
             FormalArithmeticExpression expression = new PEntailment(currentAssumption, currentExp);
             newProof.addExpression(expression, null);
         } else if (statementType.getClass() == ModusPonens.class) {
-            Statement<FormalArithmeticExpression> antecedent = ((ModusPonens) statementType).getFirst();
+            Statement<FormalArithmeticExpression> antecedent = ((ModusPonens<FormalArithmeticExpression>) statementType).getFirst();
             FormalArithmeticExpression expression = new PEntailment(
                     new PEntailment(currentAssumption, antecedent.getExp()),
                     new PEntailment(
@@ -561,23 +518,6 @@ public class FormalArithmeticProof implements Proof<FormalArithmeticExpression> 
             expression = new PEntailment(currentAssumption, currentExp);
             newProof.addExpression(expression, null);
         } else if (statementType.getClass() == PredicateAxiom.class) {
-            Expression expr = statement.getExp();
-            Term var;
-            PEntailment PEntailment = (PEntailment) expr;
-            if (PEntailment.getRight() instanceof Exists) {
-                var = ((Exists) PEntailment.getRight()).getVariable();
-            } else if (PEntailment.getLeft() instanceof ForAll) {
-                var = ((ForAll) PEntailment.getLeft()).getVariable();
-            } else {
-                throw new IllegalStateException("Illegal predicate axiom");
-            }
-                    /*
-                    if (hyposVars.contains(var.getName())) {
-                        throw new InvalidProofException(
-                            DenialReason.ERROR_3.create(statement.getLine(), "схема аксиом", var.getName(), getHypoExp(var, assumptions).toString())
-                        );
-                    }
-                    */
             newProof.addExpression(currentExp, null);
             newProof.addExpression(new PEntailment(currentExp, new PEntailment(currentAssumption, currentExp)), null);
             FormalArithmeticExpression expression = new PEntailment(currentAssumption, currentExp);
