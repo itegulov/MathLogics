@@ -18,13 +18,15 @@ public class FormalArithmeticValidatorTest {
 
     @Before
     public void setUp() throws Exception {
-        file = new File("test.in");
+        file = File.createTempFile("math_logic_test", ".in");
         validator = FormalArithmeticValidator.getInstance();
     }
 
     @After
     public void tearDown() throws Exception {
-
+        if (!file.delete()) {
+            throw new IllegalStateException("Couldn't delete temp file test.in");
+        }
     }
 
     @Test
