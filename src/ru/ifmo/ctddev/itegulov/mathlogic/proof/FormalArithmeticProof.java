@@ -1,6 +1,5 @@
 package ru.ifmo.ctddev.itegulov.mathlogic.proof;
 
-import javafx.util.Pair;
 import ru.ifmo.ctddev.itegulov.mathlogic.exceptions.DenialReason;
 import ru.ifmo.ctddev.itegulov.mathlogic.exceptions.InvalidProofException;
 import ru.ifmo.ctddev.itegulov.mathlogic.exceptions.TreeMismatchException;
@@ -9,6 +8,7 @@ import ru.ifmo.ctddev.itegulov.mathlogic.interfaces.Validator;
 import ru.ifmo.ctddev.itegulov.mathlogic.formalarithmetic.PredicateRules;
 import ru.ifmo.ctddev.itegulov.mathlogic.structure.Expression;
 import ru.ifmo.ctddev.itegulov.mathlogic.structure.FormalArithmeticExpression;
+import ru.ifmo.ctddev.itegulov.mathlogic.structure.Pair;
 import ru.ifmo.ctddev.itegulov.mathlogic.structure.arithmetics.Successor;
 import ru.ifmo.ctddev.itegulov.mathlogic.structure.arithmetics.Zero;
 import ru.ifmo.ctddev.itegulov.mathlogic.structure.predicate.Exists;

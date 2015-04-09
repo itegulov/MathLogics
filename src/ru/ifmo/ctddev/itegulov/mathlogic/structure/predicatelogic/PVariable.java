@@ -1,7 +1,6 @@
 package ru.ifmo.ctddev.itegulov.mathlogic.structure.predicatelogic;
 
 import ru.ifmo.ctddev.itegulov.mathlogic.exceptions.TreeMismatchException;
-import javafx.util.Pair;
 import ru.ifmo.ctddev.itegulov.mathlogic.structure.*;
 import ru.ifmo.ctddev.itegulov.mathlogic.structure.predicate.Term;
 
