@@ -62,7 +62,7 @@ public abstract class AbstractDeductor<E extends Expression<E>> implements Deduc
         String[] assumptionStrings = parts[0].split(",");
         for (String assumptionString : assumptionStrings) {
             try {
-                assumptions.add(new Statement<>(parser.parse(assumptionString), new Assumption(), 0));
+                assumptions.add(new Statement<>(parser.parse(assumptionString), new Assumption<>(), 0));
             } catch (ParseException e) {
                 throw new InvalidProofException("Couldn't parse assumption");
             }

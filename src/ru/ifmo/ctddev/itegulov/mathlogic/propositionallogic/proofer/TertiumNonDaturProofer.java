@@ -37,18 +37,17 @@ public final class TertiumNonDaturProofer implements Proofer<LogicExpression> {
     private Parser<LogicExpression> parser = LogicParser.getInstance();
     private List<Statement<LogicExpression>> proofed;
 
-    private <E> List<E> combineLists(List... lists) {
+    private <E> List<E> combineLists(List<E> firstList, List<E> secondList) {
         List<E> list = new ArrayList<>();
-        for (List l : lists) {
-            list.addAll(l);
-        }
+        list.addAll(firstList);
+        list.addAll(secondList);
         return list;
     }
 
     private Proof<LogicExpression> getProof(LogicExpression toProve, List<Statement<LogicExpression>> hypothesis, int pos) throws ParseException {
         LogicalProof proof = new LogicalProof(null);
-        Statement<LogicExpression> var = new Statement<>(hypothesis.get(pos).getExp(), new Assumption(), -1);
-        Statement<LogicExpression> notVar = new Statement<>(new Not(hypothesis.get(pos).getExp()), new Assumption(), -1);
+        Statement<LogicExpression> var = new Statement<>(hypothesis.get(pos).getExp(), new Assumption<>(), -1);
+        Statement<LogicExpression> notVar = new Statement<>(new Not(hypothesis.get(pos).getExp()), new Assumption<>(), -1);
 
         Proof<LogicExpression> proof1;
         Proof<LogicExpression> proof2;
@@ -168,12 +167,14 @@ public final class TertiumNonDaturProofer implements Proofer<LogicExpression> {
         List<Statement<LogicExpression>> proofedList = new ArrayList<>();
         List<Statement<LogicExpression>> hypothesis = new ArrayList<>();
         for (Variable<LogicExpression> var : variableValues) {
-            Map<Integer, LogicExpression> expressionMap = new HashMap<>();
-            expressionMap.put(1, (LogicExpression) var);
-            Proof<LogicExpression> newProof = LogicRules.TERTIUM_NON_DATUR_PROOF.replaceAll(expressionMap);
+            //Map<Integer, LogicExpression> expressionMap = new HashMap<>();
+            //expressionMap.put(1, (LogicExpression) var);
+            //Proof<LogicExpression> newProof = LogicRules.TERTIUM_NON_DATUR_PROOF.replaceAll(expressionMap);
+            Proof<LogicExpression> newProof = new LogicalProof(null);
+            LogicRules.addTeruimNonDaturProof((LogicExpression) var, newProof);
             proof.addProof(newProof);
             proofedList.add(newProof.getStatements().get(newProof.getStatements().size() - 1));
-            hypothesis.add(new Statement<>((LogicExpression) var, new Assumption(), -1));
+            hypothesis.add(new Statement<>((LogicExpression) var, new Assumption<>(), -1));
         }
         proofed = proofedList;
         proof.addProof(getProof(expression, hypothesis, 0));

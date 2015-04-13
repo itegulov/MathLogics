@@ -70,17 +70,4 @@ public final class PredicateRules {
         }
         EXISTS_RULE = proof;
     }
-
-    public static void main(String[] args) throws FileNotFoundException, InvalidProofException {
-        /*FormalArithmeticProof proof = new FormalArithmeticProof(null);
-        ExistsRule.addExistsProof1(new PGap(1), new PGap(2), new PGap(3), new PGap(4), proof);
-        ExistsRule.addExistsProof2(new PGap(1), new PGap(2), new PGap(3), new PGap(4), proof);
-        ExistsRule.addExistsProof3(new PGap(1), new PGap(2), new PGap(3), new PGap(4), proof);
-        Validator<FormalArithmeticExpression> validator = FormalArithmeticValidator.getInstance();
-        validator.validate(proof, null);
-        PrintWriter pw = new PrintWriter(new File("exists_rule.proof"));
-        pw.println(proof.toSimpleString());
-        pw.close();*/
-        System.out.println(EXISTS_RULE);
-    }
 }
