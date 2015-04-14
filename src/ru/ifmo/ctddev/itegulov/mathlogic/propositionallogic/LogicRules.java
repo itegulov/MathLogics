@@ -49,7 +49,7 @@ public final class LogicRules {
         TERTIUM_NON_DATUR_PROOF = proof;
     }
 
-    public static void addTeruimNonDaturProof(LogicExpression e, Proof<LogicExpression> proof) {
+    public static void addTertiumNonDaturProof(LogicExpression e, Proof<LogicExpression> proof) {
         map.clear();
         map.put(1, e);
         proof.addProof(TERTIUM_NON_DATUR_PROOF.replaceAll(map));

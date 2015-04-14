@@ -36,6 +36,11 @@ public class FormalArithmeticProof implements Proof<FormalArithmeticExpression> 
         statements = new ArrayList<>();
     }
 
+    public FormalArithmeticProof(Statement<FormalArithmeticExpression> assumption) {
+        this.assumptions = Collections.singletonList(assumption);
+        statements = new ArrayList<>();
+    }
+
     public String toSimpleString() {
         StringBuilder sb = new StringBuilder();
 
@@ -49,6 +54,11 @@ public class FormalArithmeticProof implements Proof<FormalArithmeticExpression> 
     @Override
     public void addExpression(final FormalArithmeticExpression expression, final StatementType<FormalArithmeticExpression> type) {
         addStatement(new Statement<>(expression, type, -1));
+    }
+
+    @Override
+    public void addExpression(final FormalArithmeticExpression expression) {
+        addExpression(expression, null);
     }
 
     @Override
@@ -624,6 +634,11 @@ public class FormalArithmeticProof implements Proof<FormalArithmeticExpression> 
             newProof.addStatement(new Statement<>(statement.getExp().replaceAll(map), statement.getType(), -1));
         }
         return newProof;
+    }
+
+    @Override
+    public List<Statement<FormalArithmeticExpression>> getAssumptions() {
+        return assumptions;
     }
 
     public boolean rightExists(FormalArithmeticExpression exp) {

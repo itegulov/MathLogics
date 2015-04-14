@@ -22,6 +22,14 @@ public interface Proof<E extends Expression<E>> {
     void addExpression(final E expression, final StatementType<E> type);
 
     /**
+     * Adds statement to proof, consisting of expression
+     * without any type.
+     *
+     * @param expression expression to add
+     */
+    void addExpression(final E expression);
+
+    /**
      * Adds specified statement to proof.
      *
      * @param st statement to add
@@ -85,4 +93,11 @@ public interface Proof<E extends Expression<E>> {
      * @see Expression#replaceAll(Map)
      */
     Proof<E> replaceAll(Map<Integer, E> map);
+
+    /**
+     * Gets all assumptions, used in this proof.
+     *
+     * @return list of statements, representing assumptions
+     */
+    List<Statement<E>> getAssumptions();
 }

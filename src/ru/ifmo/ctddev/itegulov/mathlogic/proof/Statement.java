@@ -88,7 +88,7 @@ public final class Statement<E extends Expression<E>> {
         if (exp == null) {
             return type.toString();
         }
-        return "(" + line + ") " + exp.toString() + " (" + type.toString() + ")";
+        return "(" + line + ") " + exp.toString() + " (" + (type == null ? "Неизвестно" : type.toString()) + ")";
     }
 
     public String toSimpleString() {

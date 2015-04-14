@@ -42,6 +42,11 @@ public final class LogicalProof implements Proof<LogicExpression> {
     }
 
     @Override
+    public void addExpression(final LogicExpression expression) {
+        addExpression(expression, null);
+    }
+
+    @Override
     public void addStatement(final Statement<LogicExpression> st) {
         line++;
         st.setLine(line);
@@ -113,6 +118,11 @@ public final class LogicalProof implements Proof<LogicExpression> {
             newProof.addStatement(new Statement<>(statement.getExp().replaceAll(map), statement.getType(), -1));
         }
         return newProof;
+    }
+
+    @Override
+    public List<Statement<LogicExpression>> getAssumptions() {
+        return assumptions;
     }
 
     @Override

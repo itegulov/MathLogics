@@ -81,4 +81,8 @@ public abstract class PUnaryOperator extends AbstractFormalArithmeticExpression 
         }
         return exp.getReplacedVariableOccurrences(((PUnaryOperator) originalExpr).exp);
     }
+
+    public FormalArithmeticExpression getExp() {
+        return exp;
+    }
 }

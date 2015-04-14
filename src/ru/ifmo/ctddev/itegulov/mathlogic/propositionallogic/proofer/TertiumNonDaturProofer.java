@@ -171,7 +171,7 @@ public final class TertiumNonDaturProofer implements Proofer<LogicExpression> {
             //expressionMap.put(1, (LogicExpression) var);
             //Proof<LogicExpression> newProof = LogicRules.TERTIUM_NON_DATUR_PROOF.replaceAll(expressionMap);
             Proof<LogicExpression> newProof = new LogicalProof(null);
-            LogicRules.addTeruimNonDaturProof((LogicExpression) var, newProof);
+            LogicRules.addTertiumNonDaturProof((LogicExpression) var, newProof);
             proof.addProof(newProof);
             proofedList.add(newProof.getStatements().get(newProof.getStatements().size() - 1));
             hypothesis.add(new Statement<>((LogicExpression) var, new Assumption<>(), -1));
