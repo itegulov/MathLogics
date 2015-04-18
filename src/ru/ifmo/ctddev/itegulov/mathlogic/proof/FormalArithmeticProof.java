@@ -27,7 +27,7 @@ public class FormalArithmeticProof implements Proof<FormalArithmeticExpression> 
     //TODO: javadoc
     private final List<Statement<FormalArithmeticExpression>> statements;
     private final Map<FormalArithmeticExpression, Statement<FormalArithmeticExpression>> all = new HashMap<>();
-    private final List<Statement<FormalArithmeticExpression>> assumptions;
+    private List<Statement<FormalArithmeticExpression>> assumptions;
     private final Map<FormalArithmeticExpression, Set<Statement<FormalArithmeticExpression>>> right = new HashMap<>();
     private int line = 0;
 
@@ -39,16 +39,6 @@ public class FormalArithmeticProof implements Proof<FormalArithmeticExpression> 
     public FormalArithmeticProof(Statement<FormalArithmeticExpression> assumption) {
         this.assumptions = Collections.singletonList(assumption);
         statements = new ArrayList<>();
-    }
-
-    public String toSimpleString() {
-        StringBuilder sb = new StringBuilder();
-
-        for (Statement<FormalArithmeticExpression> s : statements) {
-            sb.append(s.toSimpleString()).append("\n");
-        }
-
-        return sb.toString();
     }
 
     @Override
@@ -496,7 +486,7 @@ public class FormalArithmeticProof implements Proof<FormalArithmeticExpression> 
                             )
                     ),
                     new PEntailment(currentExp, currentExp)
-            ), null);
+            ));
             newProof.addExpression(new PEntailment(
                     currentExp,
                     new PEntailment(
@@ -504,14 +494,14 @@ public class FormalArithmeticProof implements Proof<FormalArithmeticExpression> 
                             currentExp
                     )
             ), PredicateLogicAxiom.AxiomOne);
-            newProof.addExpression(new PEntailment(currentExp, currentExp), null);
+            newProof.addExpression(new PEntailment(currentExp, currentExp));
         } else if (statementType.getClass() == PredicateLogicAxiom.class
                 || containsStatement(assumptions, statement)
                 || containsStatement(proofed, statement)) {
-            newProof.addExpression(currentExp, null);
-            newProof.addExpression(new PEntailment(currentExp, new PEntailment(currentAssumption, currentExp)), null);
+            newProof.addExpression(currentExp);
+            newProof.addExpression(new PEntailment(currentExp, new PEntailment(currentAssumption, currentExp)));
             FormalArithmeticExpression expression = new PEntailment(currentAssumption, currentExp);
-            newProof.addExpression(expression, null);
+            newProof.addExpression(expression);
         } else if (statementType.getClass() == ModusPonens.class) {
             Statement<FormalArithmeticExpression> antecedent = ((ModusPonens<FormalArithmeticExpression>) statementType).getFirst();
             FormalArithmeticExpression expression = new PEntailment(
@@ -530,7 +520,7 @@ public class FormalArithmeticProof implements Proof<FormalArithmeticExpression> 
                             )
                     )
             );
-            newProof.addExpression(expression, null);
+            newProof.addExpression(expression);
             expression = new PEntailment(
                     new PEntailment(
                             currentAssumption,
@@ -544,24 +534,24 @@ public class FormalArithmeticProof implements Proof<FormalArithmeticExpression> 
                             currentExp
                     )
             );
-            newProof.addExpression(expression, null);
+            newProof.addExpression(expression);
             expression = new PEntailment(currentAssumption, currentExp);
-            newProof.addExpression(expression, null);
+            newProof.addExpression(expression);
         } else if (statementType.getClass() == PredicateAxiom.class) {
-            newProof.addExpression(currentExp, null);
-            newProof.addExpression(new PEntailment(currentExp, new PEntailment(currentAssumption, currentExp)), null);
+            newProof.addExpression(currentExp);
+            newProof.addExpression(new PEntailment(currentExp, new PEntailment(currentAssumption, currentExp)));
             FormalArithmeticExpression expression = new PEntailment(currentAssumption, currentExp);
-            newProof.addExpression(expression, null);
+            newProof.addExpression(expression);
         } else if (statementType.getClass() == ArithmeticAxiom.class) {
-            newProof.addExpression(currentExp, null);
-            newProof.addExpression(new PEntailment(currentExp, new PEntailment(currentAssumption, currentExp)), null);
+            newProof.addExpression(currentExp);
+            newProof.addExpression(new PEntailment(currentExp, new PEntailment(currentAssumption, currentExp)));
             FormalArithmeticExpression expression = new PEntailment(currentAssumption, currentExp);
-            newProof.addExpression(expression, null);
+            newProof.addExpression(expression);
         } else if (statementType.getClass() == InductionRule.class) {
-            newProof.addExpression(currentExp, null);
-            newProof.addExpression(new PEntailment(currentExp, new PEntailment(currentAssumption, currentExp)), null);
+            newProof.addExpression(currentExp);
+            newProof.addExpression(new PEntailment(currentExp, new PEntailment(currentAssumption, currentExp)));
             FormalArithmeticExpression expression = new PEntailment(currentAssumption, currentExp);
-            newProof.addExpression(expression, null);
+            newProof.addExpression(expression);
         } else {
             if (statementType.getClass() == ExistsDerivationRule.class) {
                 if (currentExp instanceof PEntailment &&
@@ -639,6 +629,22 @@ public class FormalArithmeticProof implements Proof<FormalArithmeticExpression> 
     @Override
     public List<Statement<FormalArithmeticExpression>> getAssumptions() {
         return assumptions;
+    }
+
+    @Override
+    public void setAssumptions(List<Statement<FormalArithmeticExpression>> assumptions) {
+        this.assumptions = assumptions;
+    }
+
+    @Override
+    public String asSimpleString() {
+        StringBuilder sb = new StringBuilder();
+
+        for (Statement<FormalArithmeticExpression> s : statements) {
+            sb.append(s.toSimpleString()).append("\n");
+        }
+
+        return sb.toString();
     }
 
     public boolean rightExists(FormalArithmeticExpression exp) {

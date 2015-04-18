@@ -100,4 +100,18 @@ public interface Proof<E extends Expression<E>> {
      * @return list of statements, representing assumptions
      */
     List<Statement<E>> getAssumptions();
+
+    /**
+     * Sets assumptions for this proof.
+     * @param assumptions assumptions to be set
+     */
+    void setAssumptions(List<Statement<E>> assumptions);
+
+    /**
+     * Returns proof's simple string representation (without line numbers and
+     * basis).
+     *
+     * @return string, simply representing this proof
+     */
+    String asSimpleString();
 }

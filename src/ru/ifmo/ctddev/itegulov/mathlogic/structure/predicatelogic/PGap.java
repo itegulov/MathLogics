@@ -7,6 +7,7 @@ import ru.ifmo.ctddev.itegulov.mathlogic.structure.Pair;
 import ru.ifmo.ctddev.itegulov.mathlogic.structure.Variable;
 import ru.ifmo.ctddev.itegulov.mathlogic.structure.predicate.Term;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -69,17 +70,19 @@ public final class PGap extends Term implements Variable<FormalArithmeticExpress
 
     @Override
     public void setQuantifiers(final Set<String> quantifiers) {
-        throw new IllegalStateException("cannot perform this operation on gap");
+        //throw new IllegalStateException("cannot perform this operation on gap");
     }
 
     @Override
     public int markFreeVariableOccurrences(final String variableName) {
-        throw new IllegalStateException("cannot perform this operation on gap");
+        //throw new IllegalStateException("cannot perform this operation on gap");
+        return 0;
     }
 
     @Override
     public Set<Pair<Term, Term>> getReplacedVariableOccurrences(final Expression originalExpr) throws TreeMismatchException {
-        throw new IllegalStateException("cannot perform this operation on gap");
+        return new HashSet<>();
+        //throw new IllegalStateException("cannot perform this operation on gap");
     }
 
     @Override

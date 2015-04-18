@@ -17,8 +17,6 @@ import ru.ifmo.ctddev.itegulov.mathlogic.structure.predicatelogic.PVariable;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
-
 /**
  * @author Daniyar Itegulov
  */
@@ -45,13 +43,64 @@ public class PredicateRulesTest {
     @Test
     public void test2_liftNotForAll() throws Exception {
         PVariable a = new PVariable("A");
-        PVariable b = new PVariable("B");
         Term x = new Term("x");
         List<Statement<FormalArithmeticExpression>> assumptions = new ArrayList<>();
         assumptions.add(new Statement<>(new PNot(new ForAll(x, a)), new Assumption<>(), -1));
         Proof<FormalArithmeticExpression> proof = new FormalArithmeticProof(assumptions);
         proof.addExpression(new PNot(new ForAll(x, a)));
         PredicateRules.liftQuantifier(new PNot(new ForAll(x, a)), proof);
+        FormalArithmeticValidator.getInstance().validate(proof, proof.getAssumptions());
+    }
+
+    @Test
+    public void test3_liftNotNotExists() throws Exception {
+        PVariable a = new PVariable("A");
+        Term x = new Term("x");
+        List<Statement<FormalArithmeticExpression>> assumptions = new ArrayList<>();
+        assumptions.add(new Statement<>(new PNot(new PNot(new Exists(x, a))), new Assumption<>(), -1));
+        Proof<FormalArithmeticExpression> proof = new FormalArithmeticProof(assumptions);
+        proof.addExpression(new PNot(new PNot(new Exists(x, a))));
+        PredicateRules.liftQuantifier(new PNot(new PNot(new Exists(x, a))), proof);
+        FormalArithmeticValidator.getInstance().validate(proof, proof.getAssumptions());
+    }
+
+    @Test
+    public void test4_mapForAll() throws Exception {
+        PVariable p = new PVariable("P");
+        Term x = new Term("x");
+        PVariable q = new PVariable("Q");
+        List<Statement<FormalArithmeticExpression>> assumptions = new ArrayList<>();
+        assumptions.add(new Statement<>(new ForAll(x, new PEntailment(p, q)), null, -1));
+        Proof<FormalArithmeticExpression> proof = new FormalArithmeticProof(assumptions);
+        proof.addExpression(new ForAll(x, new PEntailment(p, q)));
+        PredicateRules.addMapForAllProof(x, p, q, proof);
+        proof.addExpression(new PEntailment(new ForAll(x, p), new ForAll(x, q)));
+        FormalArithmeticValidator.getInstance().validate(proof, proof.getAssumptions());
+    }
+
+    @Test
+    public void test5_mapExists() throws Exception {
+        PVariable p = new PVariable("P");
+        Term x = new Term("x");
+        PVariable q = new PVariable("Q");
+        List<Statement<FormalArithmeticExpression>> assumptions = new ArrayList<>();
+        assumptions.add(new Statement<>(new ForAll(x, new PEntailment(p, q)), null, -1));
+        Proof<FormalArithmeticExpression> proof = new FormalArithmeticProof(assumptions);
+        proof.addExpression(new ForAll(x, new PEntailment(p, q)));
+        PredicateRules.addMapExistsProof(x, p, q, proof);
+        proof.addExpression(new PEntailment(new Exists(x, p), new Exists(x, q)));
+        FormalArithmeticValidator.getInstance().validate(proof, proof.getAssumptions());
+    }
+
+    @Test
+    public void test6_liftNotNotForAll() throws Exception {
+        PVariable a = new PVariable("A");
+        Term x = new Term("x");
+        List<Statement<FormalArithmeticExpression>> assumptions = new ArrayList<>();
+        assumptions.add(new Statement<>(new PNot(new PNot(new ForAll(x, a))), new Assumption<>(), -1));
+        Proof<FormalArithmeticExpression> proof = new FormalArithmeticProof(assumptions);
+        proof.addExpression(new PNot(new PNot(new ForAll(x, a))));
+        PredicateRules.liftQuantifier(new PNot(new PNot(new ForAll(x, a))), proof);
         System.out.println(FormalArithmeticValidator.getInstance().validate(proof, proof.getAssumptions()));
     }
 }

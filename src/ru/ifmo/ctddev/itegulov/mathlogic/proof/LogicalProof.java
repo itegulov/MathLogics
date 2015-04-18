@@ -15,7 +15,7 @@ import java.util.*;
 public final class LogicalProof implements Proof<LogicExpression> {
     //TODO: javadoc
     private final List<Statement<LogicExpression>> statements;
-    private final List<Statement<LogicExpression>> assumptions;
+    private List<Statement<LogicExpression>> assumptions;
     private final Map<LogicExpression, Statement<LogicExpression>> all = new HashMap<>();
     private final Map<LogicExpression, Set<Statement<LogicExpression>>> right = new HashMap<>();
     private int line = 0;
@@ -126,6 +126,23 @@ public final class LogicalProof implements Proof<LogicExpression> {
     }
 
     @Override
+    public void setAssumptions(List<Statement<LogicExpression>> assumptions) {
+        this.assumptions = assumptions;
+    }
+
+    @Override
+    public String asSimpleString() {
+
+        StringBuilder sb = new StringBuilder();
+
+        for (Statement<LogicExpression> s : statements) {
+            sb.append(s.toSimpleString()).append("\n");
+        }
+
+        return sb.toString();
+    }
+
+    @Override
     public List<Statement<LogicExpression>> getStatements() {
         return statements;
     }
@@ -187,24 +204,24 @@ public final class LogicalProof implements Proof<LogicExpression> {
             LogicExpression currentExp = statement.getExp();
             StatementType statementType = statement.getType();
             if (statement.getExp().equals(currentAssumption)) {
-                newProof.addExpression(parser.parse("(1)->(1)->(1)".replace("1", currentExp.toString())), null);
-                newProof.addExpression(parser.parse("((1)->((1)->(1)))->((1)->(((1)->(1))->(1)))->((1)->(1))".replace("1", currentExp.toString())), null);
-                newProof.addExpression(parser.parse("((1)->(((1)->(1))->1))->((1)->(1))".replace("1", currentExp.toString())), null);
-                newProof.addExpression(parser.parse("((1)->(((1)->(1))->(1)))".replace("1", currentExp.toString())), null);
-                newProof.addExpression(parser.parse("(1)->(1)".replace("1", currentExp.toString())), null);
+                newProof.addExpression(parser.parse("(1)->(1)->(1)".replace("1", currentExp.toString())));
+                newProof.addExpression(parser.parse("((1)->((1)->(1)))->((1)->(((1)->(1))->(1)))->((1)->(1))".replace("1", currentExp.toString())));
+                newProof.addExpression(parser.parse("((1)->(((1)->(1))->1))->((1)->(1))".replace("1", currentExp.toString())));
+                newProof.addExpression(parser.parse("((1)->(((1)->(1))->(1)))".replace("1", currentExp.toString())));
+                newProof.addExpression(parser.parse("(1)->(1)".replace("1", currentExp.toString())));
             } else if (statementType.getClass() == LogicAxiom.class || containsStatement(assumptions, statement) || containsStatement(proofed, statement)) {
-                newProof.addExpression(currentExp, null);
-                newProof.addExpression(new Entailment(currentExp, new Entailment(currentAssumption, currentExp)), null);
+                newProof.addExpression(currentExp);
+                newProof.addExpression(new Entailment(currentExp, new Entailment(currentAssumption, currentExp)));
                 LogicExpression expression = new Entailment(currentAssumption, currentExp);
-                newProof.addExpression(expression, null);
+                newProof.addExpression(expression);
             } else if (statementType.getClass() == ModusPonens.class) {
                 Statement antecedent = ((ModusPonens) statementType).getFirst();
                 LogicExpression expression = parser.parse("((1)->(2))->(((1)->((2)->(3)))->((1)->(3)))".replace("1", currentAssumption.toString()).replace("2", antecedent.getExp().toString()).replace("3", currentExp.toString()));
-                newProof.addExpression(expression, null);
+                newProof.addExpression(expression);
                 expression = parser.parse("(((1)->((2)->(3)))->((1)->(3)))".replace("1", currentAssumption.toString()).replace("2", antecedent.getExp().toString()).replace("3", currentExp.toString()));
-                newProof.addExpression(expression, null);
+                newProof.addExpression(expression);
                 expression = parser.parse("(1)->(3)".replace("1", currentAssumption.toString()).replace("3", currentExp.toString()));
-                newProof.addExpression(expression, null);
+                newProof.addExpression(expression);
             }
         } catch (ParseException e) {
             throw new IllegalStateException("Const expression is invalid");

@@ -19,7 +19,7 @@ public abstract class AbstractExpression<E extends Expression> implements Expres
     @Override
     public boolean equals(Object obj) {
         return obj instanceof Expression
-                && ((Expression) obj).treeMatch(this);
+                && treeMatch((Expression) obj);
     }
 
     public Object clone() throws CloneNotSupportedException {
