@@ -10,9 +10,7 @@ import ru.ifmo.ctddev.itegulov.mathlogic.structure.FormalArithmeticExpression;
 import ru.ifmo.ctddev.itegulov.mathlogic.structure.predicate.Exists;
 import ru.ifmo.ctddev.itegulov.mathlogic.structure.predicate.ForAll;
 import ru.ifmo.ctddev.itegulov.mathlogic.structure.predicate.Term;
-import ru.ifmo.ctddev.itegulov.mathlogic.structure.predicatelogic.PEntailment;
-import ru.ifmo.ctddev.itegulov.mathlogic.structure.predicatelogic.PNot;
-import ru.ifmo.ctddev.itegulov.mathlogic.structure.predicatelogic.PVariable;
+import ru.ifmo.ctddev.itegulov.mathlogic.structure.predicatelogic.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -101,6 +99,19 @@ public class PredicateRulesTest {
         Proof<FormalArithmeticExpression> proof = new FormalArithmeticProof(assumptions);
         proof.addExpression(new PNot(new PNot(new ForAll(x, a))));
         PredicateRules.liftQuantifier(new PNot(new PNot(new ForAll(x, a))), proof);
+        FormalArithmeticValidator.getInstance().validate(proof, proof.getAssumptions());
+    }
+
+    @Test
+    public void test7_inMorganOr() throws Exception {
+        PVariable a = new PVariable("A");
+        PVariable b = new PVariable("B");
+        List<Statement<FormalArithmeticExpression>> assumptions = new ArrayList<>();
+        assumptions.add(new Statement<>(new POr(new PNot(a), new PNot(b)), new Assumption<>(), -1));
+        Proof<FormalArithmeticExpression> proof = new FormalArithmeticProof(assumptions);
+        PredicateRules.addInMorganOrProof(a, b, proof);
+        proof.addExpression(new POr(new PNot(a), new PNot(b)));
+        proof.addExpression(new PNot(new PAnd(a, b)));
         System.out.println(FormalArithmeticValidator.getInstance().validate(proof, proof.getAssumptions()));
     }
 }
