@@ -112,6 +112,47 @@ public class PredicateRulesTest {
         PredicateRules.addInMorganOrProof(a, b, proof);
         proof.addExpression(new POr(new PNot(a), new PNot(b)));
         proof.addExpression(new PNot(new PAnd(a, b)));
+        FormalArithmeticValidator.getInstance().validate(proof, proof.getAssumptions());
+    }
+
+    @Test
+    public void test8_orToNotNot() throws Exception {
+        PVariable a = new PVariable("A");
+        PVariable b = new PVariable("B");
+        List<Statement<FormalArithmeticExpression>> assumptions = new ArrayList<>();
+        assumptions.add(new Statement<>(new POr(a, b), new Assumption<>(), -1));
+        Proof<FormalArithmeticExpression> proof = new FormalArithmeticProof(assumptions);
+        PredicateRules.addOrToNotNotProof(a, b, proof);
+        proof.addExpression(new POr(a, b));
+        proof.addExpression(new POr(new PNot(new PNot(a)), new PNot(new PNot(b))));
+        FormalArithmeticValidator.getInstance().validate(proof, proof.getAssumptions());
+    }
+
+    @Test
+    public void test9_notAThenB() throws Exception {
+        PVariable a = new PVariable("A");
+        PVariable b = new PVariable("B");
+        List<Statement<FormalArithmeticExpression>> assumptions = new ArrayList<>();
+        assumptions.add(new Statement<>(new POr(a, b), new Assumption<>(), -1));
+        Proof<FormalArithmeticExpression> proof = new FormalArithmeticProof(assumptions);
+        PredicateRules.addNotAThenBProof(a, b, proof);
+        proof.addExpression(new POr(a, b));
+        proof.addExpression(new PEntailment(new PNot(a), b));
+        FormalArithmeticValidator.getInstance().validate(proof, proof.getAssumptions());
+    }
+
+    @Test
+    public void test10_inMorganAnd() throws Exception {
+        PVariable a = new PVariable("A");
+        PVariable b = new PVariable("B");
+        List<Statement<FormalArithmeticExpression>> assumptions = new ArrayList<>();
+        assumptions.add(new Statement<>(new PAnd(new PNot(a), new PNot(b)), new Assumption<>(), -1));
+        Proof<FormalArithmeticExpression> proof = new FormalArithmeticProof(assumptions);
+        PredicateRules.addInMorganAndProof(a, b, proof);
+        proof.addExpression(new PAnd(new PNot(a), new PNot(b)));
+        proof.addExpression(new PNot(new POr(a, b)));
         System.out.println(FormalArithmeticValidator.getInstance().validate(proof, proof.getAssumptions()));
     }
+
+
 }

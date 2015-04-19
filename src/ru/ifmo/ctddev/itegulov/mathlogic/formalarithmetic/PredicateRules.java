@@ -37,6 +37,10 @@ public final class PredicateRules {
     private static final Proof<FormalArithmeticExpression> DE_MORGAN_AND_PROOF;
     private static final Proof<FormalArithmeticExpression> NOT_AND_PROOF;
     private static final Proof<FormalArithmeticExpression> NOT_AND_SYM_PROOF;
+    private static final Proof<FormalArithmeticExpression> OR_TO_NOT_NOT_PROOF;
+    private static final Proof<FormalArithmeticExpression> NOT_A_THEN_B_PROOF;
+    private static final Proof<FormalArithmeticExpression> IN_MORGAN_AND_PROOF;
+    private static final Proof<FormalArithmeticExpression> DE_MORGAN_OR_PROOF;
 
     private static Map<Integer, FormalArithmeticExpression> map  = new HashMap<>();
 
@@ -203,6 +207,116 @@ public final class PredicateRules {
             throw new IllegalStateException();
         }
         NOT_AND_SYM_PROOF = proof;
+    }
+
+    static {
+        Proof<FormalArithmeticExpression> proof;
+        Validator<FormalArithmeticExpression> validator = FormalArithmeticValidator.getInstance();
+        try {
+            proof = validator.validate(new File("res/rules/or_to_not_not.proof"));
+        } catch (FileNotFoundException e) {
+            System.err.println("Const proof wasn't found");
+            throw new IllegalStateException();
+        } catch (InvalidProofException e) {
+            System.err.println("Const proof is invalid");
+            throw new IllegalStateException();
+        }
+        OR_TO_NOT_NOT_PROOF = proof;
+    }
+
+    static {
+        Proof<FormalArithmeticExpression> proof;
+        Validator<FormalArithmeticExpression> validator = FormalArithmeticValidator.getInstance();
+        List<Statement<FormalArithmeticExpression>> assumptions = new ArrayList<>();
+        PGap a = new PGap(1);
+        PGap b = new PGap(2);
+        assumptions.add(new Statement<>(new PEntailment(new POr(a, b),
+                new POr(new PNot(new PNot(a)), new PNot(new PNot(b)))), null, -1));
+        assumptions.add(new Statement<>(new PEntailment(new POr(new PNot(new PNot(a)), new PNot(new PNot(b))),
+                new PNot(new PAnd(new PNot(a), new PNot(b)))), null, -1));
+        try {
+            proof = validator.validate(new File("res/rules/not_a_then_b.proof"), assumptions);
+        } catch (FileNotFoundException e) {
+            System.err.println("Const proof wasn't found");
+            throw new IllegalStateException();
+        } catch (InvalidProofException e) {
+            System.err.println("Const proof is invalid");
+            throw new IllegalStateException();
+        }
+        NOT_A_THEN_B_PROOF = proof;
+    }
+
+    static {
+        Proof<FormalArithmeticExpression> proof;
+        Validator<FormalArithmeticExpression> validator = FormalArithmeticValidator.getInstance();
+        List<Statement<FormalArithmeticExpression>> assumptions = new ArrayList<>();
+        PGap a = new PGap(1);
+        PGap b = new PGap(2);
+        assumptions.add(new Statement<>(new PEntailment(new POr(a, b), new PEntailment(new PNot(a), b)), null, -1));
+        try {
+            proof = validator.validate(new File("res/rules/in_morgan_and.proof"), assumptions);
+        } catch (FileNotFoundException e) {
+            System.err.println("Const proof wasn't found");
+            throw new IllegalStateException();
+        } catch (InvalidProofException e) {
+            System.err.println("Const proof is invalid");
+            throw new IllegalStateException();
+        }
+        IN_MORGAN_AND_PROOF = proof;
+    }
+
+    static {
+        Proof<FormalArithmeticExpression> proof;
+        Validator<FormalArithmeticExpression> validator = FormalArithmeticValidator.getInstance();
+        try {
+            proof = validator.validate(new File("res/rules/de_morgan_or.proof"));
+        } catch (FileNotFoundException e) {
+            System.err.println("Const proof wasn't found");
+            throw new IllegalStateException();
+        } catch (InvalidProofException e) {
+            System.err.println("Const proof is invalid");
+            throw new IllegalStateException();
+        }
+        DE_MORGAN_OR_PROOF = proof;
+    }
+
+    public static void addDeMorganOrProof(FormalArithmeticExpression a,
+                                           FormalArithmeticExpression b,
+                                           Proof<FormalArithmeticExpression> proof) {
+        map.clear();
+        map.put(1, a);
+        map.put(2, b);
+        proof.addProof(DE_MORGAN_OR_PROOF.replaceAll(map));
+    }
+
+    public static void addInMorganAndProof(FormalArithmeticExpression a,
+                                           FormalArithmeticExpression b,
+                                           Proof<FormalArithmeticExpression> proof) {
+        addNotAThenBProof(a, b, proof);
+        map.clear();
+        map.put(1, a);
+        map.put(2, b);
+        proof.addProof(IN_MORGAN_AND_PROOF.replaceAll(map));
+    }
+
+    public static void addNotAThenBProof(FormalArithmeticExpression a,
+                                         FormalArithmeticExpression b,
+                                         Proof<FormalArithmeticExpression> proof) {
+        addOrToNotNotProof(a, b, proof);
+        addInMorganOrProof(new PNot(a), new PNot(b), proof);
+        map.clear();
+        map.put(1, a);
+        map.put(2, b);
+        proof.addProof(NOT_A_THEN_B_PROOF.replaceAll(map));
+    }
+
+    public static void addOrToNotNotProof(FormalArithmeticExpression a,
+                                          FormalArithmeticExpression b,
+                                          Proof<FormalArithmeticExpression> proof) {
+        map.clear();
+        map.put(1, a);
+        map.put(2, b);
+        proof.addProof(OR_TO_NOT_NOT_PROOF.replaceAll(map));
     }
 
     public static void addInMorganOrProof(FormalArithmeticExpression a,
@@ -459,22 +573,49 @@ public final class PredicateRules {
             proof.addExpression(new PEntailment(result, new ForAll(x, temp)));
             proof.addExpression(new ForAll(x, temp));
             if (result instanceof Exists) {
-                Exists exists = (Exists) result;
                 addMapExistsProof(x, new POr(new PNot(l), new PNot(r)), new PNot(new PAnd(l, r)), proof);
                 proof.addExpression(new PEntailment(result, new Exists(x, new PNot(new PAnd(l, r)))));
                 proof.addExpression(new Exists(x, new PNot(new PAnd(l, r))));
                 return new Exists(x, new PNot(new PAnd(l, r)));
             } else if (result instanceof ForAll) {
-                ForAll forAll = (ForAll) result;
                 addMapForAllProof(x, new POr(new PNot(l), new PNot(r)), new PNot(new PAnd(l, r)), proof);
                 proof.addExpression(new PEntailment(result, new Exists(x, new PNot(new PAnd(l, r)))));
                 proof.addExpression(new Exists(x, new PNot(new PAnd(l, r))));
                 return new Exists(x, new PNot(new PAnd(l, r)));
             } else {
-                throw new IllegalStateException("Unknown type of quatifier");
+                throw new IllegalStateException("Unknown type of quantifier");
             }
         } else if (pNot.getExp() instanceof POr) {
-            //TODO: implement
+            POr pAnd = (POr) pNot.getExp();
+            FormalArithmeticExpression l = pAnd.getLeft();
+            FormalArithmeticExpression r = pAnd.getRight();
+            addDeMorganOrProof(l, r, proof);
+            proof.addExpression(new PNot(new POr(l, r)));
+            proof.addExpression(new PAnd(new PNot(l), new PNot(r)));
+            Quantifier result = liftQuantifier(new PAnd(new PNot(l), new PNot(r)), proof);
+            Term x = result.getVariable();
+            l = ((PNot) ((PAnd) result.getExp()).getLeft()).getExp();
+            r = ((PNot) ((PAnd) result.getExp()).getRight()).getExp();
+            addInMorganAndProof(l, r, proof);
+            PEntailment temp = new PEntailment(new PAnd(new PNot(l), new PNot(r)),
+                    new PNot(new POr(l, r)));
+            proof.addExpression(new PEntailment(temp, new PEntailment(result, temp)));
+            proof.addExpression(new PEntailment(result, temp));
+            proof.addExpression(new PEntailment(result, new ForAll(x, temp)));
+            proof.addExpression(new ForAll(x, temp));
+            if (result instanceof Exists) {
+                addMapExistsProof(x, temp.getLeft(), temp.getRight(), proof);
+                proof.addExpression(new PEntailment(result, new Exists(x, new PNot(new POr(l, r)))));
+                proof.addExpression(new Exists(x, new PNot(new POr(l, r))));
+                return new Exists(x, new PNot(new POr(l, r)));
+            } else if (result instanceof ForAll) {
+                addMapForAllProof(x, temp.getLeft(), temp.getRight(), proof);
+                proof.addExpression(new PEntailment(result, new ForAll(x, new PNot(new POr(l, r)))));
+                proof.addExpression(new ForAll(x, new PNot(new POr(l, r))));
+                return new ForAll(x, new PNot(new POr(l, r)));
+            } else {
+                throw new IllegalStateException("Unknown type of quantifier");
+            }
         } else if (pNot.getExp() instanceof PEntailment) {
             //TODO: implement
         }
@@ -487,8 +628,9 @@ public final class PredicateRules {
         List<Statement<FormalArithmeticExpression>> assumptions = new ArrayList<>();
         PVariable a = new PVariable("A");
         PVariable b = new PVariable("B");
-        assumptions.add(new Statement<>(new PNot(a), null, -1));
-        proof = validator.validate(new File("res/rules/temp.proof"), assumptions);
-        System.out.println(FormalArithmeticDeductor.getInstance().deductLast(proof, proof.getAssumptions(), null).asSimpleString());
+        assumptions.add(new Statement<>(new PNot(new POr(a, b)), null, -1));
+        proof = validator.validate(new File("res/rules/de_morgan_or.proof"), assumptions);
+        proof = FormalArithmeticDeductor.getInstance().deductLast(proof, assumptions, null);
+        System.out.println(proof.asSimpleString());
     }
 }
