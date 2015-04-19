@@ -13,14 +13,13 @@ import ru.ifmo.ctddev.itegulov.mathlogic.structure.predicate.Exists;
 import ru.ifmo.ctddev.itegulov.mathlogic.structure.predicate.ForAll;
 import ru.ifmo.ctddev.itegulov.mathlogic.structure.predicate.Quantifier;
 import ru.ifmo.ctddev.itegulov.mathlogic.structure.predicate.Term;
-import ru.ifmo.ctddev.itegulov.mathlogic.structure.predicatelogic.PAnd;
-import ru.ifmo.ctddev.itegulov.mathlogic.structure.predicatelogic.PEntailment;
-import ru.ifmo.ctddev.itegulov.mathlogic.structure.predicatelogic.PNot;
-import ru.ifmo.ctddev.itegulov.mathlogic.structure.predicatelogic.POr;
+import ru.ifmo.ctddev.itegulov.mathlogic.structure.predicatelogic.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -35,6 +34,7 @@ public final class PredicateRules {
     private static final Proof<FormalArithmeticExpression> NOT_NOT_PROOF;
     private static final Proof<FormalArithmeticExpression> MAP_FOR_ALL_PROOF;
     private static final Proof<FormalArithmeticExpression> MAP_EXISTS_PROOF;
+    private static final Proof<FormalArithmeticExpression> DE_MORGAN_AND_PROOF;
 
     private static Map<Integer, FormalArithmeticExpression> map  = new HashMap<>();
 
@@ -156,6 +156,30 @@ public final class PredicateRules {
             throw new IllegalStateException();
         }
         MAP_EXISTS_PROOF = proof;
+    }
+
+    static {
+        Proof<FormalArithmeticExpression> proof;
+        Validator<FormalArithmeticExpression> validator = FormalArithmeticValidator.getInstance();
+        try {
+            proof = validator.validate(new File("res/rules/de_morgan_and.proof"));
+        } catch (FileNotFoundException e) {
+            System.err.println("Const proof wasn't found");
+            throw new IllegalStateException();
+        } catch (InvalidProofException e) {
+            System.err.println("Const proof is invalid");
+            throw new IllegalStateException();
+        }
+        DE_MORGAN_AND_PROOF = proof;
+    }
+
+    public static void addDeMorganAndProof(FormalArithmeticExpression a,
+                                           FormalArithmeticExpression b,
+                                           Proof<FormalArithmeticExpression> proof) {
+        map.clear();
+        map.put(1, a);
+        map.put(2, a);
+        proof.addProof(DE_MORGAN_AND_PROOF.replaceAll(map));
     }
 
     public static void addMapForAllProof(Term x, FormalArithmeticExpression p, FormalArithmeticExpression q, Proof<FormalArithmeticExpression> proof) {
@@ -362,5 +386,13 @@ public final class PredicateRules {
     }
 
     public static void main(String[] args) throws FileNotFoundException, InvalidProofException {
+        Proof<FormalArithmeticExpression> proof;
+        Validator<FormalArithmeticExpression> validator = FormalArithmeticValidator.getInstance();
+        List<Statement<FormalArithmeticExpression>> assumptions = new ArrayList<>();
+        PVariable a = new PVariable("A");
+        PVariable b = new PVariable("B");
+        assumptions.add(new Statement<>(new PNot(new PAnd(a, b)), null, -1));
+        proof = validator.validate(new File("res/rules/temp.proof"), assumptions);
+        System.out.println(FormalArithmeticDeductor.getInstance().deductLast(proof, proof.getAssumptions(), null).asSimpleString());
     }
 }
