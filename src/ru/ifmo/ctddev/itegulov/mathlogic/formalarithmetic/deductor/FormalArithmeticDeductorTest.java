@@ -112,6 +112,15 @@ public class FormalArithmeticDeductorTest {
         exception.expectMessage("Вывод некорректен начиная с формулы 11750");
         System.out.println(deductor.deductLast(new File("res/tests/formal_arithmetic_deductor/incorrect/incorrect11.in"), null));
     }
+
+    @Test
+    public void testDeductIncorrect12() throws Exception {
+        exception.expect(InvalidProofException.class);
+        exception.expectMessage("Вывод некорректен, начиная с формулы номер 61: " +
+                "используется правило с квантором по переменной a, входящей свободно в допущение " +
+                "@a(?a(@b(?b(P(f(a),g(b))))))->Q(g(a),f(b))");
+        deductor.deductLast(new File("res/tests/formal_arithmetic_deductor/incorrect/incorrect12.in"), null);
+    }
     
     @Test 
     public void testDeductGood() throws Exception {
