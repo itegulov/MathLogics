@@ -59,7 +59,22 @@ public abstract class AbstractDeductor<E extends Expression<E>> implements Deduc
 
         String assumptionsStatement = scanner.next();
         String[] parts = assumptionsStatement.split("\\|\\-", 2);
-        String[] assumptionStrings = parts[0].split(",");
+        String left = parts[0];
+        int balance = 0;
+        int last = 0;
+        List<String> as = new ArrayList<>();
+        for (int i = 0; i < left.length(); i++) {
+            if (left.charAt(i) == ')') {
+                balance--;
+            } else if (left.charAt(i) == '(') {
+                balance++;
+            } else if (left.charAt(i) == ',' && balance == 0) {
+                as.add(left.substring(last, i));
+                last = i + 1;
+            }
+        }
+        as.add(left.substring(last, left.length()));
+        String[] assumptionStrings = as.toArray(new String[as.size()]);
         for (String assumptionString : assumptionStrings) {
             try {
                 assumptions.add(new Statement<>(parser.parse(assumptionString), new Assumption<>(), 0));
