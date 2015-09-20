@@ -68,4 +68,8 @@ public abstract class UnaryOperator extends AbstractLogicExpression {
     public List<LogicExpression> getParticularProof(List<LogicExpression> hypothesis) {
         return exp.getParticularProof(hypothesis);
     }
+
+    public LogicExpression getExp() {
+        return exp;
+    }
 }
