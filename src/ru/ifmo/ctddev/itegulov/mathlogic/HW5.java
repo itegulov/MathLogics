@@ -4,8 +4,8 @@ import ru.ifmo.ctddev.itegulov.mathlogic.exceptions.InvalidProofException;
 import ru.ifmo.ctddev.itegulov.mathlogic.exceptions.ParseException;
 import ru.ifmo.ctddev.itegulov.mathlogic.formalarithmetic.deductor.FormalArithmeticDeductor;
 import ru.ifmo.ctddev.itegulov.mathlogic.kripke.ExpressionIsTrueException;
-import ru.ifmo.ctddev.itegulov.mathlogic.kripke.KripkeBuilder;
-import ru.ifmo.ctddev.itegulov.mathlogic.kripke.Model;
+import ru.ifmo.ctddev.itegulov.mathlogic.kripke.innovative.KripkeBuilder;
+import ru.ifmo.ctddev.itegulov.mathlogic.kripke.innovative.Model;
 import ru.ifmo.ctddev.itegulov.mathlogic.proof.Proof;
 import ru.ifmo.ctddev.itegulov.mathlogic.propositionallogic.parser.LogicParser;
 import ru.ifmo.ctddev.itegulov.mathlogic.scanner.FastLineScanner;
@@ -21,12 +21,12 @@ import java.io.PrintWriter;
 public class HW5 {
 
     public static void main(String[] args) throws FileNotFoundException, InvalidProofException, ParseException {
-        KripkeBuilder kripkeBuilder = KripkeBuilder.getInstance();
         LogicParser parser = LogicParser.getInstance();
         FastLineScanner fastLineScanner = new FastLineScanner(new File("task5.in"));
         PrintWriter pw = new PrintWriter("task5.out");
         try {
-            Model model = kripkeBuilder.findModel(parser.parse(fastLineScanner.next()));
+            KripkeBuilder kripkeBuilder = new KripkeBuilder(parser.parse(fastLineScanner.next()));
+            Model model = kripkeBuilder.build();
             pw.println(model);
         } catch (ExpressionIsTrueException e) {
             pw.println("Формула общезначима");
