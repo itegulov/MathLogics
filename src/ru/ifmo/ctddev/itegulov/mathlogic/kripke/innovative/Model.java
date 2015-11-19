@@ -1,6 +1,9 @@
 package ru.ifmo.ctddev.itegulov.mathlogic.kripke.innovative;
 
 import ru.ifmo.ctddev.itegulov.mathlogic.structure.LogicExpression;
+import ru.ifmo.ctddev.itegulov.mathlogic.structure.Variable;
+
+import java.util.List;
 
 public class Model {
     private World rootWorld;
@@ -24,6 +27,18 @@ public class Model {
         return rootWorld;
     }
 
+    public List<World> allWorlds() {
+        return rootWorld.allWorlds();
+    }
+
+    public void forceRecursive(Variable<LogicExpression> variable) {
+        rootWorld.forceRecursive(variable);
+    }
+
+    public Model clone() {
+        return new Model(rootWorld.clone());
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -32,7 +47,6 @@ public class Model {
         Model model = (Model) o;
 
         return rootWorld.equals(model.rootWorld);
-
     }
 
     @Override

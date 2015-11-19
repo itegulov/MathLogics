@@ -10,17 +10,14 @@ import java.util.stream.Collectors;
 /**
  * @author Daniyar Itegulov
  */
-public class World {
+public class World implements Cloneable {
 
-    private Set<Variable<LogicExpression>> forcedVariables = new HashSet<>();
+    private final Set<Variable<LogicExpression>> forcedVariables;
+    private Map<LogicExpression, Boolean> result = new HashMap<>();
     private List<World> children = new ArrayList<>();
 
-    public World(int mask, List<Variable<LogicExpression>> variables) {
-        for (int i = 0; i < variables.size(); i++) {
-            if ((mask & (1 << i)) != 0) {
-                forcedVariables.add(variables.get(i));
-            }
-        }
+    public World(Collection<Variable<LogicExpression>> forcedVariables) {
+        this.forcedVariables = new HashSet<>(forcedVariables);
     }
 
     public void addChild(World child) {
@@ -52,12 +49,19 @@ public class World {
     }
 
     public boolean check(LogicExpression expression) {
+        if (result.containsKey(expression)) {
+            return result.get(expression);
+        }
         if (expression instanceof And) {
             And and = (And) expression;
-            return check(and.getLeft()) && check(and.getRight());
+            boolean r = check(and.getLeft()) && check(and.getRight());
+            result.put(expression, r);
+            return r;
         } else if (expression instanceof Or) {
             Or or = (Or) expression;
-            return check(or.getLeft()) || check(or.getRight());
+            boolean r = check(or.getLeft()) || check(or.getRight());
+            result.put(expression, r);
+            return r;
         } else if (expression instanceof Entailment) {
             Entailment entailment = (Entailment) expression;
 
@@ -66,10 +70,12 @@ public class World {
             while (!worlds.isEmpty()) {
                 World w = worlds.poll();
                 if (w.check(entailment.getLeft()) && !w.check(entailment.getRight())) {
+                    result.put(expression, false);
                     return false;
                 }
                 worlds.addAll(w.children.stream().collect(Collectors.toList()));
             }
+            result.put(expression, true);
             return true;
         } else if (expression instanceof Not) {
             Not not = (Not) expression;
@@ -79,17 +85,34 @@ public class World {
             while (!worlds.isEmpty()) {
                 World w = worlds.poll();
                 if (w.check(not.getExp())) {
+                    result.put(expression, false);
                     return false;
                 }
                 worlds.addAll(w.children.stream().collect(Collectors.toList()));
             }
+            result.put(expression, true);
             return true;
         } else if (expression instanceof NVariable) {
             NVariable variable = (NVariable) expression;
-            return forcedVariables.contains(variable);
+            boolean r = forcedVariables.contains(variable);
+            result.put(expression, r);
+            return r;
         } else {
             throw new IllegalStateException("There is no more type of expressions");
         }
+    }
+
+    public World clone() {
+        try {
+            super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new IllegalStateException("Can't happen");
+        }
+        World thisWorld = new World(forcedVariables);
+        for (World child: children) {
+            thisWorld.addChild(child.clone());
+        }
+        return thisWorld;
     }
 
     @Override
@@ -109,5 +132,21 @@ public class World {
         int result = forcedVariables.hashCode();
         result = 31 * result + children.hashCode();
         return result;
+    }
+
+    public List<World> allWorlds() {
+        List<World> worlds = new ArrayList<>();
+        worlds.add(this);
+        for (World child: worlds) {
+            worlds.addAll(child.allWorlds());
+        }
+        return worlds;
+    }
+
+    public void forceRecursive(Variable<LogicExpression> variable) {
+        forcedVariables.add(variable);
+        for (World child: children) {
+            child.forceRecursive(variable);
+        }
     }
 }
