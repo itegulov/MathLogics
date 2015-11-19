@@ -38,6 +38,9 @@ public class World implements Cloneable {
         sb.append('*').append(' ');
         boolean flag = false;
         for (Variable variable : forcedVariables) {
+            if (variable.getName().equals("∫")) {
+                continue;
+            }
             if (flag) sb.append(", ");
             sb.append(variable);
             flag = true;
