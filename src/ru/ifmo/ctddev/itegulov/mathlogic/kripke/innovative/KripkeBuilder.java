@@ -35,6 +35,9 @@ public class KripkeBuilder {
 
     public Model build(List<LogicExpression> mustBeTrue) throws ExpressionIsTrueException {
         int n = variables.size();
+        if (n != 1) {
+            throw new IllegalStateException("It can't be true");
+        }
         Set<Variable<LogicExpression>> additionalVariables = new HashSet<>();
         for (LogicExpression exp: mustBeTrue) {
             Map<String, Variable<LogicExpression>> map = new HashMap<>();
@@ -43,7 +46,7 @@ public class KripkeBuilder {
         }
         variables.forEach(additionalVariables::remove);
         List<Variable<LogicExpression>> additionalVariablesList = new ArrayList<>(additionalVariables);
-        for (int maxDepth = 1; maxDepth <= 3; maxDepth++) { // It should be enough
+        for (int maxDepth = 1; maxDepth <= 2; maxDepth++) { // It should be enough
             for (int firstWorldMask = 0; firstWorldMask < (1 << n); firstWorldMask++) {
                 List<Model> models = build(firstWorldMask, 0, maxDepth);
                 for (Model model: models) {

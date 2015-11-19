@@ -3,6 +3,7 @@ package ru.ifmo.ctddev.itegulov.mathlogic.kripke.innovative;
 import ru.ifmo.ctddev.itegulov.mathlogic.kripke.ExpressionIsTrueException;
 import ru.ifmo.ctddev.itegulov.mathlogic.structure.LogicExpression;
 import ru.ifmo.ctddev.itegulov.mathlogic.structure.Variable;
+import ru.ifmo.ctddev.itegulov.mathlogic.structure.predicatelogic.PVariable;
 import ru.ifmo.ctddev.itegulov.mathlogic.structure.purelogic.*;
 
 import java.util.*;
@@ -87,11 +88,10 @@ public class InnovativeKripkeBuilder {
             newMustBeTrue.add(entailment.getLeft());
             return build(entailment.getRight(), newMustBeTrue);
         } else if (expression instanceof Not) {
-            try {
-                return new KripkeBuilder(expression).build(mustBeTrue);
-            } catch (ExpressionIsTrueException e) {
-                return null;
-            }
+            Not not = (Not) expression;
+            List<LogicExpression> newMustBeTrue = new ArrayList<>(mustBeTrue);
+            newMustBeTrue.add(not.getExp());
+            return build(new Or(new NVariable("∫"), new Not(new NVariable("∫"))), newMustBeTrue);
         } else if (expression instanceof NVariable) {
             return new Model(new World(Collections.emptySet()));
         } else {
